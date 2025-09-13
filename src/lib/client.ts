@@ -1,15 +1,22 @@
 import { EventEmitter } from 'node:events';
+import { MetricsCollector } from '../analytics/index';
 import type { CacheConfig } from '../cache/index';
 import { CacheManager, createHeatmapKey } from '../cache/index';
 import { getDb } from '../db/index';
 import { EventDispatcher } from '../events/index';
+import { DataExporter, type ExportOptions } from '../export/index';
 import type { GatewayOptions } from '../gateway/index';
 import { GatewayClient } from '../gateway/index';
+import { NotificationEngine } from '../notifications/index';
+import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
 
 export interface StatsClientOptions extends GatewayOptions {
   dbPath?: string;
   cache?: CacheConfig;
+  enableMetrics?: boolean;
+  enableNotifications?: boolean;
+  enableRateLimit?: boolean;
 }
 
 export class StatsClient extends EventEmitter {
@@ -18,6 +25,10 @@ export class StatsClient extends EventEmitter {
   private aggregator: StatsAggregator;
   private cache: CacheManager;
   private db: ReturnType<typeof getDb>;
+  private metrics?: MetricsCollector;
+  private notifications?: NotificationEngine;
+  private rateLimit?: RateLimitManager;
+  private exporter: DataExporter;
 
   constructor(options: StatsClientOptions) {
     super();
@@ -27,6 +38,19 @@ export class StatsClient extends EventEmitter {
     this.dispatcher = new EventDispatcher();
     this.aggregator = new StatsAggregator(this.db);
     this.cache = new CacheManager(options.cache);
+    this.exporter = new DataExporter(this.db);
+
+    if (options.enableMetrics !== false) {
+      this.metrics = new MetricsCollector();
+    }
+
+    if (options.enableNotifications) {
+      this.notifications = new NotificationEngine();
+    }
+
+    if (options.enableRateLimit) {
+      this.rateLimit = new RateLimitManager();
+    }
 
     this.setupEventHandlers();
   }
@@ -37,6 +61,7 @@ export class StatsClient extends EventEmitter {
     });
 
     this.dispatcher.on('processed', (event, data) => {
+      this.metrics?.incrementEventsProcessed();
       this.emit('eventProcessed', event, data);
 
       if (data.guild_id) {
@@ -45,10 +70,12 @@ export class StatsClient extends EventEmitter {
     });
 
     this.dispatcher.on('error', (error, event, data) => {
+      this.metrics?.incrementErrors();
       this.emit('processingError', error, event, data);
     });
 
     this.gateway.on('error', (error) => {
+      this.metrics?.incrementErrors();
       this.emit('gatewayError', error);
     });
   }
@@ -112,5 +139,25 @@ export class StatsClient extends EventEmitter {
 
   getDatabase() {
     return this.db;
+  }
+
+  getMetrics() {
+    return this.metrics?.getMetrics();
+  }
+
+  async exportData(options: ExportOptions) {
+    return await this.exporter.export(options);
+  }
+
+  getNotificationEngine() {
+    return this.notifications;
+  }
+
+  getRateLimitManager() {
+    return this.rateLimit;
+  }
+
+  isRateLimited(key: string, tokens = 1): boolean {
+    return this.rateLimit ? !this.rateLimit.isAllowed(key, tokens) : false;
   }
 }

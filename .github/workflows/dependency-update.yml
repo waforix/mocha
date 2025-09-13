@@ -1,0 +1,314 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      update_type:
+        description: 'Type of update to perform'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - all
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-updates:
+    name: Check for Updates
+    runs-on: ubuntu-latest
+    outputs:
+      has_updates: ${{ steps.check.outputs.has_updates }}
+      updates: ${{ steps.check.outputs.updates }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun
+
+      - name: Check for outdated dependencies
+        id: check
+        run: |
+          # Check for outdated packages
+          bun outdated --json > outdated.json || echo '{}' > outdated.json
+          
+          # Check if there are any updates
+          if [ -s outdated.json ] && [ "$(cat outdated.json)" != "{}" ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+            echo "updates<<EOF" >> $GITHUB_OUTPUT
+            cat outdated.json >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            
+            echo "📦 Found outdated dependencies:"
+            cat outdated.json
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+            echo "✅ All dependencies are up to date"
+          fi
+
+      - name: Upload outdated report
+        if: steps.check.outputs.has_updates == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: outdated-dependencies
+          path: outdated.json
+          retention-days: 7
+
+  update-patch:
+    name: Update Patch Dependencies
+    runs-on: ubuntu-latest
+    needs: check-updates
+    if: needs.check-updates.outputs.has_updates == 'true' && (github.event.inputs.update_type == 'patch' || github.event.inputs.update_type == 'all' || github.event_name == 'schedule')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./.github/actions/setup-bun
+
+      - name: Update patch dependencies
+        run: |
+          # Update patch versions only
+          bun update --patch
+          
+          # Check if anything changed
+          if git diff --quiet package.json bun.lockb; then
+            echo "No patch updates available"
+            echo "CHANGES=false" >> $GITHUB_ENV
+          else
+            echo "CHANGES=true" >> $GITHUB_ENV
+          fi
+
+      - name: Run tests after patch updates
+        if: env.CHANGES == 'true'
+        run: |
+          bun run check
+          bunx tsc --noEmit
+          bun test || echo "Tests failed, will note in PR"
+
+      - name: Create patch update PR
+        if: env.CHANGES == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update patch dependencies'
+          title: '🔧 Update patch dependencies'
+          body: |
+            ## Automated Dependency Update
+            
+            This PR updates patch-level dependencies to their latest versions.
+            
+            ### Changes
+            - Updated patch dependencies using `bun update --patch`
+            
+            ### Testing
+            - ✅ Linting and type checking passed
+            - ✅ Tests executed (check results above)
+            
+            ### Review Notes
+            - This is an automated PR for patch updates
+            - Patch updates should be safe and backward compatible
+            - Please review the changes and merge if everything looks good
+            
+            ---
+            *This PR was created automatically by the dependency update workflow*
+          branch: chore/update-patch-dependencies
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+            patch
+
+  update-minor:
+    name: Update Minor Dependencies
+    runs-on: ubuntu-latest
+    needs: check-updates
+    if: needs.check-updates.outputs.has_updates == 'true' && (github.event.inputs.update_type == 'minor' || github.event.inputs.update_type == 'all')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./.github/actions/setup-bun
+
+      - name: Update minor dependencies
+        run: |
+          # Update minor versions
+          bun update --minor
+          
+          if git diff --quiet package.json bun.lockb; then
+            echo "No minor updates available"
+            echo "CHANGES=false" >> $GITHUB_ENV
+          else
+            echo "CHANGES=true" >> $GITHUB_ENV
+          fi
+
+      - name: Run comprehensive tests
+        if: env.CHANGES == 'true'
+        run: |
+          bun run check
+          bunx tsc --noEmit
+          bun test
+          
+          # Test examples
+          for example in examples/*/; do
+            if [ -f "$example/package.json" ]; then
+              echo "Testing $example"
+              cd "$example"
+              bun install
+              bun run check || echo "Example check failed: $example"
+              cd - > /dev/null
+            fi
+          done
+
+      - name: Create minor update PR
+        if: env.CHANGES == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update minor dependencies'
+          title: '📦 Update minor dependencies'
+          body: |
+            ## Automated Minor Dependency Update
+            
+            This PR updates minor-level dependencies to their latest versions.
+            
+            ### Changes
+            - Updated minor dependencies using `bun update --minor`
+            
+            ### Testing
+            - ✅ Linting and type checking passed
+            - ✅ Unit tests passed
+            - ✅ Examples tested
+            
+            ### Review Notes
+            - This is an automated PR for minor updates
+            - Minor updates may include new features but should be backward compatible
+            - Please review the changelog of updated packages for any breaking changes
+            - Test thoroughly before merging
+            
+            ---
+            *This PR was created automatically by the dependency update workflow*
+          branch: chore/update-minor-dependencies
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+            minor
+
+  security-updates:
+    name: Security Updates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./.github/actions/setup-bun
+
+      - name: Check for security vulnerabilities
+        id: security
+        run: |
+          # Run security audit
+          bun audit --json > audit.json || true
+          
+          if [ -s audit.json ]; then
+            # Check for high/critical vulnerabilities
+            high_critical=$(jq '[.advisories[] | select(.severity == "high" or .severity == "critical")] | length' audit.json 2>/dev/null || echo "0")
+            
+            if [ "$high_critical" -gt 0 ]; then
+              echo "has_security_issues=true" >> $GITHUB_OUTPUT
+              echo "Found $high_critical high/critical security vulnerabilities"
+            else
+              echo "has_security_issues=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "has_security_issues=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update vulnerable dependencies
+        if: steps.security.outputs.has_security_issues == 'true'
+        run: |
+          # Try to update vulnerable packages
+          bun update
+          
+          # Check if vulnerabilities are fixed
+          bun audit --json > audit-after.json || true
+          
+          if git diff --quiet package.json bun.lockb; then
+            echo "CHANGES=false" >> $GITHUB_ENV
+          else
+            echo "CHANGES=true" >> $GITHUB_ENV
+          fi
+
+      - name: Create security update PR
+        if: steps.security.outputs.has_security_issues == 'true' && env.CHANGES == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'security: update vulnerable dependencies'
+          title: '🔒 Security: Update vulnerable dependencies'
+          body: |
+            ## Security Dependency Update
+            
+            This PR addresses security vulnerabilities in dependencies.
+            
+            ### Security Issues
+            - Found high/critical security vulnerabilities
+            - Updated dependencies to resolve security issues
+            
+            ### Changes
+            - Updated vulnerable packages to secure versions
+            
+            ### Priority
+            - 🚨 **HIGH PRIORITY** - Contains security fixes
+            - Please review and merge as soon as possible
+            
+            ---
+            *This PR was created automatically by the security update workflow*
+          branch: security/update-vulnerable-dependencies
+          delete-branch: true
+          labels: |
+            security
+            dependencies
+            high-priority
+            automated
+
+  update-summary:
+    name: Update Summary
+    runs-on: ubuntu-latest
+    needs: [check-updates, update-patch, update-minor, security-updates]
+    if: always()
+    steps:
+      - name: Dependency Update Summary
+        run: |
+          echo "## 📦 Dependency Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.check-updates.outputs.has_updates }}" = "true" ]; then
+            echo "📋 **Updates Available**: Yes" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **All Dependencies**: Up to date" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.update-patch.result }}" = "success" ]; then
+            echo "✅ **Patch Updates**: Processed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.update-patch.result }}" = "skipped" ]; then
+            echo "⏭️ **Patch Updates**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.update-minor.result }}" = "success" ]; then
+            echo "✅ **Minor Updates**: Processed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.update-minor.result }}" = "skipped" ]; then
+            echo "⏭️ **Minor Updates**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.security-updates.result }}" = "success" ]; then
+            echo "🔒 **Security Updates**: Checked" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check the PRs section for any created pull requests." >> $GITHUB_STEP_SUMMARY

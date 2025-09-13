@@ -110,3 +110,36 @@ export const presenceEvents = sqliteTable(
     timestampIdx: index('presence_timestamp_idx').on(table.timestamp),
   })
 );
+
+export const reactionEvents = sqliteTable(
+  'reaction_events',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    guildId: text('guild_id')
+      .notNull()
+      .references(() => guilds.id, { onDelete: 'cascade' }),
+    channelId: text('channel_id')
+      .notNull()
+      .references(() => channels.id, { onDelete: 'cascade' }),
+    messageId: text('message_id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    emojiId: text('emoji_id'),
+    emojiName: text('emoji_name').notNull(),
+    emojiAnimated: integer('emoji_animated', { mode: 'boolean' }).default(false),
+    action: text('action', { enum: ['add', 'remove'] }).notNull(),
+    timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    guildIdx: index('reaction_guild_idx').on(table.guildId),
+    messageIdx: index('reaction_message_idx').on(table.messageId),
+    userIdx: index('reaction_user_idx').on(table.userId),
+    timestampIdx: index('reaction_timestamp_idx').on(table.timestamp),
+  })
+);

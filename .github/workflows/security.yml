@@ -1,0 +1,216 @@
+name: Security
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun
+
+      - name: Run Bun audit
+        run: |
+          bun audit --json > audit-results.json || true
+          
+          # Check if there are any vulnerabilities
+          if [ -s audit-results.json ]; then
+            echo "🔍 Security vulnerabilities found:"
+            cat audit-results.json
+            
+            # Count high/critical vulnerabilities
+            high_critical=$(jq '[.advisories[] | select(.severity == "high" or .severity == "critical")] | length' audit-results.json 2>/dev/null || echo "0")
+            
+            if [ "$high_critical" -gt 0 ]; then
+              echo "❌ Found $high_critical high/critical vulnerabilities"
+              exit 1
+            else
+              echo "⚠️ Found vulnerabilities but none are high/critical"
+            fi
+          else
+            echo "✅ No security vulnerabilities found"
+          fi
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-audit-results
+          path: audit-results.json
+          retention-days: 30
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun
+
+      - name: Install license checker
+        run: bun add -g license-checker
+
+      - name: Check licenses
+        run: |
+          # Generate license report
+          license-checker --json --out licenses.json
+          
+          # Check for problematic licenses
+          problematic_licenses=("GPL-2.0" "GPL-3.0" "AGPL-1.0" "AGPL-3.0" "LGPL-2.0" "LGPL-2.1" "LGPL-3.0")
+          
+          found_issues=false
+          for license in "${problematic_licenses[@]}"; do
+            if grep -q "$license" licenses.json; then
+              echo "⚠️ Found potentially problematic license: $license"
+              found_issues=true
+            fi
+          done
+          
+          if [ "$found_issues" = false ]; then
+            echo "✅ No problematic licenses found"
+          else
+            echo "Please review the licenses above for compatibility with your project"
+          fi
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: licenses.json
+          retention-days: 30
+
+  dockerfile-scan:
+    name: Dockerfile Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for Dockerfiles
+        id: docker_check
+        run: |
+          if find . -name "Dockerfile*" -o -name "*.dockerfile" | grep -q .; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Hadolint
+        if: steps.docker_check.outputs.found == 'true'
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: "Dockerfile*"
+          format: sarif
+          output-file: hadolint-results.sarif
+
+      - name: Upload Hadolint results
+        if: steps.docker_check.outputs.found == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hadolint-results.sarif
+
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, codeql, secret-scan, license-check]
+    if: always()
+    steps:
+      - name: Security Summary
+        run: |
+          echo "## 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Dependency scan results
+          if [ "${{ needs.dependency-scan.result }}" = "success" ]; then
+            echo "✅ **Dependency Scan**: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.dependency-scan.result }}" = "failure" ]; then
+            echo "❌ **Dependency Scan**: Failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⏭️ **Dependency Scan**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # CodeQL results
+          if [ "${{ needs.codeql.result }}" = "success" ]; then
+            echo "✅ **CodeQL Analysis**: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.codeql.result }}" = "failure" ]; then
+            echo "❌ **CodeQL Analysis**: Failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⏭️ **CodeQL Analysis**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Secret scan results
+          if [ "${{ needs.secret-scan.result }}" = "success" ]; then
+            echo "✅ **Secret Scanning**: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.secret-scan.result }}" = "failure" ]; then
+            echo "❌ **Secret Scanning**: Failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⏭️ **Secret Scanning**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # License check results
+          if [ "${{ needs.license-check.result }}" = "success" ]; then
+            echo "✅ **License Check**: Passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.license-check.result }}" = "failure" ]; then
+            echo "❌ **License Check**: Failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⏭️ **License Check**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "For detailed results, check the individual job logs above." >> $GITHUB_STEP_SUMMARY
