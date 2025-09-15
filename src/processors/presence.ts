@@ -1,14 +1,14 @@
 import { schema } from '../db/index';
-import type { PresenceUpdate } from '../types/index';
+import type { APIPresenceUpdate } from '../types/index';
 import { BaseProcessor } from './base';
 
-export class PresenceProcessor extends BaseProcessor<PresenceUpdate> {
+export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
   private lastPresence = new Map<
     string,
     { status: string; activity?: string; activityType?: number }
   >();
 
-  async process(presence: PresenceUpdate) {
+  async process(presence: APIPresenceUpdate) {
     const key = `${presence.guild_id}:${presence.user.id}`;
     const last = this.lastPresence.get(key);
 
