@@ -1,9 +1,7 @@
 import { getPostgresDb } from './postgres/connection';
 import { initializePostgresDatabase } from './postgres/init';
 import { getSqliteDb } from './sqlite/connection';
-import type { DatabaseConfig } from './types';
-
-export type DatabaseInstance = ReturnType<typeof getSqliteDb> | ReturnType<typeof getPostgresDb>;
+import type { DatabaseConfig, DatabaseInstance } from './types';
 
 export async function createDatabaseConnection(config: DatabaseConfig): Promise<DatabaseInstance> {
   if (config.type === 'sqlite') {

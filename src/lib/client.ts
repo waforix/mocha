@@ -2,8 +2,8 @@ import { EventEmitter } from 'node:events';
 import { MetricsCollector } from '../analytics/index';
 import type { CacheConfig } from '../cache/index';
 import { CacheManager, createHeatmapKey } from '../cache/index';
-import { type DatabaseInstance, getDb } from '../db/index';
-import type { DatabaseConfig } from '../db/types';
+import { type CommonDatabase, createDatabaseAdapter, getDb } from '../db/index';
+import type { DatabaseConfig, DatabaseInstance } from '../db/types';
 import { EventDispatcher } from '../events/index';
 import { DataExporter, type ExportOptions } from '../export/index';
 import type { GatewayOptions } from '../gateway/index';
@@ -23,10 +23,11 @@ export interface StatsClientOptions extends GatewayOptions {
 
 export class StatsClient extends EventEmitter {
   private gateway: GatewayClient;
-  private dispatcher: EventDispatcher;
+  private dispatcher!: EventDispatcher;
   private aggregator!: StatsAggregator;
   private cache: CacheManager;
   private db!: DatabaseInstance;
+  private dbAdapter!: CommonDatabase;
   private metrics?: MetricsCollector;
   private notifications?: NotificationEngine;
   private rateLimit?: RateLimitManager;
@@ -36,7 +37,7 @@ export class StatsClient extends EventEmitter {
   constructor(options: StatsClientOptions) {
     super();
     this.gateway = new GatewayClient(options);
-    this.dispatcher = new EventDispatcher();
+
     this.cache = new CacheManager(options.cache);
 
     this.initializeDatabase(options)
@@ -57,13 +58,13 @@ export class StatsClient extends EventEmitter {
       path: options.dbPath || './data/stats.db',
     };
     this.db = await getDb(config);
+    this.dbAdapter = createDatabaseAdapter(this.db);
   }
 
   private setupComponents(options: StatsClientOptions) {
-    // biome-ignore lint/suspicious/noExplicitAny: Database instance compatibility
-    this.aggregator = new StatsAggregator(this.db as any);
-    // biome-ignore lint/suspicious/noExplicitAny: Database instance compatibility
-    this.exporter = new DataExporter(this.db as any);
+    this.dispatcher = new EventDispatcher(this.dbAdapter);
+    this.aggregator = new StatsAggregator(this.dbAdapter);
+    this.exporter = new DataExporter(this.dbAdapter);
 
     if (options.enableMetrics !== false) {
       this.metrics = new MetricsCollector();

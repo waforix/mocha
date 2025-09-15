@@ -1,6 +1,6 @@
-import { createDatabaseConnection, type DatabaseInstance } from './factory';
+import { createDatabaseConnection } from './factory';
 import * as schema from './schema/index';
-import type { DatabaseConfig } from './types';
+import type { DatabaseConfig, DatabaseInstance } from './types';
 
 let db: DatabaseInstance;
 

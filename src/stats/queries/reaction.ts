@@ -1,10 +1,10 @@
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
-import type { getDb } from '../../db/index';
+import type { CommonDatabase } from '../../db/index';
 import { reactionEvents, users } from '../../db/schema/index';
 import { createDateSince } from '../../utils/date';
 
 export class ReactionQueries {
-  constructor(private db: ReturnType<typeof getDb>) {}
+  constructor(private db: CommonDatabase) {}
 
   async getReactionStats(guildId: string, userId?: string, days = 30) {
     const since = createDateSince(days);
