@@ -9,7 +9,7 @@ import {
   ReactionProcessor,
   VoiceProcessor,
 } from '../processors/index';
-import type { Message, PresenceUpdate, VoiceState } from '../types/index';
+import type { APIMessage, APIPresenceUpdate, APIVoiceState } from '../types/index';
 
 export class EventDispatcher extends EventEmitter {
   private db = getDb();
@@ -24,10 +24,10 @@ export class EventDispatcher extends EventEmitter {
     try {
       switch (event) {
         case EVENTS.MESSAGE_CREATE:
-          await this.messageProcessor.process(data as Message);
+          await this.messageProcessor.process(data as APIMessage);
           break;
         case EVENTS.VOICE_STATE_UPDATE:
-          await this.voiceProcessor.process(data as VoiceState);
+          await this.voiceProcessor.process(data as APIVoiceState);
           break;
         case EVENTS.GUILD_MEMBER_ADD:
           await this.memberProcessor.processJoin(
@@ -38,7 +38,7 @@ export class EventDispatcher extends EventEmitter {
           await this.memberProcessor.processLeave(data as { guild_id: string; user: unknown });
           break;
         case EVENTS.PRESENCE_UPDATE:
-          await this.presenceProcessor.process(data as PresenceUpdate);
+          await this.presenceProcessor.process(data as APIPresenceUpdate);
           break;
         case EVENTS.GUILD_CREATE:
           await this.guildProcessor.process(data);

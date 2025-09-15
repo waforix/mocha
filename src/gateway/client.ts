@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { WebSocket } from 'ws';
-import type { GatewayPayload } from '../types/index';
+import type { APIGatewayPayload } from '../types/index';
 import { calculateBackoff } from '../utils/backoff';
 import { GATEWAY_URL, INTENTS, OPCODES } from './constants';
 import { isFatalCloseCode } from './errors';
@@ -42,7 +42,7 @@ export class GatewayClient extends EventEmitter {
   }
 
   private onMessage(data: unknown) {
-    const payload: GatewayPayload = JSON.parse((data as Buffer).toString());
+    const payload: APIGatewayPayload = JSON.parse((data as Buffer).toString());
 
     if (payload.s) this.sequence = payload.s;
 
@@ -113,7 +113,7 @@ export class GatewayClient extends EventEmitter {
     this.ws.send(JSON.stringify(payload));
   }
 
-  private handleDispatch(payload: GatewayPayload) {
+  private handleDispatch(payload: APIGatewayPayload) {
     if (payload.t === 'READY') {
       const readyData = payload.d as Record<string, unknown>;
       this.sessionId = readyData.session_id as string;

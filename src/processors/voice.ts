@@ -1,11 +1,11 @@
 import { schema } from '../db/index';
-import type { VoiceState } from '../types/index';
+import type { APIVoiceState } from '../types/index';
 import { BaseProcessor } from './base';
 
-export class VoiceProcessor extends BaseProcessor<VoiceState> {
+export class VoiceProcessor extends BaseProcessor<APIVoiceState> {
   private voiceSessions = new Map<string, { channelId: string; joinTime: Date }>();
 
-  async process(voiceState: VoiceState) {
+  async process(voiceState: APIVoiceState) {
     if (!voiceState.guild_id) return;
 
     const sessionKey = `${voiceState.guild_id}:${voiceState.user_id}`;

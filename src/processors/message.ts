@@ -1,9 +1,9 @@
 import { schema } from '../db/index';
-import type { Message } from '../types/index';
+import type { APIMessage } from '../types/index';
 import { BaseProcessor } from './base';
 
-export class MessageProcessor extends BaseProcessor<Message> {
-  async process(message: Message) {
+export class MessageProcessor extends BaseProcessor<APIMessage> {
+  async process(message: APIMessage) {
     if (!message.guild_id || message.author.bot) return;
 
     await this.upsertUser(message.author);
