@@ -1,10 +1,10 @@
 import { and, count, eq, gte, sql, sum } from 'drizzle-orm';
-import type { getDb } from '../../db/index';
+import type { DatabaseInstance } from '../../db/index';
 import { schema } from '../../db/index';
 import { createDateSince } from '../../utils/date';
 
 export class MessageQueries {
-  constructor(private db: ReturnType<typeof getDb>) {}
+  constructor(private db: DatabaseInstance) {}
 
   async getStats(guildId: string, userId?: string, days = 30) {
     const since = createDateSince(days);

@@ -1,5 +1,5 @@
 import { and, eq, gte, lte } from 'drizzle-orm';
-import type { getDb } from '../db/index';
+import type { DatabaseInstance } from '../db/index';
 import { channels, memberEvents, messageEvents, users, voiceEvents } from '../db/schema/index';
 import type { ExportData, ExportOptions } from './formats';
 import { CSVFormatter, JSONFormatter } from './formats';

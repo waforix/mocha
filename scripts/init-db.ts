@@ -1,23 +1,33 @@
-import { Database } from 'bun:sqlite';
-import { readFileSync } from 'fs';
+import { createDatabaseConnection } from '../src/db/factory';
+import type { DatabaseConfig } from '../src/db/types';
 
-const db = new Database('./data/stats.db');
+const dbType = process.env.DB_TYPE as 'sqlite' | 'postgres' || 'sqlite';
 
-const migration = readFileSync('./drizzle/0000_wandering_raza.sql', 'utf-8');
+let config: DatabaseConfig;
 
-const statements = migration.split(';').filter(stmt => stmt.trim());
-
-for (const statement of statements) {
-  if (statement.trim()) {
-    try {
-      db.exec(statement);
-      console.log('✓ Executed:', statement.trim().split('\n')[0]);
-    } catch (error) {
-      console.error('✗ Failed:', statement.trim().split('\n')[0]);
-      console.error(error);
-    }
-  }
+if (dbType === 'postgres') {
+  config = {
+    type: 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT) || 5432,
+    database: process.env.DB_NAME || 'waforix',
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    ssl: process.env.DB_SSL === 'true',
+  };
+} else {
+  config = {
+    type: 'sqlite',
+    path: process.env.DB_PATH || './data/stats.db',
+  };
 }
 
-console.log('Database initialized successfully!');
-db.close();
+console.log(`🔧 Initializing ${dbType.toUpperCase()} database...`);
+
+try {
+  await createDatabaseConnection(config);
+  console.log('✅ Database initialized successfully!');
+} catch (error) {
+  console.error('❌ Failed to initialize database:', error);
+  process.exit(1);
+}

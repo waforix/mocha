@@ -1,8 +1,7 @@
-import type { getDb } from '../db/index';
-import { schema } from '../db/index';
+import { type DatabaseInstance, schema } from '../db/index';
 
 export abstract class BaseProcessor<T = unknown> {
-  constructor(protected db: ReturnType<typeof getDb>) {}
+  constructor(protected db: DatabaseInstance) {}
 
   abstract process(data: T): Promise<void>;
 

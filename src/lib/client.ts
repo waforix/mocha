@@ -2,7 +2,8 @@ import { EventEmitter } from 'node:events';
 import { MetricsCollector } from '../analytics/index';
 import type { CacheConfig } from '../cache/index';
 import { CacheManager, createHeatmapKey } from '../cache/index';
-import { getDb } from '../db/index';
+import { type DatabaseInstance, getDb } from '../db/index';
+import type { DatabaseConfig } from '../db/types';
 import { EventDispatcher } from '../events/index';
 import { DataExporter, type ExportOptions } from '../export/index';
 import type { GatewayOptions } from '../gateway/index';
@@ -13,6 +14,7 @@ import { StatsAggregator } from '../stats/index';
 
 export interface StatsClientOptions extends GatewayOptions {
   dbPath?: string;
+  database?: DatabaseConfig;
   cache?: CacheConfig;
   enableMetrics?: boolean;
   enableNotifications?: boolean;
@@ -22,23 +24,46 @@ export interface StatsClientOptions extends GatewayOptions {
 export class StatsClient extends EventEmitter {
   private gateway: GatewayClient;
   private dispatcher: EventDispatcher;
-  private aggregator: StatsAggregator;
+  private aggregator!: StatsAggregator;
   private cache: CacheManager;
-  private db: ReturnType<typeof getDb>;
+  private db!: DatabaseInstance;
   private metrics?: MetricsCollector;
   private notifications?: NotificationEngine;
   private rateLimit?: RateLimitManager;
-  private exporter: DataExporter;
+  private exporter!: DataExporter;
+  private initialized = false;
 
   constructor(options: StatsClientOptions) {
     super();
-
-    this.db = getDb(options.dbPath);
     this.gateway = new GatewayClient(options);
     this.dispatcher = new EventDispatcher();
-    this.aggregator = new StatsAggregator(this.db);
     this.cache = new CacheManager(options.cache);
-    this.exporter = new DataExporter(this.db);
+
+    this.initializeDatabase(options)
+      .then(() => {
+        this.setupComponents(options);
+        this.setupEventHandlers();
+        this.initialized = true;
+        this.emit('ready');
+      })
+      .catch((error) => {
+        this.emit('error', error);
+      });
+  }
+
+  private async initializeDatabase(options: StatsClientOptions) {
+    const config = options.database || {
+      type: 'sqlite' as const,
+      path: options.dbPath || './data/stats.db',
+    };
+    this.db = await getDb(config);
+  }
+
+  private setupComponents(options: StatsClientOptions) {
+    // biome-ignore lint/suspicious/noExplicitAny: Database instance compatibility
+    this.aggregator = new StatsAggregator(this.db as any);
+    // biome-ignore lint/suspicious/noExplicitAny: Database instance compatibility
+    this.exporter = new DataExporter(this.db as any);
 
     if (options.enableMetrics !== false) {
       this.metrics = new MetricsCollector();
@@ -51,8 +76,6 @@ export class StatsClient extends EventEmitter {
     if (options.enableRateLimit) {
       this.rateLimit = new RateLimitManager();
     }
-
-    this.setupEventHandlers();
   }
 
   private setupEventHandlers() {
@@ -81,6 +104,7 @@ export class StatsClient extends EventEmitter {
   }
 
   async connect() {
+    await this.waitForInitialization();
     this.gateway.connect();
   }
 
@@ -88,7 +112,28 @@ export class StatsClient extends EventEmitter {
     this.gateway.disconnect();
   }
 
+  private async waitForInitialization(): Promise<void> {
+    if (this.initialized) return;
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Database initialization timeout'));
+      }, 10000);
+
+      this.once('ready', () => {
+        clearTimeout(timeout);
+        resolve();
+      });
+
+      this.once('error', (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      });
+    });
+  }
+
   async getUserStats(guildId: string, userId: string, days = 30) {
+    await this.waitForInitialization();
     const cached = this.cache.getUserStats(guildId, userId, days);
     if (cached) return cached;
 
@@ -99,6 +144,7 @@ export class StatsClient extends EventEmitter {
   }
 
   async getGuildStats(guildId: string, days = 30) {
+    await this.waitForInitialization();
     const cached = this.cache.getGuildStats(guildId, days);
     if (cached) return cached;
 
@@ -109,6 +155,7 @@ export class StatsClient extends EventEmitter {
   }
 
   async getLeaderboard(guildId: string, type: 'messages' | 'voice', limit = 10, days = 30) {
+    await this.waitForInitialization();
     const cached = this.cache.getLeaderboard(guildId, type, limit, days);
     if (cached) return cached;
 
@@ -119,6 +166,7 @@ export class StatsClient extends EventEmitter {
   }
 
   async getActivityHeatmap(guildId: string, userId?: string, days = 7) {
+    await this.waitForInitialization();
     const key = createHeatmapKey(guildId, userId, days);
     const cached = this.cache.getQuery(key);
     if (cached) return cached;
@@ -137,7 +185,8 @@ export class StatsClient extends EventEmitter {
     this.cache.clear();
   }
 
-  getDatabase() {
+  async getDatabase() {
+    await this.waitForInitialization();
     return this.db;
   }
 
@@ -146,6 +195,7 @@ export class StatsClient extends EventEmitter {
   }
 
   async exportData(options: ExportOptions) {
+    await this.waitForInitialization();
     return await this.exporter.export(options);
   }
 

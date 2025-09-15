@@ -1,4 +1,4 @@
-import type { getDb } from '../db/index';
+import type { DatabaseInstance } from '../db/index';
 import { StatsQueries } from './queries';
 
 export interface UserStats {
@@ -32,7 +32,7 @@ export interface GuildStats {
 export class StatsAggregator {
   private queries: StatsQueries;
 
-  constructor(db: ReturnType<typeof getDb>) {
+  constructor(db: DatabaseInstance) {
     this.queries = new StatsQueries(db);
   }
 
