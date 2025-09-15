@@ -1,0 +1,9 @@
+dist
+*.db
+*.db*
+.env*
+node_modules
+data
+data\stats.db-wal
+data\stats.db-shm
+examples\stats-bot\data
