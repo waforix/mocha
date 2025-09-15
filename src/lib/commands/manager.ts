@@ -1,5 +1,5 @@
+import type { SlashCommand } from './index';
 import { DiscordCommandRegistry } from './registry';
-import type { SlashCommand } from './types';
 
 export class CommandManager {
   private registry: DiscordCommandRegistry;

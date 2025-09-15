@@ -1,5 +1,5 @@
-import type { SlashCommand, SlashCommandChoice, SlashCommandOption } from './types';
-import { SlashCommandOptionType } from './types';
+import type { SlashCommand, SlashCommandChoice, SlashCommandOption } from './command-types';
+import { SlashCommandOptionType } from './command-types';
 
 export class SlashCommandBuilder {
   private command: SlashCommand;

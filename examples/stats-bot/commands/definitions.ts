@@ -1,4 +1,4 @@
-import { type SlashCommand, SlashCommandOptionType } from '../../../src/lib/commands/index.ts';
+import { type SlashCommand, SlashCommandOptionType } from '../../../src/builders/index.ts';
 
 export const statsCommand: SlashCommand = {
   name: 'stats',

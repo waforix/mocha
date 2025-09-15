@@ -1,4 +1,4 @@
-import type { CommandRegistry, SlashCommand } from './types';
+import type { CommandRegistry, SlashCommand } from './index';
 
 export class DiscordCommandRegistry implements CommandRegistry {
   private commands: SlashCommand[] = [];
