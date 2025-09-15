@@ -24,4 +24,4 @@ jobs:
         run: bun install
         
       - name: Check formatting
-        run: bunx biome format --check src/
+        run: bunx biome ci src/
