@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import { getDb } from '../db/index';
+import type { CommonDatabase } from '../db/index';
 import { EVENTS } from '../gateway/constants';
 import {
   GuildProcessor,
@@ -12,13 +12,22 @@ import {
 import type { APIMessage, APIPresenceUpdate, APIVoiceState } from '../types/index';
 
 export class EventDispatcher extends EventEmitter {
-  private db = getDb();
-  private messageProcessor = new MessageProcessor(this.db);
-  private voiceProcessor = new VoiceProcessor(this.db);
-  private memberProcessor = new MemberProcessor(this.db);
-  private presenceProcessor = new PresenceProcessor(this.db);
-  private reactionProcessor = new ReactionProcessor(this.db);
-  private guildProcessor = new GuildProcessor(this.db);
+  private messageProcessor: MessageProcessor;
+  private voiceProcessor: VoiceProcessor;
+  private memberProcessor: MemberProcessor;
+  private presenceProcessor: PresenceProcessor;
+  private reactionProcessor: ReactionProcessor;
+  private guildProcessor: GuildProcessor;
+
+  constructor(db: CommonDatabase) {
+    super();
+    this.messageProcessor = new MessageProcessor(db);
+    this.voiceProcessor = new VoiceProcessor(db);
+    this.memberProcessor = new MemberProcessor(db);
+    this.presenceProcessor = new PresenceProcessor(db);
+    this.reactionProcessor = new ReactionProcessor(db);
+    this.guildProcessor = new GuildProcessor(db);
+  }
 
   async dispatch(event: string, data: unknown) {
     try {

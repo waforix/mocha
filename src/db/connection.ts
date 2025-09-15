@@ -1,20 +1,21 @@
-import { Database } from 'bun:sqlite';
-import { drizzle } from 'drizzle-orm/bun-sqlite';
-import { initializeDatabase } from './init';
+import { createDatabaseConnection } from './factory';
 import * as schema from './schema/index';
+import type { DatabaseConfig, DatabaseInstance } from './types';
 
-let db: ReturnType<typeof drizzle>;
+let db: DatabaseInstance;
 
-export const getDb = (path = './data/stats.db') => {
+export const getDb = async (
+  config: DatabaseConfig = { type: 'sqlite', path: './data/stats.db' }
+): Promise<DatabaseInstance> => {
   if (!db) {
-    initializeDatabase(path);
+    db = await createDatabaseConnection(config);
+  }
+  return db;
+};
 
-    const sqlite = new Database(path);
-    sqlite.exec('PRAGMA journal_mode = WAL');
-    sqlite.exec('PRAGMA synchronous = NORMAL');
-    sqlite.exec('PRAGMA cache_size = 10000');
-    sqlite.exec('PRAGMA temp_store = MEMORY');
-    db = drizzle(sqlite, { schema });
+export const getDbSync = (): DatabaseInstance => {
+  if (!db) {
+    throw new Error('Database not initialized. Call getDb() first.');
   }
   return db;
 };

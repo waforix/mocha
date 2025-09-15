@@ -14,13 +14,27 @@ function checkDatabaseExists(sqlite: Database): boolean {
 }
 
 function loadMigrationStatements(): string[] {
-  const libRoot = join(import.meta.dir, '../..');
-  const migrationPath = join(libRoot, 'drizzle/0000_wandering_raza.sql');
-  const migration = readFileSync(migrationPath, 'utf-8');
-  return migration
-    .split('--> statement-breakpoint')
-    .map((stmt) => stmt.trim())
-    .filter((stmt) => stmt && !stmt.startsWith('-->'));
+  const libRoot = join(import.meta.dir, '../../..');
+  const migrationPath = join(libRoot, 'drizzle/sqlite/0000_initial.sql');
+
+  try {
+    const migration = readFileSync(migrationPath, 'utf-8');
+    return migration
+      .split('--> statement-breakpoint')
+      .map((stmt) => stmt.trim())
+      .filter((stmt) => stmt && !stmt.startsWith('-->'));
+  } catch {
+    const fallbackPath = join(libRoot, 'drizzle/0000_wandering_raza.sql');
+    try {
+      const migration = readFileSync(fallbackPath, 'utf-8');
+      return migration
+        .split('--> statement-breakpoint')
+        .map((stmt) => stmt.trim())
+        .filter((stmt) => stmt && !stmt.startsWith('-->'));
+    } catch {
+      return [];
+    }
+  }
 }
 
 function executeStatement(sqlite: Database, statement: string): void {
@@ -33,7 +47,7 @@ function executeStatement(sqlite: Database, statement: string): void {
   }
 }
 
-export function initializeDatabase(dbPath: string): void {
+export function initializeSqliteDatabase(dbPath: string): void {
   const sqlite = new Database(dbPath);
 
   if (checkDatabaseExists(sqlite)) {
@@ -50,7 +64,7 @@ export function initializeDatabase(dbPath: string): void {
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to initialize database: ${message}`);
+    throw new Error(`Failed to initialize SQLite database: ${message}`);
   } finally {
     sqlite.close();
   }

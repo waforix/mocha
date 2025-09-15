@@ -1,5 +1,5 @@
 import { and, count, eq, gte, lt, sql } from 'drizzle-orm';
-import type { getDb } from '../db/index';
+import type { CommonDatabase } from '../db/index';
 import { guilds, memberEvents, messageEvents, voiceEvents } from '../db/schema/index';
 import { createDateSince } from '../utils/date';
 
@@ -21,7 +21,7 @@ export interface GuildInsights {
 }
 
 export class InsightsEngine {
-  constructor(private db: ReturnType<typeof getDb>) {}
+  constructor(private db: CommonDatabase) {}
 
   async generateGuildInsights(guildId: string, days = 30): Promise<GuildInsights> {
     const [hourlyActivity, memberGrowth, engagementData] = await Promise.all([
@@ -78,11 +78,13 @@ export class InsightsEngine {
       .groupBy(sql`strftime('%H', datetime(${messageEvents.timestamp}, 'unixepoch'))`)
       .orderBy(sql`hour`);
 
-    const activityMap = new Map(result.map((r) => [r.hour, r.activity]));
+    const activityMap = new Map(
+      result.map((r: { hour: number; activity: unknown }) => [r.hour, r.activity])
+    );
 
     return Array.from({ length: 24 }, (_, hour) => ({
       hour,
-      activity: activityMap.get(hour) || 0,
+      activity: Number(activityMap.get(hour)) || 0,
     }));
   }
 

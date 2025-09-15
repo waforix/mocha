@@ -1,10 +1,10 @@
 import { and, count, desc, eq, gte, sum } from 'drizzle-orm';
-import type { getDb } from '../../db/index';
+import type { CommonDatabase } from '../../db/index';
 import { schema } from '../../db/index';
 import { createDateSince } from '../../utils/date';
 
 export class UserQueries {
-  constructor(private db: ReturnType<typeof getDb>) {}
+  constructor(private db: CommonDatabase) {}
 
   async getTop(guildId: string, type: 'messages' | 'voice', limit = 10, days = 30) {
     const since = createDateSince(days);

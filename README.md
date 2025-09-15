@@ -6,7 +6,7 @@ High-performance Discord bot library with builders, statistics tracking, and opt
 
 - Discord Gateway client with auto-reconnection
 - Command, message, and embed builders
-- SQLite database with intelligent caching
+- SQLite and PostgreSQL database support with intelligent caching
 - Statistics tracking and analytics
 - Full TypeScript support
 

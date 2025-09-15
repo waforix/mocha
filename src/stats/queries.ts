@@ -1,4 +1,4 @@
-import type { getDb } from '../db/index';
+import type { CommonDatabase } from '../db/index';
 import { ChannelQueries } from './queries/channel';
 import { MemberQueries } from './queries/member';
 import { MessageQueries } from './queries/message';
@@ -12,7 +12,7 @@ export class StatsQueries {
   public readonly channel: ChannelQueries;
   public readonly member: MemberQueries;
 
-  constructor(db: ReturnType<typeof getDb>) {
+  constructor(db: CommonDatabase) {
     this.message = new MessageQueries(db);
     this.voice = new VoiceQueries(db);
     this.user = new UserQueries(db);

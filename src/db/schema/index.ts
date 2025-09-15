@@ -1,2 +1,1 @@
-export * from './events';
-export * from './guilds';
+export * from '../sqlite/schema/index';

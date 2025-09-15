@@ -1,4 +1,4 @@
-import type { getDb } from '../db/index';
+import type { CommonDatabase } from '../db/index';
 import { StatsQueries } from './queries';
 
 export interface UserStats {
@@ -32,7 +32,7 @@ export interface GuildStats {
 export class StatsAggregator {
   private queries: StatsQueries;
 
-  constructor(db: ReturnType<typeof getDb>) {
+  constructor(db: CommonDatabase) {
     this.queries = new StatsQueries(db);
   }
 
@@ -68,8 +68,11 @@ export class StatsAggregator {
       guildId,
       totalMessages: Number(messageData.count) || 0,
       totalVoiceTime: Number(voiceStats?.totalTime) || 0,
-      activeUsers: channelStats.reduce((acc, ch) => acc + ch.uniqueUsers, 0),
-      topChannels: channelStats.map((ch) => ({
+      activeUsers: channelStats.reduce(
+        (acc: number, ch: Record<string, unknown>) => acc + (ch.uniqueUsers as number),
+        0
+      ),
+      topChannels: channelStats.map((ch: Record<string, unknown>) => ({
         channelId: ch.channelId,
         name: ch.channelName || undefined,
         messageCount: Number(ch.messageCount),
@@ -82,7 +85,7 @@ export class StatsAggregator {
   async getLeaderboard(guildId: string, type: 'messages' | 'voice', limit = 10, days = 30) {
     const topUsers = await this.queries.getTopUsers(guildId, type, limit, days);
 
-    return topUsers.map((user, index) => ({
+    return topUsers.map((user: Record<string, unknown>, index: number) => ({
       rank: index + 1,
       userId: user.userId,
       username: user.username,

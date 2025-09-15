@@ -1,5 +1,5 @@
 import { and, eq, gte, lte } from 'drizzle-orm';
-import type { getDb } from '../db/index';
+import type { CommonDatabase } from '../db/index';
 import { channels, memberEvents, messageEvents, users, voiceEvents } from '../db/schema/index';
 import type { ExportData, ExportOptions } from './formats';
 import { CSVFormatter, JSONFormatter } from './formats';
@@ -11,7 +11,7 @@ export class DataExporter {
     xlsx: new JSONFormatter(),
   };
 
-  constructor(private db: ReturnType<typeof getDb>) {}
+  constructor(private db: CommonDatabase) {}
 
   async export(
     options: ExportOptions
@@ -213,7 +213,7 @@ export class DataExporter {
       )
       .limit(10000);
 
-    data.messages = messages.map((m) => ({
+    data.messages = messages.map((m: Record<string, unknown>) => ({
       id: m.id,
       userId: m.userId,
       channelId: m.channelId,
@@ -236,7 +236,7 @@ export class DataExporter {
       )
       .limit(10000);
 
-    data.voice = voice.map((v) => ({
+    data.voice = voice.map((v: Record<string, unknown>) => ({
       id: v.id,
       userId: v.userId,
       channelId: v.channelId || '',
@@ -259,7 +259,7 @@ export class DataExporter {
       )
       .limit(10000);
 
-    data.members = members.map((m) => ({
+    data.members = members.map((m: Record<string, unknown>) => ({
       id: m.id,
       userId: m.userId,
       action: m.action,

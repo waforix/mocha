@@ -1,15 +1,39 @@
 import { StatsClient, INTENTS } from './src/index';
 
-const client = new StatsClient({
+// Example with SQLite (backward compatible)
+const clientSqlite = new StatsClient({
   token: 'YOUR_BOT_TOKEN',
   intents: INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
-  dbPath: './stats.db',
+  dbPath: './stats.db', // Legacy option
   cache: {
     userStatsSize: 2000,
     guildStatsSize: 200,
     ttlMs: 600000 // 10 minutes
   }
 });
+
+// Example with PostgreSQL (new option)
+const clientPostgres = new StatsClient({
+  token: 'YOUR_BOT_TOKEN',
+  intents: INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
+  database: {
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    database: 'waforix',
+    username: 'postgres',
+    password: 'your_password',
+    ssl: false,
+  },
+  cache: {
+    userStatsSize: 2000,
+    guildStatsSize: 200,
+    ttlMs: 600000 // 10 minutes
+  }
+});
+
+// Use either client
+const client = clientSqlite;
 
 client.on('eventProcessed', (event, data) => {
   console.log(`Processed ${event} for guild ${data.guild_id}`);
