@@ -1,0 +1,104 @@
+name: 💬 General Issue
+description: Questions, documentation, or other general topics
+title: "[General]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For general questions, documentation issues, or other topics that don't fit bug reports or feature requests.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What type of issue is this?
+      options:
+        - Question/Help
+        - Documentation
+        - Performance
+        - Configuration
+        - Best Practices
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe your question or issue
+      placeholder: |
+        I'm trying to understand...
+        The documentation says... but...
+        I need help with...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to accomplish?
+      placeholder: |
+        I'm building a Discord bot that...
+        My use case is...
+        I need to...
+
+  - type: input
+    id: version
+    attributes:
+      label: Waforix Version
+      placeholder: "2.1.0"
+
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database Type (if relevant)
+      options:
+        - Not applicable
+        - SQLite
+        - PostgreSQL
+        - Both
+
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What Have You Tried?
+      description: What solutions have you already attempted?
+      placeholder: |
+        I tried...
+        I looked at...
+        I searched for...
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Relevant Code/Configuration
+      description: Share any relevant code or configuration (remove sensitive data)
+      render: typescript
+      placeholder: |
+        // Your code here
+        const client = new StatsClient({
+          // configuration
+        });
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm you've done the following
+      options:
+        - label: I've searched existing issues and discussions
+          required: true
+        - label: I've checked the documentation/wiki
+          required: true
+        - label: This isn't a bug report or feature request (use other templates for those)
+          required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any other relevant information
+      placeholder: Additional context...

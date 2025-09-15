@@ -1,0 +1,105 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "needs-discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide details below.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: A brief summary of the feature you'd like to see
+      placeholder: Add support for...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem/Use Case
+      description: What problem does this feature solve? What's your use case?
+      placeholder: |
+        I'm trying to... but currently I have to...
+        This would help with...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this feature to work?
+      placeholder: |
+        I'd like to be able to...
+        The API could look like...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternatives have you considered?
+      placeholder: |
+        I considered using... but...
+        Another approach could be...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would be helpful
+        - High - Important for my use case
+        - Critical - Blocking my project
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: areas
+    attributes:
+      label: Areas Affected
+      description: Which areas would this feature impact?
+      options:
+        - label: Database operations
+        - label: Event tracking
+        - label: Analytics/Statistics
+        - label: Caching
+        - label: Performance
+        - label: API/Interface
+        - label: Documentation
+        - label: Testing
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example Usage
+      description: Show how you'd like to use this feature
+      render: typescript
+      placeholder: |
+        // Example of how the feature would be used
+        const result = await client.newFeature({
+          option: 'value'
+        });
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation
+      options:
+        - label: I'm willing to help implement this feature
+        - label: I can provide testing/feedback
+        - label: I can help with documentation
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or examples
+      placeholder: Additional information...
