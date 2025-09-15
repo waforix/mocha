@@ -6,7 +6,7 @@ import { logger } from './logger';
 
 async function main(): Promise<void> {
   try {
-    logger.info('🚀 Starting Mocha Stats Bot...');
+    logger.info('🚀 Starting Waforix Stats Bot...');
 
     validateConfig();
 

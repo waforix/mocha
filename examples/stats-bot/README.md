@@ -1,6 +1,6 @@
-# Mocha Stats Bot Example
+# Waforix Stats Bot Example
 
-A complete Discord bot example using the Mocha statistics library.
+A complete Discord bot example using the Waforix statistics library.
 
 ## Features
 

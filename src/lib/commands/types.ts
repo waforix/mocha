@@ -12,6 +12,7 @@ export interface SlashCommandOption {
   choices?: SlashCommandChoice[];
   min_value?: number;
   max_value?: number;
+  options?: SlashCommandOption[];
 }
 
 export interface SlashCommandChoice {

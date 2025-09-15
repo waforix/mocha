@@ -60,7 +60,7 @@ export function getHelpMessage(): string {
   const prefix = CONFIG.bot.prefix;
 
   return (
-    '🤖 **Mocha Stats Bot Commands**\n\n' +
+    '🤖 **Waforix Stats Bot Commands**\n\n' +
     '📊 **Statistics:**\n' +
     `• \`${prefix}stats [days]\` - Your personal stats\n` +
     `• \`${prefix}server [days]\` - Server statistics\n` +

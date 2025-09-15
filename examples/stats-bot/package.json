@@ -1,7 +1,7 @@
 {
-  "name": "mocha-stats-bot-example",
+  "name": "waforix-stats-bot-example",
   "version": "1.0.0",
-  "description": "Example Discord stats bot using Mocha library",
+  "description": "Example Discord stats bot using Waforix library",
   "main": "bot.ts",
   "scripts": {
     "dev": "bun --watch bot.ts",
@@ -26,7 +26,7 @@
     "discord",
     "bot",
     "stats",
-    "mocha"
+    "waforix"
   ],
   "author": "Your Name",
   "license": "MIT"
