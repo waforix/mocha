@@ -53,7 +53,7 @@ export class AutoModerationQueries {
         and(
           eq(schema.autoModerationEvents.guildId, guildId),
           eq(schema.autoModerationEvents.ruleId, ruleId),
-          eq(schema.autoModerationEvents.action, 'execution'),
+          eq(schema.autoModerationEvents.action, 'action_execution'),
           gte(schema.autoModerationEvents.timestamp, since)
         )
       )
@@ -74,7 +74,7 @@ export class AutoModerationQueries {
       .where(
         and(
           eq(schema.autoModerationEvents.guildId, guildId),
-          eq(schema.autoModerationEvents.action, 'execution'),
+          eq(schema.autoModerationEvents.action, 'action_execution'),
           gte(schema.autoModerationEvents.timestamp, since)
         )
       )

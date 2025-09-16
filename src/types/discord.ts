@@ -48,6 +48,11 @@ export interface APIMessage {
   edited_timestamp?: string;
   attachments: unknown[];
   embeds: unknown[];
+  type?: number;
+  thread?: {
+    id: string;
+    parent_id?: string;
+  };
 }
 
 export interface APIVoiceState {

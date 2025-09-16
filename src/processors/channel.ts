@@ -17,7 +17,7 @@ interface ChannelData {
 
 export class ChannelProcessor extends BaseProcessor<ChannelData> {
   async process(data: ChannelData): Promise<void> {
-    if (!this.validateChannelData(data)) {
+    if (!this.isValidChannelData(data)) {
       return;
     }
 
@@ -33,7 +33,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
   }
 
   async processCreate(data: ChannelData): Promise<void> {
-    if (!this.validateChannelData(data) || !data.guild_id) {
+    if (!this.isValidChannelData(data) || !data.guild_id) {
       return;
     }
 
@@ -60,7 +60,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
   }
 
   async processUpdate(data: ChannelData): Promise<void> {
-    if (!this.validateChannelData(data) || !data.guild_id) {
+    if (!this.isValidChannelData(data) || !data.guild_id) {
       return;
     }
 
@@ -87,7 +87,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
   }
 
   async processDelete(data: ChannelData): Promise<void> {
-    if (!this.validateChannelData(data) || !data.guild_id) {
+    if (!this.isValidChannelData(data) || !data.guild_id) {
       return;
     }
 
@@ -112,7 +112,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
   }
 
   async processThreadCreate(data: ChannelData): Promise<void> {
-    if (!this.validateChannelData(data) || !data.guild_id) {
+    if (!this.isValidChannelData(data) || !data.guild_id) {
       return;
     }
 
@@ -137,7 +137,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
   }
 
   async processThreadUpdate(data: ChannelData): Promise<void> {
-    if (!this.validateChannelData(data) || !data.guild_id) {
+    if (!this.isValidChannelData(data) || !data.guild_id) {
       return;
     }
 
@@ -162,7 +162,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
   }
 
   async processThreadDelete(data: ChannelData): Promise<void> {
-    if (!this.validateChannelData(data) || !data.guild_id) {
+    if (!this.isValidChannelData(data) || !data.guild_id) {
       return;
     }
 
@@ -184,7 +184,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
     }
   }
 
-  private validateChannelData(data: unknown): data is ChannelData {
+  private isValidChannelData(data: unknown): data is ChannelData {
     if (!data || typeof data !== 'object') {
       return false;
     }
