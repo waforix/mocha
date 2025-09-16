@@ -197,4 +197,4 @@ MIT License - see [LICENSE](../LICENSE) file for details.
 
 ---
 
-*Last updated: December 2023*
+*Last updated: September 2025*
