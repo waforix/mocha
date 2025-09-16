@@ -18,7 +18,7 @@ console.log('✅ Client created successfully');
 
 // Test 2: Database Connection
 console.log('\n2️⃣ Testing database connection...');
-const db = client.getDatabase();
+const _db = client.getDatabase();
 console.log('✅ Database connection established');
 
 // Test 3: Cache System
@@ -60,9 +60,9 @@ try {
 
 // Test 6: Event System
 console.log('\n6️⃣ Testing event system...');
-let eventReceived = false;
+let _eventReceived = false;
 client.on('eventProcessed', () => {
-  eventReceived = true;
+  _eventReceived = true;
 });
 client.on('gatewayError', () => {
   // Expected for test token

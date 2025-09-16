@@ -14,7 +14,7 @@ const clientSqlite = new StatsClient({
 });
 
 // Example with PostgreSQL (new option)
-const clientPostgres = new StatsClient({
+const _clientPostgres = new StatsClient({
   token: 'YOUR_BOT_TOKEN',
   intents:
     INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
