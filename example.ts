@@ -3,21 +3,26 @@ import { INTENTS, StatsClient } from './src/index';
 // Example with SQLite (backward compatible)
 const clientSqlite = new StatsClient({
   token: 'YOUR_BOT_TOKEN',
-  intents:
-    INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
-  dbPath: './stats.db', // Legacy option
+  database: {
+    type: 'sqlite',
+    path: './data/stats.db',
+  },
   cache: {
     userStatsSize: 2000,
     guildStatsSize: 200,
-    ttlMs: 600000, // 10 minutes
+    ttlMs: 600000,
+  },
+  ignore: {
+    bots: true,
+    dmChannels: true,
+    users: new Set(['123456789']),
+    channels: new Set(['987654321']),
   },
 });
 
 // Example with PostgreSQL (new option)
 const _clientPostgres = new StatsClient({
   token: 'YOUR_BOT_TOKEN',
-  intents:
-    INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
   database: {
     type: 'postgres',
     host: 'localhost',
@@ -30,7 +35,12 @@ const _clientPostgres = new StatsClient({
   cache: {
     userStatsSize: 2000,
     guildStatsSize: 200,
-    ttlMs: 600000, // 10 minutes
+    ttlMs: 600000,
+  },
+  ignore: {
+    bots: true,
+    dmChannels: true,
+    events: new Set(['PRESENCE_UPDATE']),
   },
 });
 
@@ -46,6 +56,10 @@ client.on('gatewayError', (error) => {
 });
 
 await client.connect();
+
+// Runtime configuration updates
+client.addIgnoredUser('999888777');
+client.addIgnoredChannel('111222333');
 
 // Example usage after bot is running
 setTimeout(async () => {

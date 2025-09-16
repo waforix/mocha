@@ -40,7 +40,21 @@ export class GatewayClient extends EventEmitter {
   constructor(private options: GatewayOptions) {
     super();
     this.options.intents ??=
-      INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES;
+      INTENTS.GUILDS |
+      INTENTS.GUILD_MEMBERS |
+      INTENTS.GUILD_MESSAGES |
+      INTENTS.GUILD_MESSAGE_REACTIONS |
+      INTENTS.GUILD_VOICE_STATES |
+      INTENTS.GUILD_PRESENCES |
+      INTENTS.GUILD_MODERATION |
+      INTENTS.GUILD_EMOJIS_AND_STICKERS |
+      INTENTS.GUILD_INTEGRATIONS |
+      INTENTS.GUILD_WEBHOOKS |
+      INTENTS.GUILD_INVITES |
+      INTENTS.GUILD_SCHEDULED_EVENTS |
+      INTENTS.AUTO_MODERATION_CONFIGURATION |
+      INTENTS.AUTO_MODERATION_EXECUTION |
+      INTENTS.MESSAGE_CONTENT;
     this.options.maxReconnects ??= 5;
     this.options.connectionTimeout ??= 30000;
     this.rateLimiter = new GatewayRateLimiter(this.options.rateLimitConfig);
