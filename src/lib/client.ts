@@ -12,6 +12,27 @@ import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
 
+type DiscordEventData = {
+  guild_id?: string;
+  channel_id?: string;
+  user_id?: string;
+  author?: {
+    id: string;
+    bot?: boolean;
+  };
+  user?: {
+    id: string;
+    bot?: boolean;
+  };
+  member?: {
+    user?: {
+      id: string;
+      bot?: boolean;
+    };
+  };
+  [key: string]: unknown;
+};
+
 export interface IgnoreConfig {
   users?: Set<string>;
   channels?: Set<string>;
@@ -19,7 +40,7 @@ export interface IgnoreConfig {
   events?: Set<string>;
   bots?: boolean;
   dmChannels?: boolean;
-  customFilter?: (event: string, data: any) => boolean;
+  customFilter?: (event: string, data: DiscordEventData) => boolean;
 }
 
 export interface StatsClientOptions extends GatewayOptions {
@@ -103,7 +124,7 @@ export class StatsClient extends EventEmitter {
 
   private setupEventHandlers() {
     this.gateway.on('dispatch', (event, data) => {
-      if (this.shouldIgnoreEvent(event, data)) {
+      if (this.shouldIgnoreEvent(event, data as DiscordEventData)) {
         return;
       }
       this.dispatcher.dispatch(event, data);
@@ -268,39 +289,44 @@ export class StatsClient extends EventEmitter {
     this.ignoreConfig.guilds?.delete(guildId);
   }
 
-  private shouldIgnoreEvent(event: string, data: any): boolean {
-    if (this.ignoreConfig.events?.has(event)) {
-      return true;
-    }
+  private shouldIgnoreEvent(event: string, data: DiscordEventData): boolean {
+    return (
+      this.shouldIgnoreByEvent(event) ||
+      this.shouldIgnoreByCustomFilter(event, data) ||
+      this.shouldIgnoreByGuild(data) ||
+      this.shouldIgnoreByChannel(data) ||
+      this.shouldIgnoreByUser(data) ||
+      this.shouldIgnoreByBot(data) ||
+      this.shouldIgnoreByDM(data)
+    );
+  }
 
-    if (this.ignoreConfig.customFilter && this.ignoreConfig.customFilter(event, data)) {
-      return true;
-    }
+  private shouldIgnoreByEvent(event: string): boolean {
+    return this.ignoreConfig.events?.has(event) ?? false;
+  }
 
-    if (data.guild_id && this.ignoreConfig.guilds?.has(data.guild_id)) {
-      return true;
-    }
+  private shouldIgnoreByCustomFilter(event: string, data: DiscordEventData): boolean {
+    return this.ignoreConfig.customFilter?.(event, data) ?? false;
+  }
 
-    if (data.channel_id && this.ignoreConfig.channels?.has(data.channel_id)) {
-      return true;
-    }
+  private shouldIgnoreByGuild(data: DiscordEventData): boolean {
+    return Boolean(data.guild_id && this.ignoreConfig.guilds?.has(data.guild_id));
+  }
 
-    if (data.user_id && this.ignoreConfig.users?.has(data.user_id)) {
-      return true;
-    }
+  private shouldIgnoreByChannel(data: DiscordEventData): boolean {
+    return Boolean(data.channel_id && this.ignoreConfig.channels?.has(data.channel_id));
+  }
 
-    if (data.author?.id && this.ignoreConfig.users?.has(data.author.id)) {
-      return true;
-    }
+  private shouldIgnoreByUser(data: DiscordEventData): boolean {
+    const userId = data.user_id || data.author?.id;
+    return Boolean(userId && this.ignoreConfig.users?.has(userId));
+  }
 
-    if (this.ignoreConfig.bots && (data.author?.bot || data.user?.bot)) {
-      return true;
-    }
+  private shouldIgnoreByBot(data: DiscordEventData): boolean {
+    return Boolean(this.ignoreConfig.bots && (data.author?.bot || data.user?.bot));
+  }
 
-    if (this.ignoreConfig.dmChannels && !data.guild_id) {
-      return true;
-    }
-
-    return false;
+  private shouldIgnoreByDM(data: DiscordEventData): boolean {
+    return Boolean(this.ignoreConfig.dmChannels && !data.guild_id);
   }
 }
