@@ -17,7 +17,7 @@ import {
 } from '../processors/index';
 import type { APIMessage, APIPresenceUpdate, APIVoiceState } from '../types/index';
 
-interface ChannelData {
+export interface ChannelData {
   id: string;
   type: number;
   guild_id?: string;
@@ -31,7 +31,7 @@ interface ChannelData {
   };
 }
 
-interface RoleData {
+export interface RoleData {
   id: string;
   guild_id: string;
   name: string;
@@ -43,7 +43,7 @@ interface RoleData {
   managed?: boolean;
 }
 
-interface InteractionData {
+export interface InteractionData {
   id: string;
   type: number;
   guild_id?: string;
@@ -78,7 +78,7 @@ interface InteractionData {
   };
 }
 
-interface InviteData {
+export interface InviteData {
   code: string;
   guild_id: string;
   channel_id?: string;
@@ -95,7 +95,7 @@ interface InviteData {
   created_at?: string;
 }
 
-interface ScheduledEventData {
+export interface ScheduledEventData {
   id: string;
   guild_id: string;
   name?: string;
@@ -106,28 +106,13 @@ interface ScheduledEventData {
   status?: number;
 }
 
-interface ScheduledEventUserData {
+export interface ScheduledEventUserData {
   guild_scheduled_event_id: string;
   user_id: string;
   guild_id: string;
 }
 
-interface AutoModerationRuleData {
-  id: string;
-  guild_id: string;
-  name: string;
-  creator_id: string;
-  event_type: number;
-  trigger_type: number;
-  trigger_metadata?: Record<string, unknown>;
-  actions: Array<{
-    type: number;
-    metadata?: Record<string, unknown>;
-  }>;
-  enabled?: boolean;
-}
-
-interface AutoModerationActionData {
+export interface AutoModerationActionData {
   guild_id: string;
   action: {
     type: number;
@@ -142,6 +127,21 @@ interface AutoModerationActionData {
   content?: string;
   matched_keyword?: string;
   matched_content?: string;
+}
+
+export interface AutoModerationRuleData {
+  id: string;
+  guild_id: string;
+  name: string;
+  creator_id: string;
+  event_type: number;
+  trigger_type: number;
+  trigger_metadata?: Record<string, unknown>;
+  actions: Array<{
+    type: number;
+    metadata?: Record<string, unknown>;
+  }>;
+  enabled?: boolean;
 }
 
 export class EventDispatcher extends EventEmitter {

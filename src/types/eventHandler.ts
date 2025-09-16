@@ -1,0 +1,1 @@
+export type EventHandler = (...args: any) => Promise<void>;
