@@ -8,6 +8,13 @@
       "when": 1757984995360,
       "tag": "0000_wealthy_adam_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757997031897,
+      "tag": "0001_tiny_pride",
+      "breakpoints": true
     }
   ]
 }
