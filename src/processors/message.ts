@@ -16,6 +16,9 @@ export class MessageProcessor extends BaseProcessor<APIMessage> {
       await this.upsertUser(message.author);
       await this.upsertChannel(message);
 
+      const threadId = message.thread?.id;
+      const parentChannelId = message.thread?.parent_id;
+
       await this.db.insert(schema.messageEvents).values({
         id: message.id,
         guildId: message.guild_id,
@@ -24,6 +27,9 @@ export class MessageProcessor extends BaseProcessor<APIMessage> {
         content: (message.content || '').slice(0, 2000),
         attachmentCount: message.attachments?.length || 0,
         embedCount: message.embeds?.length || 0,
+        threadId,
+        parentChannelId,
+        messageType: message.type || 0,
         timestamp: new Date(message.timestamp),
       });
     } catch (error) {

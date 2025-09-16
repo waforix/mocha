@@ -12,6 +12,10 @@ interface ReactionData {
     name: string;
     animated?: boolean;
   };
+  thread?: {
+    id: string;
+    parent_id?: string;
+  };
 }
 
 export class ReactionProcessor extends BaseProcessor {
@@ -37,6 +41,8 @@ export class ReactionProcessor extends BaseProcessor {
         emojiName: data.emoji.name,
         emojiAnimated: data.emoji.animated || false,
         action: 'add',
+        threadId: data.thread?.id,
+        parentChannelId: data.thread?.parent_id,
         timestamp: new Date(),
       });
     } catch (error) {
@@ -62,6 +68,8 @@ export class ReactionProcessor extends BaseProcessor {
         emojiName: data.emoji.name,
         emojiAnimated: data.emoji.animated || false,
         action: 'remove',
+        threadId: data.thread?.id,
+        parentChannelId: data.thread?.parent_id,
         timestamp: new Date(),
       });
     } catch (error) {
