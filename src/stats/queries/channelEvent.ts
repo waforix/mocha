@@ -18,10 +18,7 @@ export class ChannelEventQueries {
       })
       .from(schema.channelEvents)
       .where(
-        and(
-          eq(schema.channelEvents.guildId, guildId),
-          gte(schema.channelEvents.timestamp, since)
-        )
+        and(eq(schema.channelEvents.guildId, guildId), gte(schema.channelEvents.timestamp, since))
       )
       .groupBy(
         schema.channelEvents.action,

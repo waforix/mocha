@@ -152,12 +152,7 @@ export class ScheduledEventProcessor extends BaseProcessor<ScheduledEventData> {
 
     const d = data as Record<string, unknown>;
 
-    return !!(
-      d.id &&
-      typeof d.id === 'string' &&
-      d.guild_id &&
-      typeof d.guild_id === 'string'
-    );
+    return !!(d.id && typeof d.id === 'string' && d.guild_id && typeof d.guild_id === 'string');
   }
 
   private validateScheduledEventUserData(data: unknown): data is ScheduledEventUserData {

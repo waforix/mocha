@@ -19,16 +19,9 @@ export class InviteQueries {
       .from(schema.inviteEvents)
       .leftJoin(schema.users, eq(schema.inviteEvents.inviterId, schema.users.id))
       .where(
-        and(
-          eq(schema.inviteEvents.guildId, guildId),
-          gte(schema.inviteEvents.timestamp, since)
-        )
+        and(eq(schema.inviteEvents.guildId, guildId), gte(schema.inviteEvents.timestamp, since))
       )
-      .groupBy(
-        schema.inviteEvents.action,
-        schema.inviteEvents.inviterId,
-        schema.users.username
-      )
+      .groupBy(schema.inviteEvents.action, schema.inviteEvents.inviterId, schema.users.username)
       .orderBy(desc(count()));
   }
 
@@ -70,10 +63,7 @@ export class InviteQueries {
       .from(schema.inviteEvents)
       .leftJoin(schema.users, eq(schema.inviteEvents.inviterId, schema.users.id))
       .where(
-        and(
-          eq(schema.inviteEvents.guildId, guildId),
-          gte(schema.inviteEvents.timestamp, since)
-        )
+        and(eq(schema.inviteEvents.guildId, guildId), gte(schema.inviteEvents.timestamp, since))
       )
       .orderBy(desc(schema.inviteEvents.timestamp));
   }

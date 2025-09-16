@@ -190,7 +190,9 @@ export const guildEvents = pgTable(
     guildId: text('guild_id')
       .notNull()
       .references(() => guilds.id, { onDelete: 'cascade' }),
-    action: text('action', { enum: ['update', 'ban_add', 'ban_remove', 'emoji_update', 'sticker_update'] }).notNull(),
+    action: text('action', {
+      enum: ['update', 'ban_add', 'ban_remove', 'emoji_update', 'sticker_update'],
+    }).notNull(),
     targetUserId: text('target_user_id'),
     reason: text('reason'),
     changes: text('changes'),
@@ -211,11 +213,9 @@ export const inviteEvents = pgTable(
     guildId: text('guild_id')
       .notNull()
       .references(() => guilds.id, { onDelete: 'cascade' }),
-    channelId: text('channel_id')
-      .references(() => channels.id, { onDelete: 'cascade' }),
+    channelId: text('channel_id').references(() => channels.id, { onDelete: 'cascade' }),
     inviteCode: text('invite_code').notNull(),
-    inviterId: text('inviter_id')
-      .references(() => users.id, { onDelete: 'cascade' }),
+    inviterId: text('inviter_id').references(() => users.id, { onDelete: 'cascade' }),
     action: text('action', { enum: ['create', 'delete'] }).notNull(),
     maxAge: integer('max_age'),
     maxUses: integer('max_uses'),
@@ -234,10 +234,8 @@ export const interactionEvents = pgTable(
   'interaction_events',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    guildId: text('guild_id')
-      .references(() => guilds.id, { onDelete: 'cascade' }),
-    channelId: text('channel_id')
-      .references(() => channels.id, { onDelete: 'cascade' }),
+    guildId: text('guild_id').references(() => guilds.id, { onDelete: 'cascade' }),
+    channelId: text('channel_id').references(() => channels.id, { onDelete: 'cascade' }),
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
@@ -265,9 +263,10 @@ export const scheduledEvents = pgTable(
       .notNull()
       .references(() => guilds.id, { onDelete: 'cascade' }),
     eventId: text('event_id').notNull(),
-    action: text('action', { enum: ['create', 'update', 'delete', 'user_add', 'user_remove'] }).notNull(),
-    userId: text('user_id')
-      .references(() => users.id, { onDelete: 'cascade' }),
+    action: text('action', {
+      enum: ['create', 'update', 'delete', 'user_add', 'user_remove'],
+    }).notNull(),
+    userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
     name: text('name'),
     description: text('description'),
     scheduledStartTime: timestamp('scheduled_start_time', { withTimezone: true }),
@@ -293,11 +292,11 @@ export const autoModerationEvents = pgTable(
       .notNull()
       .references(() => guilds.id, { onDelete: 'cascade' }),
     ruleId: text('rule_id').notNull(),
-    action: text('action', { enum: ['rule_create', 'rule_update', 'rule_delete', 'action_execution'] }).notNull(),
-    userId: text('user_id')
-      .references(() => users.id, { onDelete: 'cascade' }),
-    channelId: text('channel_id')
-      .references(() => channels.id, { onDelete: 'cascade' }),
+    action: text('action', {
+      enum: ['rule_create', 'rule_update', 'rule_delete', 'action_execution'],
+    }).notNull(),
+    userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    channelId: text('channel_id').references(() => channels.id, { onDelete: 'cascade' }),
     messageId: text('message_id'),
     ruleName: text('rule_name'),
     triggerType: integer('trigger_type'),

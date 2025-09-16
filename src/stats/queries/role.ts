@@ -15,12 +15,7 @@ export class RoleQueries {
         count: count(),
       })
       .from(schema.roleEvents)
-      .where(
-        and(
-          eq(schema.roleEvents.guildId, guildId),
-          gte(schema.roleEvents.timestamp, since)
-        )
-      )
+      .where(and(eq(schema.roleEvents.guildId, guildId), gte(schema.roleEvents.timestamp, since)))
       .groupBy(schema.roleEvents.action)
       .orderBy(desc(count()));
   }
@@ -57,12 +52,7 @@ export class RoleQueries {
         count: count(),
       })
       .from(schema.roleEvents)
-      .where(
-        and(
-          eq(schema.roleEvents.guildId, guildId),
-          gte(schema.roleEvents.timestamp, since)
-        )
-      )
+      .where(and(eq(schema.roleEvents.guildId, guildId), gte(schema.roleEvents.timestamp, since)))
       .groupBy(schema.roleEvents.roleId, schema.roleEvents.name)
       .orderBy(desc(count()))
       .limit(limit);

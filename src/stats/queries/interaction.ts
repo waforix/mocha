@@ -22,10 +22,7 @@ export class InteractionQueries {
           gte(schema.interactionEvents.timestamp, since)
         )
       )
-      .groupBy(
-        schema.interactionEvents.interactionType,
-        schema.interactionEvents.commandName
-      )
+      .groupBy(schema.interactionEvents.interactionType, schema.interactionEvents.commandName)
       .orderBy(desc(count()));
   }
 

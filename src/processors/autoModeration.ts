@@ -33,7 +33,9 @@ interface AutoModerationActionData {
   matched_content?: string;
 }
 
-export class AutoModerationProcessor extends BaseProcessor<AutoModerationRuleData | AutoModerationActionData> {
+export class AutoModerationProcessor extends BaseProcessor<
+  AutoModerationRuleData | AutoModerationActionData
+> {
   async process(data: AutoModerationRuleData | AutoModerationActionData): Promise<void> {
     if (this.isRuleData(data)) {
       await this.processRuleUpdate(data);

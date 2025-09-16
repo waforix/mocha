@@ -41,7 +41,7 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
       await this.upsertChannel(data);
 
       const isThread = data.type === 11 || data.type === 12;
-      
+
       await this.db.insert(schema.channelEvents).values({
         guildId: data.guild_id,
         channelId: data.id,
@@ -191,10 +191,6 @@ export class ChannelProcessor extends BaseProcessor<ChannelData> {
 
     const d = data as Record<string, unknown>;
 
-    return !!(
-      d.id &&
-      typeof d.id === 'string' &&
-      typeof d.type === 'number'
-    );
+    return !!(d.id && typeof d.id === 'string' && typeof d.type === 'number');
   }
 }

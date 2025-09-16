@@ -65,7 +65,11 @@ export class InviteProcessor extends BaseProcessor<InviteData> {
     }
   }
 
-  async processDelete(data: { code: string; guild_id: string; channel_id?: string }): Promise<void> {
+  async processDelete(data: {
+    code: string;
+    guild_id: string;
+    channel_id?: string;
+  }): Promise<void> {
     if (!data.code || !data.guild_id) {
       return;
     }
@@ -90,11 +94,6 @@ export class InviteProcessor extends BaseProcessor<InviteData> {
 
     const d = data as Record<string, unknown>;
 
-    return !!(
-      d.code &&
-      typeof d.code === 'string' &&
-      d.guild_id &&
-      typeof d.guild_id === 'string'
-    );
+    return !!(d.code && typeof d.code === 'string' && d.guild_id && typeof d.guild_id === 'string');
   }
 }
