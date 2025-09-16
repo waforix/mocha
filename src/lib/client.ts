@@ -12,6 +12,16 @@ import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
 
+export interface IgnoreConfig {
+  users?: Set<string>;
+  channels?: Set<string>;
+  guilds?: Set<string>;
+  events?: Set<string>;
+  bots?: boolean;
+  dmChannels?: boolean;
+  customFilter?: (event: string, data: any) => boolean;
+}
+
 export interface StatsClientOptions extends GatewayOptions {
   dbPath?: string;
   database?: DatabaseConfig;
@@ -19,6 +29,7 @@ export interface StatsClientOptions extends GatewayOptions {
   enableMetrics?: boolean;
   enableNotifications?: boolean;
   enableRateLimit?: boolean;
+  ignore?: IgnoreConfig;
 }
 
 export class StatsClient extends EventEmitter {
@@ -33,12 +44,23 @@ export class StatsClient extends EventEmitter {
   private rateLimit?: RateLimitManager;
   private exporter!: DataExporter;
   private initialized = false;
+  private ignoreConfig: IgnoreConfig;
 
   constructor(options: StatsClientOptions) {
     super();
     this.gateway = new GatewayClient(options);
 
     this.cache = new CacheManager(options.cache);
+
+    this.ignoreConfig = {
+      users: options.ignore?.users || new Set(),
+      channels: options.ignore?.channels || new Set(),
+      guilds: options.ignore?.guilds || new Set(),
+      events: options.ignore?.events || new Set(),
+      bots: options.ignore?.bots ?? true,
+      dmChannels: options.ignore?.dmChannels ?? true,
+      customFilter: options.ignore?.customFilter,
+    };
 
     this.initializeDatabase(options)
       .then(() => {
@@ -81,6 +103,9 @@ export class StatsClient extends EventEmitter {
 
   private setupEventHandlers() {
     this.gateway.on('dispatch', (event, data) => {
+      if (this.shouldIgnoreEvent(event, data)) {
+        return;
+      }
       this.dispatcher.dispatch(event, data);
     });
 
@@ -210,5 +235,72 @@ export class StatsClient extends EventEmitter {
 
   isRateLimited(key: string, tokens = 1): boolean {
     return this.rateLimit ? !this.rateLimit.isAllowed(key, tokens) : false;
+  }
+
+  updateIgnoreConfig(config: Partial<IgnoreConfig>) {
+    this.ignoreConfig = {
+      ...this.ignoreConfig,
+      ...config,
+    };
+  }
+
+  addIgnoredUser(userId: string) {
+    this.ignoreConfig.users?.add(userId);
+  }
+
+  removeIgnoredUser(userId: string) {
+    this.ignoreConfig.users?.delete(userId);
+  }
+
+  addIgnoredChannel(channelId: string) {
+    this.ignoreConfig.channels?.add(channelId);
+  }
+
+  removeIgnoredChannel(channelId: string) {
+    this.ignoreConfig.channels?.delete(channelId);
+  }
+
+  addIgnoredGuild(guildId: string) {
+    this.ignoreConfig.guilds?.add(guildId);
+  }
+
+  removeIgnoredGuild(guildId: string) {
+    this.ignoreConfig.guilds?.delete(guildId);
+  }
+
+  private shouldIgnoreEvent(event: string, data: any): boolean {
+    if (this.ignoreConfig.events?.has(event)) {
+      return true;
+    }
+
+    if (this.ignoreConfig.customFilter && this.ignoreConfig.customFilter(event, data)) {
+      return true;
+    }
+
+    if (data.guild_id && this.ignoreConfig.guilds?.has(data.guild_id)) {
+      return true;
+    }
+
+    if (data.channel_id && this.ignoreConfig.channels?.has(data.channel_id)) {
+      return true;
+    }
+
+    if (data.user_id && this.ignoreConfig.users?.has(data.user_id)) {
+      return true;
+    }
+
+    if (data.author?.id && this.ignoreConfig.users?.has(data.author.id)) {
+      return true;
+    }
+
+    if (this.ignoreConfig.bots && (data.author?.bot || data.user?.bot)) {
+      return true;
+    }
+
+    if (this.ignoreConfig.dmChannels && !data.guild_id) {
+      return true;
+    }
+
+    return false;
   }
 }
