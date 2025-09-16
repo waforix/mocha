@@ -1,21 +1,23 @@
-import { StatsClient, INTENTS } from './src/index';
+import { INTENTS, StatsClient } from './src/index';
 
 // Example with SQLite (backward compatible)
 const clientSqlite = new StatsClient({
   token: 'YOUR_BOT_TOKEN',
-  intents: INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
+  intents:
+    INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
   dbPath: './stats.db', // Legacy option
   cache: {
     userStatsSize: 2000,
     guildStatsSize: 200,
-    ttlMs: 600000 // 10 minutes
-  }
+    ttlMs: 600000, // 10 minutes
+  },
 });
 
 // Example with PostgreSQL (new option)
 const clientPostgres = new StatsClient({
   token: 'YOUR_BOT_TOKEN',
-  intents: INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
+  intents:
+    INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES,
   database: {
     type: 'postgres',
     host: 'localhost',
@@ -28,8 +30,8 @@ const clientPostgres = new StatsClient({
   cache: {
     userStatsSize: 2000,
     guildStatsSize: 200,
-    ttlMs: 600000 // 10 minutes
-  }
+    ttlMs: 600000, // 10 minutes
+  },
 });
 
 // Use either client
@@ -49,27 +51,27 @@ await client.connect();
 setTimeout(async () => {
   const guildId = 'YOUR_GUILD_ID';
   const userId = 'YOUR_USER_ID';
-  
+
   // Get user stats
   const userStats = await client.getUserStats(guildId, userId, 30);
   console.log('User stats:', userStats);
-  
+
   // Get guild stats
   const guildStats = await client.getGuildStats(guildId, 30);
   console.log('Guild stats:', guildStats);
-  
+
   // Get message leaderboard
   const messageLeaderboard = await client.getLeaderboard(guildId, 'messages', 10, 30);
   console.log('Top message senders:', messageLeaderboard);
-  
+
   // Get voice leaderboard
   const voiceLeaderboard = await client.getLeaderboard(guildId, 'voice', 10, 30);
   console.log('Top voice users:', voiceLeaderboard);
-  
+
   // Get activity heatmap
   const heatmap = await client.getActivityHeatmap(guildId, undefined, 7);
   console.log('Activity by hour:', heatmap);
-  
+
   // Check cache performance
   console.log('Cache stats:', client.getCacheStats());
 }, 10000);

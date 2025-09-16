@@ -6,29 +6,20 @@ export class VoiceProcessor extends BaseProcessor<APIVoiceState> {
   private voiceSessions = new Map<string, { channelId: string; joinTime: Date }>();
 
   async process(voiceState: APIVoiceState) {
-    if (!voiceState.guild_id) return;
+    if (!this.validateVoiceState(voiceState)) {
+      return;
+    }
 
-    const sessionKey = `${voiceState.guild_id}:${voiceState.user_id}`;
-    const currentSession = this.voiceSessions.get(sessionKey);
+    if (!voiceState.guild_id) {
+      return;
+    }
 
-    if (!voiceState.channel_id) {
-      if (currentSession) {
-        const duration = Date.now() - currentSession.joinTime.getTime();
+    try {
+      const sessionKey = `${voiceState.guild_id}:${voiceState.user_id}`;
+      const currentSession = this.voiceSessions.get(sessionKey);
 
-        await this.db.insert(schema.voiceEvents).values({
-          guildId: voiceState.guild_id,
-          channelId: currentSession.channelId,
-          userId: voiceState.user_id,
-          action: 'leave',
-          duration: Math.floor(duration / 1000),
-          timestamp: new Date(),
-        });
-
-        this.voiceSessions.delete(sessionKey);
-      }
-    } else {
-      if (currentSession) {
-        if (currentSession.channelId !== voiceState.channel_id) {
+      if (!voiceState.channel_id) {
+        if (currentSession) {
           const duration = Date.now() - currentSession.joinTime.getTime();
 
           await this.db.insert(schema.voiceEvents).values({
@@ -40,6 +31,36 @@ export class VoiceProcessor extends BaseProcessor<APIVoiceState> {
             timestamp: new Date(),
           });
 
+          this.voiceSessions.delete(sessionKey);
+        }
+      } else {
+        if (currentSession) {
+          if (currentSession.channelId !== voiceState.channel_id) {
+            const duration = Date.now() - currentSession.joinTime.getTime();
+
+            await this.db.insert(schema.voiceEvents).values({
+              guildId: voiceState.guild_id,
+              channelId: currentSession.channelId,
+              userId: voiceState.user_id,
+              action: 'leave',
+              duration: Math.floor(duration / 1000),
+              timestamp: new Date(),
+            });
+
+            await this.db.insert(schema.voiceEvents).values({
+              guildId: voiceState.guild_id,
+              channelId: voiceState.channel_id,
+              userId: voiceState.user_id,
+              action: 'join',
+              timestamp: new Date(),
+            });
+
+            this.voiceSessions.set(sessionKey, {
+              channelId: voiceState.channel_id,
+              joinTime: new Date(),
+            });
+          }
+        } else {
           await this.db.insert(schema.voiceEvents).values({
             guildId: voiceState.guild_id,
             channelId: voiceState.channel_id,
@@ -53,20 +74,24 @@ export class VoiceProcessor extends BaseProcessor<APIVoiceState> {
             joinTime: new Date(),
           });
         }
-      } else {
-        await this.db.insert(schema.voiceEvents).values({
-          guildId: voiceState.guild_id,
-          channelId: voiceState.channel_id,
-          userId: voiceState.user_id,
-          action: 'join',
-          timestamp: new Date(),
-        });
-
-        this.voiceSessions.set(sessionKey, {
-          channelId: voiceState.channel_id,
-          joinTime: new Date(),
-        });
       }
+    } catch (error) {
+      throw new Error(`Failed to process voice state: ${error}`);
     }
+  }
+
+  private validateVoiceState(voiceState: unknown): voiceState is APIVoiceState {
+    if (!voiceState || typeof voiceState !== 'object') {
+      return false;
+    }
+
+    const vs = voiceState as Record<string, unknown>;
+
+    return !!(
+      vs.user_id &&
+      typeof vs.user_id === 'string' &&
+      (vs.guild_id === null || typeof vs.guild_id === 'string') &&
+      (vs.channel_id === null || typeof vs.channel_id === 'string')
+    );
   }
 }

@@ -1,71 +1,21 @@
-import { Database } from 'bun:sqlite';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { MigrationManager } from '../migrations/manager';
+import type { SqliteConfig } from '../types';
 
-function checkDatabaseExists(sqlite: Database): boolean {
-  try {
-    const result = sqlite
-      .query("SELECT name FROM sqlite_master WHERE type='table' AND name='guilds'")
-      .get();
-    return !!result;
-  } catch {
-    return false;
-  }
-}
+export async function initializeSqliteDatabase(dbPath: string): Promise<void> {
+  const config: SqliteConfig = {
+    type: 'sqlite',
+    path: dbPath,
+  };
 
-function loadMigrationStatements(): string[] {
-  const libRoot = join(import.meta.dir, '../../..');
-  const migrationPath = join(libRoot, 'drizzle/sqlite/0000_initial.sql');
+  const migrationManager = new MigrationManager(config);
 
   try {
-    const migration = readFileSync(migrationPath, 'utf-8');
-    return migration
-      .split('--> statement-breakpoint')
-      .map((stmt) => stmt.trim())
-      .filter((stmt) => stmt && !stmt.startsWith('-->'));
-  } catch {
-    const fallbackPath = join(libRoot, 'drizzle/0000_wandering_raza.sql');
-    try {
-      const migration = readFileSync(fallbackPath, 'utf-8');
-      return migration
-        .split('--> statement-breakpoint')
-        .map((stmt) => stmt.trim())
-        .filter((stmt) => stmt && !stmt.startsWith('-->'));
-    } catch {
-      return [];
-    }
-  }
-}
-
-function executeStatement(sqlite: Database, statement: string): void {
-  try {
-    sqlite.exec(statement.trim());
-  } catch (error) {
-    if (!(error instanceof Error) || !error.message?.includes('already exists')) {
-      throw error;
-    }
-  }
-}
-
-export function initializeSqliteDatabase(dbPath: string): void {
-  const sqlite = new Database(dbPath);
-
-  if (checkDatabaseExists(sqlite)) {
-    sqlite.close();
-    return;
-  }
-
-  try {
-    const statements = loadMigrationStatements();
-    for (const statement of statements) {
-      if (statement.trim()) {
-        executeStatement(sqlite, statement);
-      }
+    const result = await migrationManager.runMigrations();
+    if (result.applied > 0) {
+      console.log(`Applied ${result.applied} SQLite migrations`);
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to initialize SQLite database: ${message}`);
-  } finally {
-    sqlite.close();
   }
 }

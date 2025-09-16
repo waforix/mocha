@@ -1,6 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import type { PostgresConfig } from '../types';
+import { initializePostgresDatabase } from './init';
 import * as schema from './schema/index';
 
 const connections = new Map<string, ReturnType<typeof drizzle>>();
@@ -22,10 +23,12 @@ function createPostgresClient(config: PostgresConfig) {
   });
 }
 
-export function getPostgresDb(config: PostgresConfig) {
+export async function getPostgresDb(config: PostgresConfig) {
   const key = createConnectionKey(config);
 
   if (!connections.has(key)) {
+    await initializePostgresDatabase(config);
+
     const client = createPostgresClient(config);
     const db = drizzle(client, { schema });
     connections.set(key, db);

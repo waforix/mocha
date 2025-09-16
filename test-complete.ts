@@ -1,4 +1,4 @@
-import { StatsClient, INTENTS } from './src/index';
+import { INTENTS, StatsClient } from './src/index';
 
 console.log('🧪 Running comprehensive library test...\n');
 
@@ -11,8 +11,8 @@ const client = new StatsClient({
   cache: {
     userStatsSize: 100,
     guildStatsSize: 10,
-    ttlMs: 60000
-  }
+    ttlMs: 60000,
+  },
 });
 console.log('✅ Client created successfully');
 
@@ -40,19 +40,19 @@ try {
   // These will return empty results but shouldn't crash
   const mockGuildId = '123456789';
   const mockUserId = '987654321';
-  
+
   const userStats = await client.getUserStats(mockGuildId, mockUserId, 7);
   console.log('User stats structure:', Object.keys(userStats));
-  
+
   const guildStats = await client.getGuildStats(mockGuildId, 7);
   console.log('Guild stats structure:', Object.keys(guildStats));
-  
+
   const leaderboard = await client.getLeaderboard(mockGuildId, 'messages', 5, 7);
   console.log('Leaderboard structure:', Array.isArray(leaderboard) ? 'Array' : 'Not Array');
-  
+
   const heatmap = await client.getActivityHeatmap(mockGuildId, undefined, 7);
   console.log('Heatmap structure:', Array.isArray(heatmap) ? 'Array' : 'Not Array');
-  
+
   console.log('✅ All statistics methods working');
 } catch (error) {
   console.error('❌ Statistics test failed:', error.message);

@@ -6,9 +6,9 @@ import * as schema from './schema/index';
 
 const connections = new Map<string, ReturnType<typeof drizzle>>();
 
-export function getSqliteDb(config: SqliteConfig) {
+export async function getSqliteDb(config: SqliteConfig) {
   if (!connections.has(config.path)) {
-    initializeSqliteDatabase(config.path);
+    await initializeSqliteDatabase(config.path);
 
     const sqlite = new Database(config.path);
     sqlite.exec('PRAGMA journal_mode = WAL');
