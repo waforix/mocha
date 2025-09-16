@@ -20,37 +20,76 @@ export class ReactionProcessor extends BaseProcessor {
   }
 
   async processAdd(data: ReactionData): Promise<void> {
-    await this.ensureUserExists(data.user_id);
-    await this.ensureChannelExists(data.channel_id, data.guild_id);
+    if (!this.validateReactionData(data)) {
+      return;
+    }
 
-    await this.db.insert(reactionEvents).values({
-      guildId: data.guild_id,
-      channelId: data.channel_id,
-      messageId: data.message_id,
-      userId: data.user_id,
-      emojiId: data.emoji.id || null,
-      emojiName: data.emoji.name,
-      emojiAnimated: data.emoji.animated || false,
-      action: 'add',
-      timestamp: new Date(),
-    });
+    try {
+      await this.ensureUserExists(data.user_id);
+      await this.ensureChannelExists(data.channel_id, data.guild_id);
+
+      await this.db.insert(reactionEvents).values({
+        guildId: data.guild_id,
+        channelId: data.channel_id,
+        messageId: data.message_id,
+        userId: data.user_id,
+        emojiId: data.emoji.id || null,
+        emojiName: data.emoji.name,
+        emojiAnimated: data.emoji.animated || false,
+        action: 'add',
+        timestamp: new Date(),
+      });
+    } catch (error) {
+      throw new Error(`Failed to process reaction add: ${error}`);
+    }
   }
 
   async processRemove(data: ReactionData): Promise<void> {
-    await this.ensureUserExists(data.user_id);
-    await this.ensureChannelExists(data.channel_id, data.guild_id);
+    if (!this.validateReactionData(data)) {
+      return;
+    }
 
-    await this.db.insert(reactionEvents).values({
-      guildId: data.guild_id,
-      channelId: data.channel_id,
-      messageId: data.message_id,
-      userId: data.user_id,
-      emojiId: data.emoji.id || null,
-      emojiName: data.emoji.name,
-      emojiAnimated: data.emoji.animated || false,
-      action: 'remove',
-      timestamp: new Date(),
-    });
+    try {
+      await this.ensureUserExists(data.user_id);
+      await this.ensureChannelExists(data.channel_id, data.guild_id);
+
+      await this.db.insert(reactionEvents).values({
+        guildId: data.guild_id,
+        channelId: data.channel_id,
+        messageId: data.message_id,
+        userId: data.user_id,
+        emojiId: data.emoji.id || null,
+        emojiName: data.emoji.name,
+        emojiAnimated: data.emoji.animated || false,
+        action: 'remove',
+        timestamp: new Date(),
+      });
+    } catch (error) {
+      throw new Error(`Failed to process reaction remove: ${error}`);
+    }
+  }
+
+  private validateReactionData(data: unknown): data is ReactionData {
+    if (!data || typeof data !== 'object') {
+      return false;
+    }
+
+    const d = data as Record<string, unknown>;
+
+    return !!(
+      d.guild_id &&
+      typeof d.guild_id === 'string' &&
+      d.channel_id &&
+      typeof d.channel_id === 'string' &&
+      d.message_id &&
+      typeof d.message_id === 'string' &&
+      d.user_id &&
+      typeof d.user_id === 'string' &&
+      d.emoji &&
+      typeof d.emoji === 'object' &&
+      (d.emoji as Record<string, unknown>).name &&
+      typeof (d.emoji as Record<string, unknown>).name === 'string'
+    );
   }
 
   private async ensureUserExists(userId: string): Promise<void> {

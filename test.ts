@@ -1,4 +1,4 @@
-import { StatsClient, INTENTS } from './src/index';
+import { INTENTS, StatsClient } from './src/index';
 
 // Test database connection
 console.log('Testing database connection...');
@@ -6,7 +6,7 @@ console.log('Testing database connection...');
 const client = new StatsClient({
   token: 'test-token',
   intents: INTENTS.GUILDS | INTENTS.GUILD_MESSAGES,
-  dbPath: './data/stats.db'
+  dbPath: './data/stats.db',
 });
 
 console.log('✓ StatsClient created successfully');

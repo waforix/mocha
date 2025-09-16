@@ -1,4 +1,4 @@
-import { StatsClient, INTENTS } from './src/index';
+import { INTENTS, StatsClient } from './src/index';
 
 console.log('🧪 Running comprehensive library test...\n');
 
@@ -11,14 +11,14 @@ const client = new StatsClient({
   cache: {
     userStatsSize: 100,
     guildStatsSize: 10,
-    ttlMs: 60000
-  }
+    ttlMs: 60000,
+  },
 });
 console.log('✅ Client created successfully');
 
 // Test 2: Database Connection
 console.log('\n2️⃣ Testing database connection...');
-const db = client.getDatabase();
+const _db = client.getDatabase();
 console.log('✅ Database connection established');
 
 // Test 3: Cache System
@@ -40,19 +40,19 @@ try {
   // These will return empty results but shouldn't crash
   const mockGuildId = '123456789';
   const mockUserId = '987654321';
-  
+
   const userStats = await client.getUserStats(mockGuildId, mockUserId, 7);
   console.log('User stats structure:', Object.keys(userStats));
-  
+
   const guildStats = await client.getGuildStats(mockGuildId, 7);
   console.log('Guild stats structure:', Object.keys(guildStats));
-  
+
   const leaderboard = await client.getLeaderboard(mockGuildId, 'messages', 5, 7);
   console.log('Leaderboard structure:', Array.isArray(leaderboard) ? 'Array' : 'Not Array');
-  
+
   const heatmap = await client.getActivityHeatmap(mockGuildId, undefined, 7);
   console.log('Heatmap structure:', Array.isArray(heatmap) ? 'Array' : 'Not Array');
-  
+
   console.log('✅ All statistics methods working');
 } catch (error) {
   console.error('❌ Statistics test failed:', error.message);
@@ -60,9 +60,9 @@ try {
 
 // Test 6: Event System
 console.log('\n6️⃣ Testing event system...');
-let eventReceived = false;
+let _eventReceived = false;
 client.on('eventProcessed', () => {
-  eventReceived = true;
+  _eventReceived = true;
 });
 client.on('gatewayError', () => {
   // Expected for test token

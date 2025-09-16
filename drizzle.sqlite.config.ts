@@ -3,8 +3,8 @@ import { defineConfig } from 'drizzle-kit';
 export default defineConfig({
   schema: './src/db/sqlite/schema/index.ts',
   out: './drizzle/sqlite',
-  driver: 'better-sqlite',
+  dialect: 'sqlite',
   dbCredentials: {
-    url: './data/stats.db'
-  }
+    url: './data/stats.db',
+  },
 });

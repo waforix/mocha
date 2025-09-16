@@ -1,7 +1,7 @@
 import { createDatabaseConnection } from '../src/db/factory';
 import type { DatabaseConfig } from '../src/db/types';
 
-const dbType = process.env.DB_TYPE as 'sqlite' | 'postgres' || 'sqlite';
+const dbType = (process.env.DB_TYPE as 'sqlite' | 'postgres') || 'sqlite';
 
 let config: DatabaseConfig;
 
