@@ -11,6 +11,12 @@ import {
     SKUFlag,
     SKUType
 } from "./sku";
+import {
+    ActionType,
+    EventType,
+    KeywordPresetType,
+    TriggerType
+} from "./autoModeration";
 import { ChannelFlag } from "./channelFlag";
 import { ChannelType } from "./channelType";
 import { DefaultMessageNotificationLevel } from "./defaultMessageNotificationLevel";
@@ -52,6 +58,10 @@ export {
     AuditLogEvent,
     SKUFlag,
     SKUType,
+    ActionType,
+    EventType,
+    KeywordPresetType,
+    TriggerType,
     ChannelFlag,
     ChannelType,
     DefaultMessageNotificationLevel,
