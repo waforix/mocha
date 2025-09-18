@@ -55,6 +55,8 @@ import { SortOrderType } from "./sortOrderType";
 import { StickerFormat } from "./stickerFormat";
 import { StickerType } from "./stickerType";
 import { SystemChannelFlag } from "./systemChannelFlag";
+import { PrivacyLevel } from "./stageInstance";
+import { SubscriptionStatus } from "./subscription";
 import { UserFlag } from "./userFlag";
 import { UserPremiumType } from "./userPremiumType";
 import { VerificationLevel } from "./verificationLevel";
@@ -108,6 +110,8 @@ export {
     StickerFormat,
     StickerType,
     SystemChannelFlag,
+    PrivacyLevel,
+    SubscriptionStatus,
     UserFlag,
     UserPremiumType,
     VerificationLevel,

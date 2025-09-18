@@ -1,4 +1,5 @@
 import { SKUFlag, SKUType } from "../../enums/sku";
+import { Library } from "../conversion";
 
 export type APISKU = {
     id: string;
@@ -8,3 +9,5 @@ export type APISKU = {
     slug: string;
     flags: SKUFlag;
 }
+
+export type SKU = Library<APISKU>;

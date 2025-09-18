@@ -188,6 +188,22 @@ export type APILabel = {
     component: APILabelChild;
 }
 
+export type APIMessageComponent = APIActionRow<APIButton | APIStringSelect | APIUserSelect | APIRoleSelect | APIMentionableSelect | APIChannelSelect> |
+    APITextDisplay |
+    APIMediaGallery |
+    APIFile |
+    APISeparator |
+    APIContainer
+
+export type APIModalComponent = StringSelect |
+    TextInput |
+    UserSelect |
+    RoleSelect |
+    MentionableSelect |
+    ChannelSelect |
+    TextDisplay |
+    Label
+
 export type ActionRow<T extends APIActionRowChild> = Library<APIActionRow<T>>;
 export type ActionRowChild = Library<APIActionRowChild>;
 export type Button = Library<APIButton>;
@@ -214,3 +230,5 @@ export type Container = Library<APIContainer>;
 export type ContainerChild = Library<APIContainerChild>;
 export type Label = Library<APILabel>;
 export type LabelChild = Library<APILabelChild>;
+export type MessageComponent = Library<APIMessageComponent>;
+export type ModalComponent = Library<APIModalComponent>;

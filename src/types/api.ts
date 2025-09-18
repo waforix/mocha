@@ -129,33 +129,5 @@ export type APIGuildMember = {
 
 
 
-export type APIVoiceState = {
-    guild_id?: string;
-    channel_id?: string;
-    user_id: string;
-    member?: APIGuildMember;
-    session_id: string;
-    deaf: boolean;
-    mute: boolean;
-    self_deaf: boolean;
-    self_mute: boolean;
-    self_stream?: boolean;
-    self_video: boolean;
-    suppress: boolean;
-    request_to_speak_timestamp?: Date;
-}
 
-export type APIWebhook = {
-    id: string;
-    type: number;
-    guild_id?: string;
-    channel_id?: string;
-    user?: APIUser;
-    name?: string;
-    avatar?: string;
-    token?: string;
-    application_id?: string;
-    source_guild?: Partial<APIGuild>;
-    source_channel?: Partial<APIChannel>;
-    url?: string;
-}
+
