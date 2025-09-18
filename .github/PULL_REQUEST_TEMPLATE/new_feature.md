@@ -19,8 +19,7 @@ Which areas this feature is impacting?
 - [] Other 
   - If you picked other please explain your feature here
 
-**Example**
-An example of the new feature
+**Example**: An example of the new feature
 ```ts
 // ...
 ```
