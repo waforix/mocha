@@ -1,6 +1,6 @@
 {
-  "id": "49d81d6d-eda0-42f4-8443-5dea60ddec7d",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "57a4ad8e-19de-4e2a-b1af-5483c1d5c5d4",
+  "prevId": "49d81d6d-eda0-42f4-8443-5dea60ddec7d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -24,11 +24,11 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "type": {
           "name": "type",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -36,11 +36,11 @@
           "name": "parentId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -92,13 +92,13 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -112,7 +112,7 @@
           "name": "icon",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "ownerId": {
           "name": "ownerId",
@@ -122,9 +122,9 @@
         },
         "memberCount": {
           "name": "memberCount",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -158,7 +158,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'e4b3266c-d2e2-42f8-bef0-8a3c5f6128a2'"
+          "default": "'dba6a3ee-9c1d-468c-b5b5-c787660b3db5'"
         },
         "guildId": {
           "name": "guildId",
@@ -176,19 +176,19 @@
           "name": "nick",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "joinedAt": {
           "name": "joinedAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "leftAt": {
           "name": "leftAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "roles": {
           "name": "roles",
@@ -198,7 +198,7 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -244,13 +244,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -259,7 +259,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'d956507a-28e5-4d7d-81e0-f0a3348867f2'"
+          "default": "'37378f10-62f5-4ada-9760-b15e0c0494b6'"
         },
         "guildId": {
           "name": "guildId",
@@ -327,13 +327,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -369,14 +369,14 @@
         },
         "attachmentCount": {
           "name": "attachmentCount",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
         "embedCount": {
           "name": "embedCount",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
@@ -436,13 +436,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -451,7 +451,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'72a84629-4ef0-4208-b133-f5ca7e110097'"
+          "default": "'ba29fa04-0fee-4497-ba1a-0b5200775786'"
         },
         "guildId": {
           "name": "guildId",
@@ -475,13 +475,13 @@
           "name": "activity",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "activityType": {
           "name": "activityType",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -525,13 +525,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -540,7 +540,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'59443d13-9345-4830-a99b-5c5b2902f5c4'"
+          "default": "'e241404d-6c1f-49f8-bf22-e7da805b5aef'"
         },
         "guildId": {
           "name": "guildId",
@@ -570,7 +570,7 @@
           "name": "emojiId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "emojiName": {
           "name": "emojiName",
@@ -580,7 +580,7 @@
         },
         "emojiAnimated": {
           "name": "emojiAnimated",
-          "type": "text",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": false
@@ -652,13 +652,13 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -678,11 +678,11 @@
           "name": "avatar",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "bot": {
           "name": "bot",
-          "type": "text",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": false
@@ -702,13 +702,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -717,7 +717,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'537d725b-6816-49a1-9c84-116b503603af'"
+          "default": "'62af5eee-ff25-47d5-b8ba-d3564d4079ff'"
         },
         "guildId": {
           "name": "guildId",
@@ -729,7 +729,7 @@
           "name": "channelId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "userId": {
           "name": "userId",
@@ -745,9 +745,9 @@
         },
         "duration": {
           "name": "duration",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},

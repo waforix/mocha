@@ -1,6 +1,6 @@
 {
-  "id": "49d81d6d-eda0-42f4-8443-5dea60ddec7d",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "507675a9-2e27-44ef-8e01-d10a6585ec0f",
+  "prevId": "edf98644-1659-45f8-8079-fe72fe81b150",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -24,11 +24,11 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "type": {
           "name": "type",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -36,11 +36,11 @@
           "name": "parentId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -53,19 +53,6 @@
           "tableTo": "guild",
           "columnsFrom": [
             "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "channel_parentId_channel_id_fk": {
-          "name": "channel_parentId_channel_id_fk",
-          "tableFrom": "channel",
-          "tableTo": "channel",
-          "columnsFrom": [
-            "parentId"
           ],
           "columnsTo": [
             "id"
@@ -92,13 +79,13 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -112,7 +99,7 @@
           "name": "icon",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "ownerId": {
           "name": "ownerId",
@@ -122,9 +109,9 @@
         },
         "memberCount": {
           "name": "memberCount",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -157,8 +144,7 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "'e4b3266c-d2e2-42f8-bef0-8a3c5f6128a2'"
+          "notNull": true
         },
         "guildId": {
           "name": "guildId",
@@ -176,19 +162,19 @@
           "name": "nick",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "joinedAt": {
           "name": "joinedAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "leftAt": {
           "name": "leftAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "roles": {
           "name": "roles",
@@ -198,7 +184,7 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         }
@@ -244,13 +230,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -258,8 +244,7 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "'d956507a-28e5-4d7d-81e0-f0a3348867f2'"
+          "notNull": true
         },
         "guildId": {
           "name": "guildId",
@@ -327,13 +312,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -369,14 +354,14 @@
         },
         "attachmentCount": {
           "name": "attachmentCount",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
         },
         "embedCount": {
           "name": "embedCount",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
@@ -390,19 +375,6 @@
           "tableTo": "guild",
           "columnsFrom": [
             "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "messageevent_channelId_channel_id_fk": {
-          "name": "messageevent_channelId_channel_id_fk",
-          "tableFrom": "messageevent",
-          "tableTo": "channel",
-          "columnsFrom": [
-            "channelId"
           ],
           "columnsTo": [
             "id"
@@ -436,13 +408,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -450,8 +422,7 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "'72a84629-4ef0-4208-b133-f5ca7e110097'"
+          "notNull": true
         },
         "guildId": {
           "name": "guildId",
@@ -475,13 +446,13 @@
           "name": "activity",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "activityType": {
           "name": "activityType",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -525,13 +496,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -539,8 +510,7 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "'59443d13-9345-4830-a99b-5c5b2902f5c4'"
+          "notNull": true
         },
         "guildId": {
           "name": "guildId",
@@ -570,7 +540,7 @@
           "name": "emojiId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "emojiName": {
           "name": "emojiName",
@@ -580,7 +550,7 @@
         },
         "emojiAnimated": {
           "name": "emojiAnimated",
-          "type": "text",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": false
@@ -600,19 +570,6 @@
           "tableTo": "guild",
           "columnsFrom": [
             "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "reactionevent_channelId_channel_id_fk": {
-          "name": "reactionevent_channelId_channel_id_fk",
-          "tableFrom": "reactionevent",
-          "tableTo": "channel",
-          "columnsFrom": [
-            "channelId"
           ],
           "columnsTo": [
             "id"
@@ -652,13 +609,13 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -678,11 +635,11 @@
           "name": "avatar",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "bot": {
           "name": "bot",
-          "type": "text",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": false
@@ -702,13 +659,13 @@
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
         },
@@ -716,8 +673,7 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "'537d725b-6816-49a1-9c84-116b503603af'"
+          "notNull": true
         },
         "guildId": {
           "name": "guildId",
@@ -729,7 +685,7 @@
           "name": "channelId",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "userId": {
           "name": "userId",
@@ -745,9 +701,9 @@
         },
         "duration": {
           "name": "duration",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -758,19 +714,6 @@
           "tableTo": "guild",
           "columnsFrom": [
             "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "voiceevent_channelId_channel_id_fk": {
-          "name": "voiceevent_channelId_channel_id_fk",
-          "tableFrom": "voiceevent",
-          "tableTo": "channel",
-          "columnsFrom": [
-            "channelId"
           ],
           "columnsTo": [
             "id"

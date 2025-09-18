@@ -11,11 +11,12 @@ export interface SqliteConfig {
 
 export interface PostgresConfig {
   type: 'postgres';
-  host: string;
-  port: number;
-  database: string;
-  username: string;
-  password: string;
+  connectionString: string;
+  host?: string;
+  port?: number;
+  database?: string;
+  username?: string;
+  password?: string;
   ssl?: boolean;
   maxConnections?: number;
   idleTimeoutMs?: number;
@@ -30,6 +31,11 @@ export interface DatabaseOptions {
   enableOptimizations?: boolean;
 }
 
+export interface DatabaseInstance {
+  db: any;
+  close: () => void;
+  type: DatabaseType;
+}
+
 export type SqliteInstance = BunSQLiteDatabase<Record<string, unknown>> & { $client: Database };
 export type PostgresInstance = PostgresJsDatabase<Record<string, unknown>>;
-export type DatabaseInstance = SqliteInstance | PostgresInstance;

@@ -1,32 +1,19 @@
-import { Database } from 'bun:sqlite';
-import { drizzle } from 'drizzle-orm/bun-sqlite';
-import type { SqliteConfig } from '../types';
-import { initializeSqliteDatabase } from './init';
-import * as schema from './schema/index';
+import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import * as schema from '../generated/sqlite/schema';
+import type { DatabaseConfig, DatabaseInstance } from '../types';
 
-const connections = new Map<string, ReturnType<typeof drizzle>>();
-
-export async function getSqliteDb(config: SqliteConfig) {
-  if (!connections.has(config.path)) {
-    await initializeSqliteDatabase(config.path);
-
-    const sqlite = new Database(config.path);
-    sqlite.exec('PRAGMA journal_mode = WAL');
-    sqlite.exec('PRAGMA synchronous = NORMAL');
-    sqlite.exec('PRAGMA cache_size = 10000');
-    sqlite.exec('PRAGMA temp_store = MEMORY');
-
-    const db = drizzle(sqlite, { schema });
-    connections.set(config.path, db);
+export async function getSqliteDb(config: DatabaseConfig): Promise<DatabaseInstance> {
+  if (config.type !== 'sqlite') {
+    throw new Error('Invalid config type for SQLite connection');
   }
 
-  const connection = connections.get(config.path);
-  if (!connection) {
-    throw new Error(`SQLite connection not found for path: ${config.path}`);
-  }
-  return connection;
-}
+  const sqlite = new Database(config.path);
+  const db = drizzle(sqlite, { schema });
 
-export function closeSqliteConnections() {
-  connections.clear();
+  return {
+    db,
+    close: () => sqlite.close(),
+    type: 'sqlite'
+  };
 }

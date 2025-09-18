@@ -1,48 +1,53 @@
 {
-  "id": "49d81d6d-eda0-42f4-8443-5dea60ddec7d",
+  "version": "5",
+  "dialect": "mysql",
+  "id": "f07b7272-f47b-4a30-8987-6b171c457cd3",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "7",
-  "dialect": "postgresql",
   "tables": {
-    "public.channel": {
+    "channel": {
       "name": "channel",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "guildId": {
           "name": "guildId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "type": {
           "name": "type",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "parentId": {
           "name": "parentId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -74,57 +79,68 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "channel_id": {
+          "name": "channel_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.guild": {
+    "guild": {
       "name": "guild",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "icon": {
           "name": "icon",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "ownerId": {
           "name": "ownerId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "memberCount": {
           "name": "memberCount",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -143,64 +159,76 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "guild_id": {
+          "name": "guild_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.member": {
+    "member": {
       "name": "member",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
+          "type": "varchar(255)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "'e4b3266c-d2e2-42f8-bef0-8a3c5f6128a2'"
+          "autoincrement": false,
+          "default": "'a362aa89-3640-403b-b8d2-f49951342cbe'"
         },
         "guildId": {
           "name": "guildId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "nick": {
           "name": "nick",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "joinedAt": {
           "name": "joinedAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "leftAt": {
           "name": "leftAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "roles": {
           "name": "roles",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -232,58 +260,69 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "member_id": {
+          "name": "member_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.memberevent": {
+    "memberevent": {
       "name": "memberevent",
-      "schema": "",
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
+          "type": "varchar(255)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "'d956507a-28e5-4d7d-81e0-f0a3348867f2'"
+          "autoincrement": false,
+          "default": "'7d8fad7b-c699-4db8-a8da-3b04b04d7b79'"
         },
         "guildId": {
           "name": "guildId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "action": {
           "name": "action",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "roles": {
           "name": "roles",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -315,70 +354,83 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "memberevent_id": {
+          "name": "memberevent_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.messageevent": {
+    "messageevent": {
       "name": "messageevent",
-      "schema": "",
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "guildId": {
           "name": "guildId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "channelId": {
           "name": "channelId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "content": {
           "name": "content",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "attachmentCount": {
           "name": "attachmentCount",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": 0
         },
         "embedCount": {
           "name": "embedCount",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": 0
         }
       },
@@ -424,64 +476,76 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "messageevent_id": {
+          "name": "messageevent_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.presenceevent": {
+    "presenceevent": {
       "name": "presenceevent",
-      "schema": "",
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
+          "type": "varchar(255)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "'72a84629-4ef0-4208-b133-f5ca7e110097'"
+          "autoincrement": false,
+          "default": "'14448870-e18e-4334-ab09-1272ce18c097'"
         },
         "guildId": {
           "name": "guildId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "status": {
           "name": "status",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "activity": {
           "name": "activity",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "activityType": {
           "name": "activityType",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -513,83 +577,98 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "presenceevent_id": {
+          "name": "presenceevent_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.reactionevent": {
+    "reactionevent": {
       "name": "reactionevent",
-      "schema": "",
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
+          "type": "varchar(255)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "'59443d13-9345-4830-a99b-5c5b2902f5c4'"
+          "autoincrement": false,
+          "default": "'101de204-1df6-433c-a4f8-a72c8ea78104'"
         },
         "guildId": {
           "name": "guildId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "channelId": {
           "name": "channelId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "messageId": {
           "name": "messageId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "emojiId": {
           "name": "emojiId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "emojiName": {
           "name": "emojiName",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "emojiAnimated": {
           "name": "emojiAnimated",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": false
         },
         "action": {
           "name": "action",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -634,120 +713,143 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "reactionevent_id": {
+          "name": "reactionevent_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.user": {
+    "user": {
       "name": "user",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "username": {
           "name": "username",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "discriminator": {
           "name": "discriminator",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "avatar": {
           "name": "avatar",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "bot": {
           "name": "bot",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "user_id": {
+          "name": "user_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.voiceevent": {
+    "voiceevent": {
       "name": "voiceevent",
-      "schema": "",
       "columns": {
         "timestamp": {
           "name": "timestamp",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": true,
+          "type": "varchar(255)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "'537d725b-6816-49a1-9c84-116b503603af'"
+          "autoincrement": false,
+          "default": "'5ab45cec-2b5c-41af-93a3-f2c65bda590d'"
         },
         "guildId": {
           "name": "guildId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "channelId": {
           "name": "channelId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "action": {
           "name": "action",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "duration": {
           "name": "duration",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -792,22 +894,26 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "voiceevent_id": {
+          "name": "voiceevent_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     }
   },
-  "enums": {},
-  "schemas": {},
-  "sequences": {},
-  "roles": {},
-  "policies": {},
   "views": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {},
+    "indexes": {}
   }
 }
