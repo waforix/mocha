@@ -1,5 +1,6 @@
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
+import { toTimestamp } from '../../db/utils';
 import { reactionEvents, users } from '../../db/schema/index';
 import { createDateSince } from '../../utils/date';
 
@@ -8,7 +9,7 @@ export class ReactionQueries {
 
   async getReactionStats(guildId: string, userId?: string, days = 30) {
     const since = createDateSince(days);
-    const conditions = [eq(reactionEvents.guildId, guildId), gte(reactionEvents.timestamp, since)];
+    const conditions = [eq(reactionEvents.guildId, guildId), gte(reactionEvents.timestamp, toTimestamp(since))];
 
     if (userId) {
       conditions.push(eq(reactionEvents.userId, userId));
@@ -39,7 +40,7 @@ export class ReactionQueries {
         and(
           eq(reactionEvents.guildId, guildId),
           eq(reactionEvents.action, 'add'),
-          gte(reactionEvents.timestamp, since)
+          gte(reactionEvents.timestamp, toTimestamp(since))
         )
       )
       .groupBy(reactionEvents.emojiId, reactionEvents.emojiName)
@@ -62,7 +63,7 @@ export class ReactionQueries {
         and(
           eq(reactionEvents.guildId, guildId),
           eq(reactionEvents.action, 'add'),
-          gte(reactionEvents.timestamp, since)
+          gte(reactionEvents.timestamp, toTimestamp(since))
         )
       )
       .groupBy(reactionEvents.userId)
@@ -84,7 +85,7 @@ export class ReactionQueries {
         and(
           eq(reactionEvents.guildId, guildId),
           eq(reactionEvents.action, 'add'),
-          gte(reactionEvents.timestamp, since)
+          gte(reactionEvents.timestamp, toTimestamp(since))
         )
       )
       .groupBy(

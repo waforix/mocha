@@ -1,5 +1,7 @@
 export * from './connection';
+export { createDatabaseConnection } from './factory';
 export { createDatabaseConnection as createDatabaseAdapter } from './factory';
+export { createDatabaseConnection as getDb } from './factory';
 export type { CommonDatabase } from './interface';
 export * from './types';
 

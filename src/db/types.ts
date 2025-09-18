@@ -1,4 +1,5 @@
 import type { Database } from 'bun:sqlite';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { BunSQLiteDatabase } from 'drizzle-orm/bun-sqlite';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
@@ -31,11 +32,13 @@ export interface DatabaseOptions {
   enableOptimizations?: boolean;
 }
 
-export interface DatabaseInstance {
-  db: any;
+export type SqliteInstance = BetterSQLite3Database<any>;
+export type PostgresInstance = PostgresJsDatabase<Record<string, unknown>>;
+
+export interface DatabaseConnection {
+  db: SqliteInstance | PostgresInstance;
   close: () => void;
   type: DatabaseType;
 }
 
-export type SqliteInstance = BunSQLiteDatabase<Record<string, unknown>> & { $client: Database };
-export type PostgresInstance = PostgresJsDatabase<Record<string, unknown>>;
+export type DatabaseInstance = DatabaseConnection;

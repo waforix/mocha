@@ -1,5 +1,6 @@
 import { and, count, eq, gte, sql } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
+import { toTimestamp } from '../../db/utils';
 import { schema } from '../../db/index';
 import { createDateSince } from '../../utils/date';
 
@@ -19,7 +20,7 @@ export class MemberQueries {
         and(
           eq(schema.memberEvents.guildId, guildId),
           eq(schema.memberEvents.action, 'join'),
-          gte(schema.memberEvents.timestamp, since)
+          gte(schema.memberEvents.timestamp, toTimestamp(since))
         )
       )
       .groupBy(sql`date(${schema.memberEvents.timestamp})`);
@@ -34,7 +35,7 @@ export class MemberQueries {
         and(
           eq(schema.memberEvents.guildId, guildId),
           eq(schema.memberEvents.action, 'leave'),
-          gte(schema.memberEvents.timestamp, since)
+          gte(schema.memberEvents.timestamp, toTimestamp(since))
         )
       )
       .groupBy(sql`date(${schema.memberEvents.timestamp})`);
