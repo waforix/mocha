@@ -30,9 +30,23 @@ import { GuildNSFWLevel } from "./guildNSFWLevel";
 import { InviteTargetType } from "./inviteTargetType";
 import { InviteType } from "./inviteType";
 import { Locale } from "./locale";
-import { MessageActivityType } from "./messageActivityType";
-import { MessageFlag } from "./messageFlag";
-import { MessageType } from "./messageType";
+import {
+    InteractionCallbackType,
+    InteractionContextType,
+    InteractionType
+} from "./interaction";
+import {
+    MessageActivityType,
+    MessageFlag,
+    MessageReferenceType,
+    MessageType
+} from "./message";
+import {
+    ButtonStyle,
+    ComponentType,
+    DefaultValueType,
+    TextInputStyle
+} from "./messageComponent";
 import { MFALevel } from "./mfaLevel";
 import { OverwriteType } from "./overwriteType";
 import { PremiumTier } from "./premiumTier";
@@ -75,9 +89,17 @@ export {
     InviteTargetType,
     InviteType,
     Locale,
+    InteractionCallbackType,
+    InteractionContextType,
+    InteractionType,
     MessageActivityType,
     MessageFlag,
+    MessageReferenceType,
     MessageType,
+    ButtonStyle,
+    ComponentType,
+    DefaultValueType,
+    TextInputStyle,
     MFALevel,
     OverwriteType,
     PremiumTier,

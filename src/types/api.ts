@@ -3,56 +3,11 @@ import { Locale } from "../enums/locale";
 import { UserFlag } from "../enums/userFlag";
 import { UserPremiumType } from "../enums/userPremiumType";
 
-export type APIChannel = {
-    id: string;
-    type: ChannelType;
-    guild_id?: string;
-    position?: number;
-    permission_overwrites?: APIOverwrite[];
-    name?: string;
-    topic?: string;
-    nsfw?: boolean;
-    last_message_id?: string;
-    bitrate?: number;
-    user_limit?: number;
-    rate_limit_per_user?: number;
-    recipients?: APIUser[];
-    owner_id?: string;
-    application_id?: string;
-    managed?: boolean;
-    parent_id?: string;
-    last_pin_timestamp?: Date;
-    rtc_region?: string;
-    video_quality_mode: VideoQualityMode;
-    message_count?: number;
-    thread_metadata?: APIThreadMetadata;
-    member?: APIThreadMember;
-    default_auto_archive_duration?: number;
-    permissions?: string;
-    flags?: number;
-    total_messages_sent?: number;
-    available_tags?: APIForumTag[];
-    applied_tags?: APIForumTag[];
-    default_reaction_emoji?: APIDefaultReaction;
-    default_thread_rate_limit_per_user?: number;
-    default_sort_order?: SortOrderType;
-    default_forum_layout?: ForumLayoutType;
-}
 
-export type APIOverwrite = {
-    id: string;
-    type: OverwriteType;
-    allow: string;
-    deny: string;
-}
 
-export type APIForumTag = {
-    id: string;
-    name: ForumTagName;
-    moderated: boolean;
-    emoji_id?: string;
-    emoji_name?: string;
-}
+
+
+
 
 export type APIChannelMention = {
     id: string;
@@ -60,16 +15,7 @@ export type APIChannelMention = {
     type: ChannelType;
 }
 
-export type APIEmoji = {
-    id?: string;
-    name?: string;
-    roles?: null//
-    user?: null//
-    require_colons?: boolean;
-    managed?: boolean;
-    animated?: boolean;
-    available?: boolean;
-}
+
 
 export type APIGuild = {
     id: string;
@@ -153,101 +99,11 @@ export type APIInvite = {
     flags?: GuildInviteFlag;
 }
 
-export type APIMessage = {
-    id: string;
-    channel_id: string;
-    author: APIUser;
-    content: string;
-    timestamp: Date;
-    edited_timestamp: Date;
-    tts: boolean;
-    mention_everyone: boolean;
-    mentions: APIUser[];
-    mention_roles: APIRole[];
-    mention_channels?: APIChannel[];
-    attachments: null;
-    embeds: null;
-    reactions?: null;
-    nonce?: number | string;
-    pinned: boolean;
-    webhook_id?: string;
-    type: MessageType;
-}
 
 
-// color: deprecated in version 10
-
-export type APIRole = {
-    id: string;
-    name: string;
-    colors: APIRoleColors;
-    hoist: boolean;
-    icon?: string;
-    unicode_emoji?: string;
-    position: number;
-    permissions: string;
-    managed: boolean;
-    mentionable: boolean;
-    tags?: APIRoleTags;
-    flags: number;
-}
 
 
-// holographic style:
-// primary_color = 11127295, secondary_color = 16759788, tertiary_color = 16761760
 
-export type APIRoleColors = {
-    primary_color: number;
-    secondary_color?: number;
-    tertiary_color?: number;
-}
-
-// tags with null type should be considered true
-// if they are present, otherwise false
-
-export type APIRoleTags = {
-    bot_id?: string;
-    integration_id?: string;
-    premium_subscriber?: null;
-    subscription_listing_id?: string;
-    available_for_purchase?: null;
-    guild_connections?: null;
-}
-
-export type APISticker = {
-    id: string;
-    pack_id?: string;
-    name: string;
-    description?: string;
-    tags: string;
-    type: StickerType;
-    format_type: StickerFormat;
-    available?: boolean;
-    guild_id?: string;
-    user?: APIUser;
-    sort_value?: number;
-}
-
-export type APIUser = {
-    id: string;
-    username: string;
-    discriminator: string;
-    global_name?: string;
-    avatar?: string;
-    bot?: boolean;
-    system?: boolean;
-    mfa_enabled?: boolean;
-    banner?: string;
-    accent_color?: number;
-    locale?: Locale;
-    verified?: boolean;
-    email?: string;
-    flags?: UserFlag;
-    premium_type?: UserPremiumType;
-    public_flags: UserFlag;
-    avatar_decoration_data: APIAvatarDecorationData;
-    collectibles: APICollectibles;
-}
 
 export type APIGuildMember = {
     user: APIUser;
@@ -267,50 +123,11 @@ export type APIGuildMember = {
 }
 
 
-export type APIUserPrimaryGuild = {
-    identity_guild_id?: string;
-    identity_enabled?: boolean;
-    tag?: string;
-    badge?: string;
-}
 
-export type APIAvatarDecorationData = {
-    asset: string;
-    sku_id: string;
-}
 
-export type APICollectibles = {
-    nameplate?: APINameplate;
-}
 
-export type APINameplate = {
-    sku_id: string;
-    asset: string;
-    label: string;
-    palette: "crimson" | "berry" | "sky" | "teal" | "forest" | "bubble_gum" | "violet" | "cobalt" | "clover" | "lemon" | "white";
-}
 
-export type APIThreadMetadata = {
-    archived: boolean;
-    auto_archive_duration: number;
-    archive_timestamp: Date;
-    locked: boolean;
-    invitable?: boolean;
-    create_timestamp?: Date;
-}
 
-export type APIThreadMember = {
-    id?: string;
-    user_id?: string;
-    join_timestamp: Date;
-    flags: number;
-    member?: APIGuildMember;
-}
-
-export type APIDefaultReaction = {
-    emoji_id?: string;
-    emoji_name?: string;
-}
 
 export type APIVoiceState = {
     guild_id?: string;
