@@ -1,6 +1,7 @@
 import { and, count, eq, gte, type SQL, sql, sum } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
 import { schema } from '../../db/index';
+import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class MessageQueries {
@@ -11,7 +12,7 @@ export class MessageQueries {
 
     const conditions: SQL[] = [
       eq(schema.messageEvents.guildId, guildId),
-      gte(schema.messageEvents.timestamp, since),
+      gte(schema.messageEvents.timestamp, toTimestamp(since)),
     ];
 
     if (userId) {
@@ -34,7 +35,7 @@ export class MessageQueries {
 
     const conditions = [
       eq(schema.messageEvents.guildId, guildId),
-      gte(schema.messageEvents.timestamp, since),
+      gte(schema.messageEvents.timestamp, toTimestamp(since)),
     ];
 
     if (userId) {

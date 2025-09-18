@@ -1,6 +1,7 @@
 import { and, count, eq, gte, lt, sql } from 'drizzle-orm';
 import type { CommonDatabase } from '../db/index';
 import { guilds, memberEvents, messageEvents, voiceEvents } from '../db/schema/index';
+import { toTimestamp } from '../db/utils';
 import { createDateSince } from '../utils/date';
 
 export interface ActivityInsight {
@@ -74,7 +75,9 @@ export class InsightsEngine {
         activity: count(),
       })
       .from(messageEvents)
-      .where(and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, since)))
+      .where(
+        and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since)))
+      )
       .groupBy(sql`strftime('%H', datetime(${messageEvents.timestamp}, 'unixepoch'))`)
       .orderBy(sql`hour`);
 
@@ -100,7 +103,7 @@ export class InsightsEngine {
           and(
             eq(memberEvents.guildId, guildId),
             eq(memberEvents.action, 'join'),
-            gte(memberEvents.createdAt, since)
+            gte(memberEvents.createdAt, toTimestamp(since))
           )
         ),
       this.db
@@ -110,8 +113,8 @@ export class InsightsEngine {
           and(
             eq(memberEvents.guildId, guildId),
             eq(memberEvents.action, 'join'),
-            gte(memberEvents.createdAt, previousPeriod),
-            lt(memberEvents.createdAt, since)
+            gte(memberEvents.createdAt, toTimestamp(previousPeriod)),
+            lt(memberEvents.createdAt, toTimestamp(since))
           )
         ),
     ]);
@@ -143,7 +146,9 @@ export class InsightsEngine {
           activeUsers: sql<number>`count(distinct ${messageEvents.userId})`,
         })
         .from(messageEvents)
-        .where(and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, since))),
+        .where(
+          and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since)))
+        ),
       this.db
         .select({
           voiceUsers: sql<number>`count(distinct ${voiceEvents.userId})`,
@@ -153,7 +158,7 @@ export class InsightsEngine {
         .where(
           and(
             eq(voiceEvents.guildId, guildId),
-            gte(voiceEvents.createdAt, since),
+            gte(voiceEvents.createdAt, toTimestamp(since)),
             eq(voiceEvents.action, 'leave')
           )
         ),

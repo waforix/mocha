@@ -7,14 +7,17 @@
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node",
-    "db:generate": "drizzle-kit generate --config=drizzle.sqlite.config.ts",
-    "db:generate:sqlite": "drizzle-kit generate --config=drizzle.sqlite.config.ts",
-    "db:generate:postgres": "drizzle-kit generate --config=drizzle.postgres.config.ts",
-    "db:generate:both": "bun run db:generate:sqlite && bun run db:generate:postgres",
+    "schemas:generate": "bun run scripts/generate-schemas.ts",
+    "db:generate": "bun run schemas:generate && drizzle-kit generate --config=drizzle.config.ts",
+    "db:generate:sqlite": "bun run schemas:generate && drizzle-kit generate --config=drizzle.config.ts",
+    "db:generate:postgres": "bun run schemas:generate && drizzle-kit generate --config=drizzle.postgres.config.ts",
+    "db:generate:mysql": "bun run schemas:generate && drizzle-kit generate --config=drizzle.mysql.config.ts",
+    "db:generate:all": "bun run schemas:generate && bun run db:generate:sqlite && bun run db:generate:postgres && bun run db:generate:mysql",
     "db:init": "bun run scripts/init-db.ts",
-    "db:studio": "drizzle-kit studio",
-    "db:studio:sqlite": "drizzle-kit studio --config=drizzle.sqlite.config.ts",
+    "db:studio": "drizzle-kit studio --config=drizzle.config.ts",
+    "db:studio:sqlite": "drizzle-kit studio --config=drizzle.config.ts",
     "db:studio:postgres": "drizzle-kit studio --config=drizzle.postgres.config.ts",
+    "db:studio:mysql": "drizzle-kit studio --config=drizzle.mysql.config.ts",
     "lint": "biome lint src/",
     "lint:fix": "biome lint --write src/",
     "format": "biome format src/",
@@ -23,12 +26,15 @@
     "check:fix": "biome check --write src/"
   },
   "dependencies": {
+    "better-sqlite3": "^12.2.0",
     "drizzle-orm": "^0.44.5",
     "postgres": "^3.4.7",
-    "ws": "^8.14.2"
+    "ws": "^8.14.2",
+    "zod": "^4.1.9"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/pg": "^8.15.5",
     "@types/ws": "^8.5.10",
     "bun-types": "^1.0.18",
