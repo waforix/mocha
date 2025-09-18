@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { SchemaGenerator, type FieldMapping, type TableMapping } from './base';
+import type { z } from 'zod';
+import { type FieldMapping, SchemaGenerator, type TableMapping } from './base';
 
 export class PostgresGenerator extends SchemaGenerator {
   constructor() {
@@ -8,7 +8,7 @@ export class PostgresGenerator extends SchemaGenerator {
 
   generateSchema(schemas: Record<string, z.ZodSchema>): string {
     const imports = [
-      "import { integer, pgTable, text, timestamp, uuid, boolean, index } from 'drizzle-orm/pg-core';"
+      "import { integer, pgTable, text, timestamp, uuid, boolean, index } from 'drizzle-orm/pg-core';",
     ];
 
     const tables: string[] = [];
@@ -19,23 +19,24 @@ export class PostgresGenerator extends SchemaGenerator {
       tables.push(tableDefinition);
     }
 
-    return [
-      ...imports,
-      '',
-      ...tables
-    ].join('\n');
+    return [...imports, '', ...tables].join('\n');
   }
 
-  generateMigration(oldSchema: Record<string, z.ZodSchema>, newSchema: Record<string, z.ZodSchema>): string {
+  generateMigration(
+    _oldSchema: Record<string, z.ZodSchema>,
+    _newSchema: Record<string, z.ZodSchema>
+  ): string {
     return '';
   }
 
   protected getFieldType(zodType: z.ZodTypeAny): string {
+    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
     const def = (zodType as any)._def;
     const type = def.type;
 
     if (type === 'string') {
       const checks = def.checks;
+      // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal check structure
       if (checks?.some((check: any) => check.kind === 'uuid')) {
         return 'uuid';
       }
@@ -59,6 +60,7 @@ export class PostgresGenerator extends SchemaGenerator {
     return 'text';
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible default value handling
   protected formatDefaultValue(value: any): string {
     if (typeof value === 'function') {
       const funcStr = value.toString();
@@ -72,7 +74,7 @@ export class PostgresGenerator extends SchemaGenerator {
     }
     if (typeof value === 'string') {
       if (value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-        return `.$defaultFn(() => crypto.randomUUID())`;
+        return '.$defaultFn(() => crypto.randomUUID())';
       }
       return `.default('${value}')`;
     }
@@ -86,13 +88,18 @@ export class PostgresGenerator extends SchemaGenerator {
   }
 
   private getTableName(schemaName: string): string {
-    return schemaName.toLowerCase().replace(/([A-Z])/g, '_$1').replace(/^_/, '');
+    return schemaName
+      .toLowerCase()
+      .replace(/([A-Z])/g, '_$1')
+      .replace(/^_/, '');
   }
 
   private mapSchemaToTable(schemaName: string, zodSchema: z.ZodSchema): TableMapping {
     const tableName = this.getTableName(schemaName);
+    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
     const shape = (zodSchema as any)._def.shape;
     const fields: FieldMapping[] = [];
+    // biome-ignore lint/suspicious/noExplicitAny: Required for flexible index definition handling
     const indexes: any[] = [];
 
     for (const [fieldName, zodType] of Object.entries(shape)) {
@@ -107,7 +114,7 @@ export class PostgresGenerator extends SchemaGenerator {
         field.references = {
           table: refTableName,
           column: 'id',
-          onDelete: 'cascade'
+          onDelete: 'cascade',
         };
       }
 
@@ -135,47 +142,49 @@ export class PostgresGenerator extends SchemaGenerator {
   }
 
   private generateTableDefinition(table: TableMapping): string {
-    const fields = table.fields.map(field => {
-      let fieldDef = '';
+    const fields = table.fields
+      .map((field) => {
+        let fieldDef = '';
 
-      if (field.type === 'timestamp') {
-        fieldDef = `  ${field.name}: timestamp('${field.name}', { withTimezone: true })`;
-      } else if (field.type === 'uuid') {
-        fieldDef = `  ${field.name}: uuid('${field.name}')`;
-      } else if (field.type === 'boolean') {
-        fieldDef = `  ${field.name}: boolean('${field.name}')`;
-      } else if (field.type === 'integer') {
-        fieldDef = `  ${field.name}: integer('${field.name}')`;
-      } else {
-        fieldDef = `  ${field.name}: text('${field.name}')`;
-      }
+        if (field.type === 'timestamp') {
+          fieldDef = `  ${field.name}: timestamp('${field.name}', { withTimezone: true })`;
+        } else if (field.type === 'uuid') {
+          fieldDef = `  ${field.name}: uuid('${field.name}')`;
+        } else if (field.type === 'boolean') {
+          fieldDef = `  ${field.name}: boolean('${field.name}')`;
+        } else if (field.type === 'integer') {
+          fieldDef = `  ${field.name}: integer('${field.name}')`;
+        } else {
+          fieldDef = `  ${field.name}: text('${field.name}')`;
+        }
 
-      if (field.primaryKey) {
-        fieldDef += '.primaryKey()';
-      }
+        if (field.primaryKey) {
+          fieldDef += '.primaryKey()';
+        }
 
-      if (!field.nullable && !field.primaryKey) {
-        fieldDef += '.notNull()';
-      }
+        if (!field.nullable && !field.primaryKey) {
+          fieldDef += '.notNull()';
+        }
 
-      if (field.references) {
-        fieldDef += `\n    .references(() => ${field.references.table}.id, { onDelete: '${field.references.onDelete}' })`;
-      }
+        if (field.references) {
+          fieldDef += `\n    .references(() => ${field.references.table}.id, { onDelete: '${field.references.onDelete}' })`;
+        }
 
-      if (field.defaultValue) {
-        fieldDef += field.defaultValue;
-      }
+        if (field.defaultValue) {
+          fieldDef += field.defaultValue;
+        }
 
-      return fieldDef;
-    }).join(',\n');
+        return fieldDef;
+      })
+      .join(',\n');
 
-    const indexDefs = table.indexes.map(idx =>
-      `    ${idx.name}: index('${idx.name}').on(table.${idx.columns.join(', table.')})`
-    ).join(',\n');
+    const indexDefs = table.indexes
+      .map(
+        (idx) => `    ${idx.name}: index('${idx.name}').on(table.${idx.columns.join(', table.')})`
+      )
+      .join(',\n');
 
-    const indexSection = table.indexes.length > 0
-      ? `,\n  (table) => ({\n${indexDefs}\n  })`
-      : '';
+    const indexSection = table.indexes.length > 0 ? `,\n  (table) => ({\n${indexDefs}\n  })` : '';
 
     return `export const ${table.name}Table = pgTable('${table.name}', {\n${fields}\n}${indexSection});`;
   }

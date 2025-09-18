@@ -1,13 +1,13 @@
 import {
-  guildTable,
   channelTable,
-  userTable,
+  guildTable,
+  membereventTable,
   memberTable,
   messageeventTable,
-  voiceeventTable,
-  membereventTable,
   presenceeventTable,
-  reactioneventTable
+  reactioneventTable,
+  userTable,
+  voiceeventTable,
 } from '../generated/sqlite/schema';
 
 export {
@@ -19,7 +19,7 @@ export {
   voiceeventTable,
   membereventTable,
   presenceeventTable,
-  reactioneventTable
+  reactioneventTable,
 };
 
 export const guilds = guildTable;

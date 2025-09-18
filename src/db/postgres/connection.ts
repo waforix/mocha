@@ -14,6 +14,6 @@ export async function getPostgresDb(config: DatabaseConfig): Promise<DatabaseIns
   return {
     db,
     close: () => client.end(),
-    type: 'postgres'
+    type: 'postgres',
   };
 }

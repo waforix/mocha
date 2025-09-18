@@ -1,6 +1,4 @@
-import type { Database } from 'bun:sqlite';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { BunSQLiteDatabase } from 'drizzle-orm/bun-sqlite';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 export type DatabaseType = 'sqlite' | 'postgres';
@@ -32,6 +30,7 @@ export interface DatabaseOptions {
   enableOptimizations?: boolean;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: Required for Drizzle database type compatibility
 export type SqliteInstance = BetterSQLite3Database<any>;
 export type PostgresInstance = PostgresJsDatabase<Record<string, unknown>>;
 

@@ -56,12 +56,8 @@
           "name": "channel_guildId_guild_id_fk",
           "tableFrom": "channel",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -129,12 +125,8 @@
           "name": "guild_ownerId_user_id_fk",
           "tableFrom": "guild",
           "tableTo": "user",
-          "columnsFrom": [
-            "ownerId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["ownerId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -210,12 +202,8 @@
           "name": "member_guildId_guild_id_fk",
           "tableFrom": "member",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -223,12 +211,8 @@
           "name": "member_userId_user_id_fk",
           "tableFrom": "member",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -297,12 +281,8 @@
           "name": "memberevent_guildId_guild_id_fk",
           "tableFrom": "memberevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -310,12 +290,8 @@
           "name": "memberevent_userId_user_id_fk",
           "tableFrom": "memberevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -399,12 +375,8 @@
           "name": "messageevent_guildId_guild_id_fk",
           "tableFrom": "messageevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -412,12 +384,8 @@
           "name": "messageevent_userId_user_id_fk",
           "tableFrom": "messageevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -493,12 +461,8 @@
           "name": "presenceevent_guildId_guild_id_fk",
           "tableFrom": "presenceevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -506,12 +470,8 @@
           "name": "presenceevent_userId_user_id_fk",
           "tableFrom": "presenceevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -609,12 +569,8 @@
           "name": "reactionevent_guildId_guild_id_fk",
           "tableFrom": "reactionevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -622,12 +578,8 @@
           "name": "reactionevent_userId_user_id_fk",
           "tableFrom": "reactionevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -763,12 +715,8 @@
           "name": "voiceevent_guildId_guild_id_fk",
           "tableFrom": "voiceevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -776,12 +724,8 @@
           "name": "voiceevent_userId_user_id_fk",
           "tableFrom": "voiceevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

@@ -37,7 +37,10 @@ export abstract class SchemaGenerator {
   }
 
   abstract generateSchema(schemas: Record<string, z.ZodSchema>): string;
-  abstract generateMigration(oldSchema: Record<string, z.ZodSchema>, newSchema: Record<string, z.ZodSchema>): string;
+  abstract generateMigration(
+    oldSchema: Record<string, z.ZodSchema>,
+    newSchema: Record<string, z.ZodSchema>
+  ): string;
 
   protected mapZodToField(zodType: z.ZodTypeAny, fieldName: string): FieldMapping {
     const field: FieldMapping = {
@@ -59,6 +62,7 @@ export abstract class SchemaGenerator {
   }
 
   private checkNullable(zodType: z.ZodTypeAny): boolean {
+    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
     const def = (zodType as any)._def;
     const type = def.type;
 
@@ -73,7 +77,9 @@ export abstract class SchemaGenerator {
     return false;
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Required for Zod default value handling
   protected getDefaultValue(zodType: z.ZodTypeAny): any {
+    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
     const def = (zodType as any)._def;
     if (def.type === 'default' && def.defaultValue !== undefined) {
       return def.defaultValue;
@@ -82,5 +88,6 @@ export abstract class SchemaGenerator {
   }
 
   protected abstract getFieldType(zodType: z.ZodTypeAny): string;
+  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible default value handling across database types
   protected abstract formatDefaultValue(value: any): string;
 }

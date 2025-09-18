@@ -56,12 +56,8 @@
           "name": "channel_guildId_guild_id_fk",
           "tableFrom": "channel",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -69,12 +65,8 @@
           "name": "channel_parentId_channel_id_fk",
           "tableFrom": "channel",
           "tableTo": "channel",
-          "columnsFrom": [
-            "parentId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parentId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -82,9 +74,7 @@
       "compositePrimaryKeys": {
         "channel_id": {
           "name": "channel_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -149,12 +139,8 @@
           "name": "guild_ownerId_user_id_fk",
           "tableFrom": "guild",
           "tableTo": "user",
-          "columnsFrom": [
-            "ownerId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["ownerId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -162,9 +148,7 @@
       "compositePrimaryKeys": {
         "guild_id": {
           "name": "guild_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -237,12 +221,8 @@
           "name": "member_guildId_guild_id_fk",
           "tableFrom": "member",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -250,12 +230,8 @@
           "name": "member_userId_user_id_fk",
           "tableFrom": "member",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -263,9 +239,7 @@
       "compositePrimaryKeys": {
         "member_id": {
           "name": "member_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -331,12 +305,8 @@
           "name": "memberevent_guildId_guild_id_fk",
           "tableFrom": "memberevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -344,12 +314,8 @@
           "name": "memberevent_userId_user_id_fk",
           "tableFrom": "memberevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -357,9 +323,7 @@
       "compositePrimaryKeys": {
         "memberevent_id": {
           "name": "memberevent_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -440,12 +404,8 @@
           "name": "messageevent_guildId_guild_id_fk",
           "tableFrom": "messageevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -453,12 +413,8 @@
           "name": "messageevent_channelId_channel_id_fk",
           "tableFrom": "messageevent",
           "tableTo": "channel",
-          "columnsFrom": [
-            "channelId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["channelId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -466,12 +422,8 @@
           "name": "messageevent_userId_user_id_fk",
           "tableFrom": "messageevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -479,9 +431,7 @@
       "compositePrimaryKeys": {
         "messageevent_id": {
           "name": "messageevent_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -554,12 +504,8 @@
           "name": "presenceevent_guildId_guild_id_fk",
           "tableFrom": "presenceevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -567,12 +513,8 @@
           "name": "presenceevent_userId_user_id_fk",
           "tableFrom": "presenceevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -580,9 +522,7 @@
       "compositePrimaryKeys": {
         "presenceevent_id": {
           "name": "presenceevent_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -677,12 +617,8 @@
           "name": "reactionevent_guildId_guild_id_fk",
           "tableFrom": "reactionevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -690,12 +626,8 @@
           "name": "reactionevent_channelId_channel_id_fk",
           "tableFrom": "reactionevent",
           "tableTo": "channel",
-          "columnsFrom": [
-            "channelId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["channelId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -703,12 +635,8 @@
           "name": "reactionevent_userId_user_id_fk",
           "tableFrom": "reactionevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -716,9 +644,7 @@
       "compositePrimaryKeys": {
         "reactionevent_id": {
           "name": "reactionevent_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -783,9 +709,7 @@
       "compositePrimaryKeys": {
         "user_id": {
           "name": "user_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -858,12 +782,8 @@
           "name": "voiceevent_guildId_guild_id_fk",
           "tableFrom": "voiceevent",
           "tableTo": "guild",
-          "columnsFrom": [
-            "guildId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["guildId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -871,12 +791,8 @@
           "name": "voiceevent_channelId_channel_id_fk",
           "tableFrom": "voiceevent",
           "tableTo": "channel",
-          "columnsFrom": [
-            "channelId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["channelId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -884,12 +800,8 @@
           "name": "voiceevent_userId_user_id_fk",
           "tableFrom": "voiceevent",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -897,9 +809,7 @@
       "compositePrimaryKeys": {
         "voiceevent_id": {
           "name": "voiceevent_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},

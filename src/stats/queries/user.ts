@@ -1,7 +1,7 @@
 import { and, count, desc, eq, gte, sum } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
-import { toTimestamp } from '../../db/utils';
 import { schema } from '../../db/index';
+import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class UserQueries {
@@ -20,7 +20,10 @@ export class UserQueries {
         .from(schema.messageEvents)
         .innerJoin(schema.users, eq(schema.messageEvents.userId, schema.users.id))
         .where(
-          and(eq(schema.messageEvents.guildId, guildId), gte(schema.messageEvents.timestamp, toTimestamp(since)))
+          and(
+            eq(schema.messageEvents.guildId, guildId),
+            gte(schema.messageEvents.timestamp, toTimestamp(since))
+          )
         )
         .groupBy(schema.messageEvents.userId, schema.users.username)
         .orderBy(desc(count()))

@@ -1,7 +1,7 @@
 import { and, count, eq, gte, type SQL, sql, sum } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
-import { toTimestamp } from '../../db/utils';
 import { schema } from '../../db/index';
+import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class MessageQueries {

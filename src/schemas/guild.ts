@@ -27,7 +27,10 @@ export const UserSchema = BaseEntitySchema.extend({
 });
 
 export const MemberSchema = z.object({
-  id: z.string().uuid().default(() => crypto.randomUUID()),
+  id: z
+    .string()
+    .uuid()
+    .default(() => crypto.randomUUID()),
   guildId: DiscordIdSchema,
   userId: DiscordIdSchema,
   nick: z.string().nullable(),

@@ -1,20 +1,15 @@
 export * from './base';
-export * from './guild';
 export * from './events';
+export * from './guild';
 
-import { 
-  GuildSchema, 
-  ChannelSchema, 
-  UserSchema, 
-  MemberSchema 
-} from './guild';
-import { 
-  MessageEventSchema, 
-  VoiceEventSchema, 
-  MemberEventSchema, 
-  PresenceEventSchema, 
-  ReactionEventSchema 
+import {
+  MemberEventSchema,
+  MessageEventSchema,
+  PresenceEventSchema,
+  ReactionEventSchema,
+  VoiceEventSchema,
 } from './events';
+import { ChannelSchema, GuildSchema, MemberSchema, UserSchema } from './guild';
 
 export const AllSchemas = {
   Guild: GuildSchema,

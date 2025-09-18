@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { DatabaseType } from '../generators/base';
 
 export interface MigrationRecord {
@@ -17,7 +17,7 @@ export class MigrationManager {
   constructor(dbType: DatabaseType, migrationsDir = './src/migrations') {
     this.dbType = dbType;
     this.migrationsDir = join(migrationsDir, dbType);
-    
+
     if (!existsSync(this.migrationsDir)) {
       mkdirSync(this.migrationsDir, { recursive: true });
     }
@@ -27,10 +27,10 @@ export class MigrationManager {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
     const filename = `${timestamp}_${name.replace(/\s+/g, '_').toLowerCase()}.sql`;
     const filepath = join(this.migrationsDir, filename);
-    
+
     writeFileSync(filepath, content);
     console.log(`Created migration: ${filename}`);
-    
+
     return filename;
   }
 
@@ -40,7 +40,7 @@ export class MigrationManager {
     }
 
     const files = readdirSync(this.migrationsDir)
-      .filter(file => file.endsWith('.sql'))
+      .filter((file) => file.endsWith('.sql'))
       .sort();
 
     return files;
@@ -53,7 +53,7 @@ export class MigrationManager {
 
   generateCreateTableMigration(tableName: string, columns: string[]): string {
     const columnDefs = columns.join(',\n  ');
-    
+
     switch (this.dbType) {
       case 'sqlite':
         return `CREATE TABLE ${tableName} (\n  ${columnDefs}\n);`;
@@ -86,7 +86,7 @@ export class MigrationManager {
   generateDropColumnMigration(tableName: string, columnName: string): string {
     switch (this.dbType) {
       case 'sqlite':
-        return `-- SQLite does not support DROP COLUMN directly\n-- Manual table recreation required`;
+        return '-- SQLite does not support DROP COLUMN directly\n-- Manual table recreation required';
       case 'postgres':
         return `ALTER TABLE ${tableName} DROP COLUMN ${columnName};`;
       case 'mysql':
@@ -100,7 +100,7 @@ export class MigrationManager {
 
   generateCreateIndexMigration(tableName: string, indexName: string, columns: string[]): string {
     const columnList = columns.join(', ');
-    
+
     switch (this.dbType) {
       case 'sqlite':
         return `CREATE INDEX ${indexName} ON ${tableName} (${columnList});`;
@@ -109,7 +109,7 @@ export class MigrationManager {
       case 'mysql':
         return `CREATE INDEX ${indexName} ON ${tableName} (${columnList});`;
       case 'mongodb':
-        return `db.${tableName}.createIndex({ ${columns.map(col => `${col}: 1`).join(', ')} });`;
+        return `db.${tableName}.createIndex({ ${columns.map((col) => `${col}: 1`).join(', ')} });`;
       default:
         throw new Error(`Unsupported database type: ${this.dbType}`);
     }

@@ -1,7 +1,7 @@
 import { and, count, eq, gte, lt, sql } from 'drizzle-orm';
 import type { CommonDatabase } from '../db/index';
-import { toTimestamp } from '../db/utils';
 import { guilds, memberEvents, messageEvents, voiceEvents } from '../db/schema/index';
+import { toTimestamp } from '../db/utils';
 import { createDateSince } from '../utils/date';
 
 export interface ActivityInsight {
@@ -75,7 +75,9 @@ export class InsightsEngine {
         activity: count(),
       })
       .from(messageEvents)
-      .where(and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since))))
+      .where(
+        and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since)))
+      )
       .groupBy(sql`strftime('%H', datetime(${messageEvents.timestamp}, 'unixepoch'))`)
       .orderBy(sql`hour`);
 
@@ -144,7 +146,9 @@ export class InsightsEngine {
           activeUsers: sql<number>`count(distinct ${messageEvents.userId})`,
         })
         .from(messageEvents)
-        .where(and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since)))),
+        .where(
+          and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since)))
+        ),
       this.db
         .select({
           voiceUsers: sql<number>`count(distinct ${voiceEvents.userId})`,

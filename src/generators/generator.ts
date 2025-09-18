@@ -1,7 +1,7 @@
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join } from 'path';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { AllSchemas } from '../schemas';
-import { getGenerator, type DatabaseType } from './index';
+import { type DatabaseType, getGenerator } from './index';
 
 export class SchemaManager {
   private outputDir: string;
@@ -12,7 +12,7 @@ export class SchemaManager {
 
   generateAll() {
     const databases: DatabaseType[] = ['sqlite', 'postgres', 'mysql', 'mongodb'];
-    
+
     for (const dbType of databases) {
       this.generateForDatabase(dbType);
     }
@@ -21,7 +21,7 @@ export class SchemaManager {
   generateForDatabase(dbType: DatabaseType) {
     const generator = getGenerator(dbType);
     const schemaContent = generator.generateSchema(AllSchemas);
-    
+
     const dbDir = join(this.outputDir, dbType);
     if (!existsSync(dbDir)) {
       mkdirSync(dbDir, { recursive: true });
@@ -36,10 +36,11 @@ export class SchemaManager {
     console.log(`Generated ${dbType} schema at ${schemaFile}`);
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible schema comparison across database types
   generateMigration(dbType: DatabaseType, oldSchemas: Record<string, any> = {}) {
     const generator = getGenerator(dbType);
     const migrationContent = generator.generateMigration(oldSchemas, AllSchemas);
-    
+
     if (migrationContent) {
       const dbDir = join(this.outputDir, dbType, 'migrations');
       if (!existsSync(dbDir)) {

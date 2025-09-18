@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { SchemaGenerator, type FieldMapping, type TableMapping } from './base';
+import type { z } from 'zod';
+import { type FieldMapping, SchemaGenerator, type TableMapping } from './base';
 
 export class MysqlGenerator extends SchemaGenerator {
   constructor() {
@@ -8,7 +8,7 @@ export class MysqlGenerator extends SchemaGenerator {
 
   generateSchema(schemas: Record<string, z.ZodSchema>): string {
     const imports = [
-      "import { int, mysqlTable, varchar, text, timestamp, boolean, index } from 'drizzle-orm/mysql-core';"
+      "import { int, mysqlTable, varchar, text, timestamp, boolean, index } from 'drizzle-orm/mysql-core';",
     ];
 
     const tables: string[] = [];
@@ -19,18 +19,18 @@ export class MysqlGenerator extends SchemaGenerator {
       tables.push(tableDefinition);
     }
 
-    return [
-      ...imports,
-      '',
-      ...tables
-    ].join('\n');
+    return [...imports, '', ...tables].join('\n');
   }
 
-  generateMigration(oldSchema: Record<string, z.ZodSchema>, newSchema: Record<string, z.ZodSchema>): string {
+  generateMigration(
+    _oldSchema: Record<string, z.ZodSchema>,
+    _newSchema: Record<string, z.ZodSchema>
+  ): string {
     return '';
   }
 
   protected getFieldType(zodType: z.ZodTypeAny): string {
+    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
     const def = (zodType as any)._def;
     const type = def.type;
 
@@ -55,11 +55,12 @@ export class MysqlGenerator extends SchemaGenerator {
     return 'varchar';
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible default value handling
   protected formatDefaultValue(value: any): string {
     if (typeof value === 'function') {
       const funcStr = value.toString();
       if (funcStr.includes('randomUUID')) {
-        return `.$defaultFn(() => crypto.randomUUID())`;
+        return '.$defaultFn(() => crypto.randomUUID())';
       }
       if (funcStr.includes('new Date')) {
         return '.defaultNow()';
@@ -68,7 +69,7 @@ export class MysqlGenerator extends SchemaGenerator {
     }
     if (typeof value === 'string') {
       if (value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-        return `.$defaultFn(() => crypto.randomUUID())`;
+        return '.$defaultFn(() => crypto.randomUUID())';
       }
       return `.default('${value}')`;
     }
@@ -82,13 +83,18 @@ export class MysqlGenerator extends SchemaGenerator {
   }
 
   private getTableName(schemaName: string): string {
-    return schemaName.toLowerCase().replace(/([A-Z])/g, '_$1').replace(/^_/, '');
+    return schemaName
+      .toLowerCase()
+      .replace(/([A-Z])/g, '_$1')
+      .replace(/^_/, '');
   }
 
   private mapSchemaToTable(schemaName: string, zodSchema: z.ZodSchema): TableMapping {
     const tableName = this.getTableName(schemaName);
+    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
     const shape = (zodSchema as any)._def.shape;
     const fields: FieldMapping[] = [];
+    // biome-ignore lint/suspicious/noExplicitAny: Required for flexible index definition handling
     const indexes: any[] = [];
 
     for (const [fieldName, zodType] of Object.entries(shape)) {
@@ -103,7 +109,7 @@ export class MysqlGenerator extends SchemaGenerator {
         field.references = {
           table: refTableName,
           column: 'id',
-          onDelete: 'cascade'
+          onDelete: 'cascade',
         };
       }
 
@@ -130,50 +136,57 @@ export class MysqlGenerator extends SchemaGenerator {
     return `${baseName}Table`;
   }
 
+  private generateFieldDefinition(field: FieldMapping): string {
+    let fieldDef = this.getFieldTypeDefinition(field);
+
+    if (field.primaryKey) {
+      fieldDef += '.primaryKey()';
+    }
+
+    if (!field.nullable && !field.primaryKey) {
+      fieldDef += '.notNull()';
+    }
+
+    if (field.references) {
+      fieldDef += `\n    .references(() => ${field.references.table}.id, { onDelete: '${field.references.onDelete}' })`;
+    }
+
+    if (field.defaultValue) {
+      fieldDef += field.defaultValue;
+    }
+
+    return fieldDef;
+  }
+
+  private getFieldTypeDefinition(field: FieldMapping): string {
+    const { name, type } = field;
+
+    switch (type) {
+      case 'varchar':
+        return `  ${name}: varchar('${name}', { length: 255 })`;
+      case 'int':
+        return `  ${name}: int('${name}')`;
+      case 'boolean':
+        return `  ${name}: boolean('${name}')`;
+      case 'timestamp':
+        return `  ${name}: timestamp('${name}')`;
+      case 'text':
+        return `  ${name}: text('${name}')`;
+      default:
+        return `  ${name}: varchar('${name}', { length: 255 })`;
+    }
+  }
+
   private generateTableDefinition(table: TableMapping): string {
-    const fields = table.fields.map(field => {
-      let fieldDef = '';
+    const fields = table.fields.map((field) => this.generateFieldDefinition(field)).join(',\n');
 
-      if (field.type === 'varchar') {
-        fieldDef = `  ${field.name}: varchar('${field.name}', { length: 255 })`;
-      } else if (field.type === 'int') {
-        fieldDef = `  ${field.name}: int('${field.name}')`;
-      } else if (field.type === 'boolean') {
-        fieldDef = `  ${field.name}: boolean('${field.name}')`;
-      } else if (field.type === 'timestamp') {
-        fieldDef = `  ${field.name}: timestamp('${field.name}')`;
-      } else if (field.type === 'text') {
-        fieldDef = `  ${field.name}: text('${field.name}')`;
-      } else {
-        fieldDef = `  ${field.name}: varchar('${field.name}', { length: 255 })`;
-      }
+    const indexDefs = table.indexes
+      .map(
+        (idx) => `    ${idx.name}: index('${idx.name}').on(table.${idx.columns.join(', table.')})`
+      )
+      .join(',\n');
 
-      if (field.primaryKey) {
-        fieldDef += '.primaryKey()';
-      }
-
-      if (!field.nullable && !field.primaryKey) {
-        fieldDef += '.notNull()';
-      }
-
-      if (field.references) {
-        fieldDef += `\n    .references(() => ${field.references.table}.id, { onDelete: '${field.references.onDelete}' })`;
-      }
-
-      if (field.defaultValue) {
-        fieldDef += field.defaultValue;
-      }
-
-      return fieldDef;
-    }).join(',\n');
-
-    const indexDefs = table.indexes.map(idx =>
-      `    ${idx.name}: index('${idx.name}').on(table.${idx.columns.join(', table.')})`
-    ).join(',\n');
-
-    const indexSection = table.indexes.length > 0
-      ? `,\n  (table) => ({\n${indexDefs}\n  })`
-      : '';
+    const indexSection = table.indexes.length > 0 ? `,\n  (table) => ({\n${indexDefs}\n  })` : '';
 
     return `export const ${table.name}Table = mysqlTable('${table.name}', {\n${fields}\n}${indexSection});`;
   }

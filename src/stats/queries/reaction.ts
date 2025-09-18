@@ -1,7 +1,7 @@
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
-import { toTimestamp } from '../../db/utils';
 import { reactionEvents, users } from '../../db/schema/index';
+import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class ReactionQueries {
@@ -9,7 +9,10 @@ export class ReactionQueries {
 
   async getReactionStats(guildId: string, userId?: string, days = 30) {
     const since = createDateSince(days);
-    const conditions = [eq(reactionEvents.guildId, guildId), gte(reactionEvents.timestamp, toTimestamp(since))];
+    const conditions = [
+      eq(reactionEvents.guildId, guildId),
+      gte(reactionEvents.timestamp, toTimestamp(since)),
+    ];
 
     if (userId) {
       conditions.push(eq(reactionEvents.userId, userId));

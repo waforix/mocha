@@ -1,14 +1,14 @@
 export * from './base';
-export * from './sqlite';
-export * from './postgres';
-export * from './mysql';
 export * from './mongodb';
+export * from './mysql';
+export * from './postgres';
+export * from './sqlite';
 
-import { SqliteGenerator } from './sqlite';
-import { PostgresGenerator } from './postgres';
-import { MysqlGenerator } from './mysql';
-import { MongodbGenerator } from './mongodb';
 import type { DatabaseType } from './base';
+import { MongodbGenerator } from './mongodb';
+import { MysqlGenerator } from './mysql';
+import { PostgresGenerator } from './postgres';
+import { SqliteGenerator } from './sqlite';
 
 export const generators = {
   sqlite: new SqliteGenerator(),
