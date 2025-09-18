@@ -105,22 +105,7 @@ export type APIInvite = {
 
 
 
-export type APIGuildMember = {
-    user: APIUser;
-    nick: string | null;
-    avatar?: string | null;
-    banner?: string | null;
-    roles: string[];
-    joined_at: Date | null;
-    premium_since: Date | null;
-    deaf: boolean;
-    mute: boolean;
-    flags: null;
-    pending?: boolean;
-    permissions?: string;
-    communication_disabled_until?: Date | null;
-    avatar_decoration_data?: APIAvatarDecorationData;
-}
+
 
 
 

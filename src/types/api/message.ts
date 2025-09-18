@@ -2,6 +2,7 @@ import { InteractionContextType, InteractionType, MessageActivityType, MessageFl
 import { APIApplication } from "./application";
 import { APIChannel, APIThreadMember } from "./channel";
 import { APIMessageComponent } from "./component";
+import { APIEmoji } from "./emoji";
 import { APIRole } from "./role";
 import { APISticker, APIStickerItem } from "./sticker";
 import { APIUser } from "./user";
@@ -84,9 +85,33 @@ export type APIMessageInteraction = {
     member: Partial<>;
 }
 
+export type Reaction = {
+    count: number;
+    count_details: APIReactionCountDetails;
+    me: boolean;
+    me_burst: boolean;
+    emoji: Partial<APIEmoji>;
+    burst_colors: string[];
+}
+
+export type APIReactionCountDetails = {
+    burst: number;
+    normal: number;
+}
+
 export type APIRoleSubscriptionData = {
     role_subscription_listing_id: string;
     tier_name: string;
     total_months_subscribed: number;
     is_renewal: boolean;
+}
+
+export type APIMessagePin = {
+    pinned_at: Date;
+    message: APIMessage;
+}
+
+export type APIMessageCall = {
+    participants: string[];
+    ended_timestamp?: = Date | null;
 }

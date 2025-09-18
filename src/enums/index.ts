@@ -6,7 +6,12 @@ import {
     ApplicationRoleConnectionMetadataType,
     TeamMembershipState
 } from "./application";
+import { ApplicationCommandOptionType } from "./applicationCommandOptionType";
+import { ApplicationCommandPermissionType } from "./applicationCommandPermissionType";
+import { ApplicationCommandType } from "./applicationCommandType";
+
 import { AuditLogEvent } from "./auditLog";
+import { AttachmentFlag } from "./attachmentFlag";
 import {
     SKUFlag,
     SKUType
@@ -20,6 +25,9 @@ import {
 import { ChannelFlag } from "./channelFlag";
 import { ChannelType } from "./channelType";
 import { DefaultMessageNotificationLevel } from "./defaultMessageNotificationLevel";
+import { EmbedType } from "./embedType";
+import { EntitlementType } from "./entitlementType";
+import { EntryPointCommandHandlerType } from "./entryPointCommandHandlerType";
 import { Event } from "./event";
 import { ExplicitContentFilter } from "./explicitContentFilter";
 import { ForumLayoutType } from "./forumLayoutType";
@@ -27,6 +35,10 @@ import { ForumTagName } from "./forumTagName";
 import { GuildFeature } from "./guildFeature";
 import { GuildInviteFlag } from "./guildInviteFlag";
 import { GuildNSFWLevel } from "./guildNSFWLevel";
+import { GuildScheduledEventRecurrenceRuleFrequency } from "./guildScheduledEventRecurrenceRule";
+import { GuildScheduledEventRecurrenceRuleMonth } from "./guildScheduledEventRecurrenceRule";
+import { GuildScheduledEventRecurrenceRuleWeekday } from "./guildScheduledEventRecurrenceRule";
+import { GuildScheduledEventStatus } from "./guildScheduledEventStatus";
 import { InviteTargetType } from "./inviteTargetType";
 import { InviteType } from "./inviteType";
 import { Locale } from "./locale";
@@ -71,16 +83,23 @@ export {
     ApplicationLocationKind,
     ApplicationRoleConnectionMetadataType,
     TeamMembershipState,
+    ApplicationCommandOptionType,
+    ApplicationCommandPermissionType,
+    ApplicationCommandType,
+    AttachmentFlag,
     AuditLogEvent,
     SKUFlag,
     SKUType,
     ActionType,
+    EmbedType,
     EventType,
     KeywordPresetType,
     TriggerType,
     ChannelFlag,
     ChannelType,
     DefaultMessageNotificationLevel,
+    EntitlementType,
+    EntryPointCommandHandlerType,
     Event,
     ExplicitContentFilter,
     ForumLayoutType,
@@ -88,6 +107,10 @@ export {
     GuildFeature,
     GuildInviteFlag,
     GuildNSFWLevel,
+    GuildScheduledEventRecurrenceRuleFrequency,
+    GuildScheduledEventRecurrenceRuleMonth,
+    GuildScheduledEventRecurrenceRuleWeekday,
+    GuildScheduledEventStatus,
     InviteTargetType,
     InviteType,
     Locale,
