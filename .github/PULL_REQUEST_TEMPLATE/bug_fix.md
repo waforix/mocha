@@ -1,8 +1,8 @@
 # Bug
-Explain the bug here
-e.g. MySQL database does not ...
-**Reproducing**: Explain how to reproduce the bug here
-e.g. 1. Do ..
+Explain the bug here<br>
+e.g. MySQL database does not ...<br>
+**Reproducing**: Explain how to reproduce the bug here<br>
+e.g. 1. Do ...<br>
 2. Then ...
 
 **Issue**: Issue Number
