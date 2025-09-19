@@ -3,7 +3,7 @@ import type { z } from 'zod';
 export type DatabaseType = 'sqlite' | 'postgres' | 'mysql' | 'mongodb';
 
 // Type for accessing Zod internal structure
-interface ZodInternalDef {
+export interface ZodInternalDef {
   type?: string;
   typeName?: string;
   innerType?: z.ZodTypeAny;
