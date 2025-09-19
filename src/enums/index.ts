@@ -24,6 +24,7 @@ import {
 } from "./autoModeration";
 import { ChannelFlag } from "./channelFlag";
 import { ChannelType } from "./channelType";
+import { CommandHandlerType } from "./commandHandlerType";
 import { DefaultMessageNotificationLevel } from "./defaultMessageNotificationLevel";
 import { EmbedType } from "./embedType";
 import { EntitlementType } from "./entitlementType";
@@ -35,15 +36,19 @@ import { ForumTagName } from "./forumTagName";
 import { GuildFeature } from "./guildFeature";
 import { GuildInviteFlag } from "./guildInviteFlag";
 import { GuildNSFWLevel } from "./guildNSFWLevel";
+import { GuildScheduledEventEntityType } from "./guildScheduledEventEntityType";
+import { GuildScheduledEventPrivacyLevel } from "./guildScheduledEventPrivacyLevel";
 import { GuildScheduledEventRecurrenceRuleFrequency } from "./guildScheduledEventRecurrenceRule";
 import { GuildScheduledEventRecurrenceRuleMonth } from "./guildScheduledEventRecurrenceRule";
 import { GuildScheduledEventRecurrenceRuleWeekday } from "./guildScheduledEventRecurrenceRule";
 import { GuildScheduledEventStatus } from "./guildScheduledEventStatus";
+import { IntegrationExpireBehavior } from "./integrationExpireBehavior";
+import { IntegrationType } from "./integrationType";
+import { InteractionCallbackType } from "./interactionCallbackType";
 import { InviteTargetType } from "./inviteTargetType";
 import { InviteType } from "./inviteType";
 import { Locale } from "./locale";
 import {
-    InteractionCallbackType,
     InteractionContextType,
     InteractionType
 } from "./interaction";
@@ -64,6 +69,7 @@ import { OverwriteType } from "./overwriteType";
 import { PremiumTier } from "./premiumTier";
 import { RoleFlag } from "./roleFlag";
 import { SortOrderType } from "./sortOrderType";
+import { Scope } from "./scope";
 import { StickerFormat } from "./stickerFormat";
 import { StickerType } from "./stickerType";
 import { SystemChannelFlag } from "./systemChannelFlag";
@@ -88,6 +94,7 @@ export {
     ApplicationCommandType,
     AttachmentFlag,
     AuditLogEvent,
+    CommandHandlerType,
     SKUFlag,
     SKUType,
     ActionType,
@@ -107,6 +114,8 @@ export {
     GuildFeature,
     GuildInviteFlag,
     GuildNSFWLevel,
+    GuildScheduledEventEntityType,
+    GuildScheduledEventPrivacyLevel,
     GuildScheduledEventRecurrenceRuleFrequency,
     GuildScheduledEventRecurrenceRuleMonth,
     GuildScheduledEventRecurrenceRuleWeekday,
@@ -114,6 +123,8 @@ export {
     InviteTargetType,
     InviteType,
     Locale,
+    IntegrationExpireBehavior,
+    IntegrationType,
     InteractionCallbackType,
     InteractionContextType,
     InteractionType,
@@ -129,6 +140,7 @@ export {
     OverwriteType,
     PremiumTier,
     RoleFlag,
+    Scope,
     SortOrderType,
     StickerFormat,
     StickerType,
