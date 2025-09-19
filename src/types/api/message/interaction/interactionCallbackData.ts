@@ -1,4 +1,5 @@
 import type { InteractionCallbackType } from "../../../../enums";
+import type { Library } from "../../../conversion";
 import type { APIPoll } from "../../poll/poll";
 import type { APIApplicationCommandOptionChoice } from "../applicationCommand/applicationCommandOptionChoice";
 import type { APIAttachment } from "../attachment";
@@ -21,7 +22,9 @@ export type APIInteractionCallbackData<
     attachments?: Partial<APIAttachment>;
     poll?: APIPoll;
 }
-: T extends InteractionCallbackType.APPLICATION_COMMAND_AUTO_COMPLETE_RESULT ?
+: T extends InteractionCallbackType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT ?
 {
     choices: APIApplicationCommandOptionChoice[];
 } : never;
+
+export type InteractionCallbackData<T = InteractionCallbackType> = Library<APIInteractionCallbackData<T>>;

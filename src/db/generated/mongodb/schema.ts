@@ -7,7 +7,7 @@ const GuildMongoSchema = z.object({
   name: z.string(),
   icon: z.string().nullable(),
   ownerId: z.string(),
-  memberCount: z.number().nullable(),
+  memberCount: z.number().nullable()
 });
 const ChannelMongoSchema = z.object({
   id: z.string(),
@@ -15,7 +15,7 @@ const ChannelMongoSchema = z.object({
   name: z.string().nullable(),
   type: z.number(),
   parentId: z.string().nullable(),
-  createdAt: z.date(),
+  createdAt: z.date()
 });
 const UserMongoSchema = z.object({
   id: z.string(),
@@ -24,7 +24,7 @@ const UserMongoSchema = z.object({
   username: z.string(),
   discriminator: z.string(),
   avatar: z.string().nullable(),
-  bot: z.boolean(),
+  bot: z.boolean()
 });
 const MemberMongoSchema = z.object({
   id: z.string(),
@@ -34,7 +34,7 @@ const MemberMongoSchema = z.object({
   joinedAt: z.date(),
   leftAt: z.date().nullable(),
   roles: z.array(z.string()),
-  createdAt: z.date(),
+  createdAt: z.date()
 });
 const MessageEventMongoSchema = z.object({
   timestamp: z.date(),
@@ -45,7 +45,7 @@ const MessageEventMongoSchema = z.object({
   userId: z.string(),
   content: z.string(),
   attachmentCount: z.number(),
-  embedCount: z.number(),
+  embedCount: z.number()
 });
 const VoiceEventMongoSchema = z.object({
   timestamp: z.date(),
@@ -55,7 +55,7 @@ const VoiceEventMongoSchema = z.object({
   channelId: z.string().nullable(),
   userId: z.string(),
   action: z.string(),
-  duration: z.number().nullable(),
+  duration: z.number().nullable()
 });
 const MemberEventMongoSchema = z.object({
   timestamp: z.date(),
@@ -64,7 +64,7 @@ const MemberEventMongoSchema = z.object({
   guildId: z.string(),
   userId: z.string(),
   action: z.string(),
-  roles: z.array(z.string()),
+  roles: z.array(z.string())
 });
 const PresenceEventMongoSchema = z.object({
   timestamp: z.date(),
@@ -74,7 +74,7 @@ const PresenceEventMongoSchema = z.object({
   userId: z.string(),
   status: z.string(),
   activity: z.string().nullable(),
-  activityType: z.number().nullable(),
+  activityType: z.number().nullable()
 });
 const ReactionEventMongoSchema = z.object({
   timestamp: z.date(),
@@ -87,7 +87,7 @@ const ReactionEventMongoSchema = z.object({
   emojiId: z.string().nullable(),
   emojiName: z.string(),
   emojiAnimated: z.boolean(),
-  action: z.string(),
+  action: z.string()
 });
 
 export const guildSchema = GuildMongoSchema;

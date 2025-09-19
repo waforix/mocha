@@ -27,8 +27,8 @@ export enum GuildFeature {
     GUESTS_ENABLED,
     GUILD_TAGS,
     ENHANCED_ROLE_COLORS,
-    COMMUNITY, /* Requires administrator */
-    DISCOVERABLE, /* Requires administrator */
-    INVITES_DISABLED, /* Requires manage guild */
-    RAID_ALERTS_DISABLED /* Requires manage guild */
+    COMMUNITY,
+    DISCOVERABLE,
+    INVITES_DISABLED,
+    RAID_ALERTS_DISABLED
 }

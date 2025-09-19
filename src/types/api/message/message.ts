@@ -1,4 +1,5 @@
 import type { MessageType } from "../../../enums";
+import type { Library } from "../../conversion";
 import type { APIApplication } from "../application/application";
 import type { APIChannel } from "../channel/channel";
 import type { APIThreadMember } from "../channel/threadMember";
@@ -60,3 +61,5 @@ export type APIMessage = {
     poll?: APIPoll;
     call?: APIMessageCall;
 }
+
+export type Message = Library<APIMessage>;

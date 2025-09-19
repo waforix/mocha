@@ -16,23 +16,3 @@ export enum ComponentType {
     CONTAINER = 17,
     LABEL = 18
 }
-
-export enum ButtonStyle {
-    PRIMARY = 1,
-    SECONDARY = 2,
-    SUCCESS = 3,
-    DANGER = 4,
-    LINK = 5,
-    PREMIUM = 6
-}
-
-export enum TextInputStyle {
-    SHORT = 1,
-    PARAGRAPH = 2
-}
-
-export enum DefaultValueType {
-    USER = "user",
-    ROLE = "role",
-    CHANNEL = "channel"
-}

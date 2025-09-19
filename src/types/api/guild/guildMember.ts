@@ -1,5 +1,5 @@
 import type { Library } from "../../conversion";
-import type { APIAvatarDecorationData } from "../user/avatarDecoration";
+import type { APIAvatarDecorationData } from "../user/avatarDecorationData";
 import type { APIUser } from "../user/user";
 
 export type APIGuildMember = {

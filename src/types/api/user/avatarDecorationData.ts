@@ -5,4 +5,4 @@ export type APIAvatarDecorationData = {
     sku_id: string;
 }
 
-export type AvatarDecoration = Library<APIAvatarDecorationData>;
+export type AvatarDecorationData = Library<APIAvatarDecorationData>;

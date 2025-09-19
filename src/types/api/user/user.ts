@@ -1,6 +1,6 @@
 import type { Locale, UserFlag, UserPremiumType } from "../../../enums";
 import type { Library } from "../../conversion";
-import type { APIAvatarDecorationData } from "./avatarDecoration";
+import type { APIAvatarDecorationData } from "./avatarDecorationData";
 import type { APICollectibles } from "./collectibles";
 import type { APIUserPrimaryGuild } from "./userPrimaryGuild";
 

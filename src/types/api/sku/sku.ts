@@ -1,4 +1,4 @@
-import type { SKUFlag, SKUType } from "../../../enums/sku";
+import type { SKUFlag, SKUType } from "../../../enums";
 import type { Library } from "../../conversion";
 
 export type APISKU = {
