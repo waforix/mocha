@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import type { z } from 'zod';
 import { AllSchemas } from '../schemas';
 import { type DatabaseType, getGenerator } from './index';
 
@@ -36,8 +37,7 @@ export class SchemaManager {
     console.log(`Generated ${dbType} schema at ${schemaFile}`);
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible schema comparison across database types
-  generateMigration(dbType: DatabaseType, oldSchemas: Record<string, any> = {}) {
+  generateMigration(dbType: DatabaseType, oldSchemas: Record<string, z.ZodSchema> = {}) {
     const generator = getGenerator(dbType);
     const migrationContent = generator.generateMigration(oldSchemas, AllSchemas);
 

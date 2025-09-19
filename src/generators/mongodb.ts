@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import { SchemaGenerator } from './base';
+import { SchemaGenerator, type ZodInternalDef } from './base';
 
 export class MongodbGenerator extends SchemaGenerator {
   constructor() {
@@ -37,8 +37,7 @@ export class MongodbGenerator extends SchemaGenerator {
   }
 
   protected getFieldType(zodType: z.ZodTypeAny): string {
-    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-    const typeName = (zodType as any)._def.typeName;
+    const typeName = (zodType as { _def: ZodInternalDef })._def.typeName;
 
     if (typeName === 'ZodString') {
       return 'string';
@@ -56,14 +55,13 @@ export class MongodbGenerator extends SchemaGenerator {
       return 'array';
     }
     if (typeName === 'ZodOptional' || typeName === 'ZodNullable') {
-      // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-      return this.getFieldType((zodType as any)._def.innerType);
+      const innerType = (zodType as { _def: ZodInternalDef })._def.innerType;
+      return innerType ? this.getFieldType(innerType) : 'mixed';
     }
     return 'mixed';
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible default value handling
-  protected formatDefaultValue(value: any): string {
+  protected formatDefaultValue(value: unknown): string {
     if (typeof value === 'function') {
       return `default: ${value.toString()}`;
     }
@@ -78,9 +76,12 @@ export class MongodbGenerator extends SchemaGenerator {
   }
 
   private generateSchemaDefinition(schemaName: string, zodSchema: z.ZodSchema): string {
-    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-    const shape = (zodSchema as any)._def.shape;
+    const shape = (zodSchema as { _def: ZodInternalDef })._def.shape;
     const fields: string[] = [];
+
+    if (!shape) {
+      return `const ${schemaName}MongoSchema = z.object({});`;
+    }
 
     for (const [fieldName, zodType] of Object.entries(shape)) {
       const fieldType = this.getMongoFieldType(zodType as z.ZodTypeAny);
@@ -91,41 +92,58 @@ export class MongodbGenerator extends SchemaGenerator {
   }
 
   private getMongoFieldType(zodType: z.ZodTypeAny): string {
-    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-    const def = (zodType as any)._def;
+    const def = (zodType as { _def: ZodInternalDef })._def;
     const type = def.type;
 
-    if (type === 'string') {
-      const checks = def.checks;
-      // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal check structure
-      if (checks?.some((check: any) => check.kind === 'uuid')) {
-        return 'z.string().uuid()';
-      }
-      return 'z.string()';
-    }
-    if (type === 'number') {
-      return 'z.number()';
-    }
-    if (type === 'boolean') {
-      return 'z.boolean()';
-    }
-    if (type === 'date') {
-      return 'z.date()';
-    }
-    if (type === 'array') {
-      return 'z.array(z.string())';
+    // Handle basic types
+    const basicType = this.getBasicMongoType(type, def);
+    if (basicType) {
+      return basicType;
     }
 
-    if (type === 'optional') {
-      return `${this.getMongoFieldType(def.innerType)}.optional()`;
-    }
-    if (type === 'nullable') {
-      return `${this.getMongoFieldType(def.innerType)}.nullable()`;
-    }
-    if (type === 'default') {
-      return this.getMongoFieldType(def.innerType);
-    }
+    // Handle wrapper types
+    return this.getWrapperMongoType(type, def);
+  }
 
+  private getBasicMongoType(type: string | undefined, def: ZodInternalDef): string | null {
+    switch (type) {
+      case 'string':
+        return this.getStringType(def);
+      case 'number':
+        return 'z.number()';
+      case 'boolean':
+        return 'z.boolean()';
+      case 'date':
+        return 'z.date()';
+      case 'array':
+        return 'z.array(z.string())';
+      default:
+        return null;
+    }
+  }
+
+  private getStringType(def: ZodInternalDef): string {
+    const checks = def.checks;
+    if (checks?.some((check: { kind: string }) => check.kind === 'uuid')) {
+      return 'z.string().uuid()';
+    }
     return 'z.string()';
+  }
+
+  private getWrapperMongoType(type: string | undefined, def: ZodInternalDef): string {
+    switch (type) {
+      case 'optional':
+        return def.innerType
+          ? `${this.getMongoFieldType(def.innerType)}.optional()`
+          : 'z.string().optional()';
+      case 'nullable':
+        return def.innerType
+          ? `${this.getMongoFieldType(def.innerType)}.nullable()`
+          : 'z.string().nullable()';
+      case 'default':
+        return def.innerType ? this.getMongoFieldType(def.innerType) : 'z.string()';
+      default:
+        return 'z.string()';
+    }
   }
 }
