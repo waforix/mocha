@@ -15,7 +15,7 @@ export const CLOSE_CODES = {
   DISALLOWED_INTENTS: 4014,
 } as const;
 
-export const FATAL_CLOSE_CODES = new Set([
+export const FATAL_CLOSE_CODES = new Set<number>([
   CLOSE_CODES.AUTHENTICATION_FAILED,
   CLOSE_CODES.INVALID_SHARD,
   CLOSE_CODES.SHARDING_REQUIRED,
@@ -24,7 +24,7 @@ export const FATAL_CLOSE_CODES = new Set([
   CLOSE_CODES.DISALLOWED_INTENTS,
 ]);
 
-export const RESUMABLE_CLOSE_CODES = new Set([
+export const RESUMABLE_CLOSE_CODES = new Set<number>([
   CLOSE_CODES.UNKNOWN_ERROR,
   CLOSE_CODES.UNKNOWN_OPCODE,
   CLOSE_CODES.DECODE_ERROR,
@@ -36,12 +36,10 @@ export const RESUMABLE_CLOSE_CODES = new Set([
 ]);
 
 export const isFatalCloseCode = (code: number): boolean => {
-  // biome-ignore lint/suspicious/noExplicitAny: Discord close codes are dynamic
-  return FATAL_CLOSE_CODES.has(code as any);
+  return FATAL_CLOSE_CODES.has(code);
 };
 export const isResumableCloseCode = (code: number): boolean => {
-  // biome-ignore lint/suspicious/noExplicitAny: Discord close codes are dynamic
-  return RESUMABLE_CLOSE_CODES.has(code as any);
+  return RESUMABLE_CLOSE_CODES.has(code);
 };
 
 export const getCloseCodeMessage = (code: number): string => {
