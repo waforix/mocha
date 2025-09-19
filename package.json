@@ -1,5 +1,5 @@
 {
-  "name": "waforix",
+  "name": "@waforix/mocha",
   "version": "1.2.1",
   "type": "module",
   "main": "dist/index.js",
