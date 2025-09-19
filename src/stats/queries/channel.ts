@@ -1,6 +1,7 @@
 import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
 import { schema } from '../../db/index';
+import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class ChannelQueries {
@@ -19,7 +20,10 @@ export class ChannelQueries {
       .from(schema.messageEvents)
       .innerJoin(schema.channels, eq(schema.messageEvents.channelId, schema.channels.id))
       .where(
-        and(eq(schema.messageEvents.guildId, guildId), gte(schema.messageEvents.timestamp, since))
+        and(
+          eq(schema.messageEvents.guildId, guildId),
+          gte(schema.messageEvents.timestamp, toTimestamp(since))
+        )
       )
       .groupBy(schema.messageEvents.channelId, schema.channels.name)
       .orderBy(desc(count()));

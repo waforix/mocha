@@ -1,6 +1,7 @@
 import { and, count, eq, gte, sum } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
 import { schema } from '../../db/index';
+import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class VoiceQueries {
@@ -19,7 +20,7 @@ export class VoiceQueries {
         and(
           eq(schema.voiceEvents.guildId, guildId),
           eq(schema.voiceEvents.action, 'leave'),
-          gte(schema.voiceEvents.timestamp, since),
+          gte(schema.voiceEvents.timestamp, toTimestamp(since)),
           userId ? eq(schema.voiceEvents.userId, userId) : undefined
         )
       );

@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 import { MetricsCollector } from '../analytics/index';
 import type { CacheConfig } from '../cache/index';
 import { CacheManager, createHeatmapKey } from '../cache/index';
-import { type CommonDatabase, createDatabaseAdapter, getDb } from '../db/index';
+import { type CommonDatabase, createDatabaseConnection } from '../db/index';
 import type { DatabaseConfig, DatabaseInstance } from '../db/types';
 import { EventDispatcher } from '../events/index';
 import { DataExporter, type ExportOptions } from '../export/index';
@@ -100,8 +100,8 @@ export class StatsClient extends EventEmitter {
       type: 'sqlite' as const,
       path: options.dbPath || './data/stats.db',
     };
-    this.db = await getDb(config);
-    this.dbAdapter = createDatabaseAdapter(this.db);
+    this.db = await createDatabaseConnection(config);
+    this.dbAdapter = this.db.db as CommonDatabase;
   }
 
   private setupComponents(options: StatsClientOptions) {

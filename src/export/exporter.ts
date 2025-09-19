@@ -1,6 +1,7 @@
 import { and, eq, gte, lte } from 'drizzle-orm';
 import type { CommonDatabase } from '../db/index';
 import { channels, memberEvents, messageEvents, users, voiceEvents } from '../db/schema/index';
+import { toTimestamp } from '../db/utils';
 import type { ExportData, ExportOptions } from './formats';
 import { CSVFormatter, JSONFormatter } from './formats';
 
@@ -88,8 +89,8 @@ export class DataExporter {
         and(
           eq(messageEvents.userId, users.id),
           eq(messageEvents.guildId, options.guildId),
-          gte(messageEvents.timestamp, options.dateRange.start),
-          lte(messageEvents.timestamp, options.dateRange.end)
+          gte(messageEvents.timestamp, toTimestamp(options.dateRange.start)),
+          lte(messageEvents.timestamp, toTimestamp(options.dateRange.end))
         )
       )
       .leftJoin(
@@ -97,8 +98,8 @@ export class DataExporter {
         and(
           eq(voiceEvents.userId, users.id),
           eq(voiceEvents.guildId, options.guildId),
-          gte(voiceEvents.timestamp, options.dateRange.start),
-          lte(voiceEvents.timestamp, options.dateRange.end)
+          gte(voiceEvents.timestamp, toTimestamp(options.dateRange.start)),
+          lte(voiceEvents.timestamp, toTimestamp(options.dateRange.end))
         )
       );
 
@@ -151,8 +152,8 @@ export class DataExporter {
         and(
           eq(messageEvents.channelId, channels.id),
           eq(messageEvents.guildId, options.guildId),
-          gte(messageEvents.timestamp, options.dateRange.start),
-          lte(messageEvents.timestamp, options.dateRange.end)
+          gte(messageEvents.timestamp, toTimestamp(options.dateRange.start)),
+          lte(messageEvents.timestamp, toTimestamp(options.dateRange.end))
         )
       );
   }
@@ -207,8 +208,8 @@ export class DataExporter {
       .where(
         and(
           eq(messageEvents.guildId, options.guildId),
-          gte(messageEvents.timestamp, options.dateRange.start),
-          lte(messageEvents.timestamp, options.dateRange.end)
+          gte(messageEvents.timestamp, toTimestamp(options.dateRange.start)),
+          lte(messageEvents.timestamp, toTimestamp(options.dateRange.end))
         )
       )
       .limit(10000);
@@ -230,8 +231,8 @@ export class DataExporter {
       .where(
         and(
           eq(voiceEvents.guildId, options.guildId),
-          gte(voiceEvents.timestamp, options.dateRange.start),
-          lte(voiceEvents.timestamp, options.dateRange.end)
+          gte(voiceEvents.timestamp, toTimestamp(options.dateRange.start)),
+          lte(voiceEvents.timestamp, toTimestamp(options.dateRange.end))
         )
       )
       .limit(10000);
@@ -253,8 +254,8 @@ export class DataExporter {
       .where(
         and(
           eq(memberEvents.guildId, options.guildId),
-          gte(memberEvents.timestamp, options.dateRange.start),
-          lte(memberEvents.timestamp, options.dateRange.end)
+          gte(memberEvents.timestamp, toTimestamp(options.dateRange.start)),
+          lte(memberEvents.timestamp, toTimestamp(options.dateRange.end))
         )
       )
       .limit(10000);
