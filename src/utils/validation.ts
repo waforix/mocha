@@ -146,8 +146,7 @@ export const validateObject = <T>(
   >) {
     const value = obj[key];
     if (validator(value)) {
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic object construction
-      (result as any)[key] = value;
+      (result as Record<string, unknown>)[key] = value;
     }
   }
 
