@@ -1,8 +1,8 @@
-import type { Library } from "../../conversion";
-import type { APINameplate } from "./nameplate";
+import type { Library } from '../../conversion';
+import type { APINameplate } from './nameplate';
 
 export type APICollectibles = {
-    nameplate?: APINameplate;
-}
+  nameplate?: APINameplate;
+};
 
 export type Collectibles = Library<APICollectibles>;

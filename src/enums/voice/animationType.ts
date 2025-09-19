@@ -1,4 +1,4 @@
 export enum AnimationType {
-    PREMIUM = 0,
-    BASIC = 1
+  PREMIUM = 0,
+  BASIC = 1,
 }

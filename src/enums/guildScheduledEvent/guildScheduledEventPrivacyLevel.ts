@@ -1,3 +1,3 @@
 export enum GuildScheduledEventPrivacyLevel {
-    GUILD_ONLY = 2
+  GUILD_ONLY = 2,
 }

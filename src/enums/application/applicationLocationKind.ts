@@ -1,4 +1,4 @@
 export enum ApplicationLocationKind {
-    GuildChannel = "gc",
-    PrivateChannel = "pc"
+  GuildChannel = 'gc',
+  PrivateChannel = 'pc',
 }

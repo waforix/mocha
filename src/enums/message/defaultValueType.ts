@@ -1,5 +1,5 @@
 export enum DefaultValueType {
-    USER = "user",
-    ROLE = "role",
-    CHANNEL = "channel"
+  USER = 'user',
+  ROLE = 'role',
+  CHANNEL = 'channel',
 }

@@ -1,5 +1,5 @@
 export enum ClientStatus {
-    DESKTOP = "desktop",
-    MOBILE = "mobile",
-    WEB = "web"
+  DESKTOP = 'desktop',
+  MOBILE = 'mobile',
+  WEB = 'web',
 }

@@ -1,9 +1,9 @@
-import type { Library } from "../../../conversion";
+import type { Library } from '../../../conversion';
 
 export type APIEmbedField = {
-    name: string;
-    value: string;
-    inline?: boolean;
-}
+  name: string;
+  value: string;
+  inline?: boolean;
+};
 
 export type EmbedField = Library<APIEmbedField>;

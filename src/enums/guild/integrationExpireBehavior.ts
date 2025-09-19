@@ -1,4 +1,4 @@
 export enum IntegrationExpireBehavior {
-    REMOVE_ROLE = 0,
-    KICK = 1
+  REMOVE_ROLE = 0,
+  KICK = 1,
 }

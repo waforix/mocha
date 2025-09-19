@@ -1,41 +1,46 @@
-import type { ComponentType, DefaultValueType } from "../../../../enums";
-import type { Library } from "../../../conversion";
+import type { ComponentType, DefaultValueType } from '../../../../enums';
+import type { Library } from '../../../conversion';
 
 export type APIDefaultValue<T extends DefaultValueType> = {
-    id: string;
-    type: T;
-}
+  id: string;
+  type: T;
+};
 
 type AnyDefaultValueType = DefaultValueType.CHANNEL | DefaultValueType.ROLE | DefaultValueType.USER;
 
 type APIMentionableSelectComponentType<
-    T extends AnyDefaultValueType |
-    DefaultValueType.CHANNEL |
-    DefaultValueType.ROLE |
-    DefaultValueType.USER> = 
-{
-    type: T extends AnyDefaultValueType ? ComponentType.MENTIONABLE_SELECT :
-        T extends DefaultValueType.CHANNEL ? ComponentType.CHANNEL_SELECT :
-        T extends DefaultValueType.ROLE ? ComponentType.ROLE_SELECT :
-        ComponentType.USER_SELECT;
-}
+  T extends
+    | AnyDefaultValueType
+    | DefaultValueType.CHANNEL
+    | DefaultValueType.ROLE
+    | DefaultValueType.USER,
+> = {
+  type: T extends AnyDefaultValueType
+    ? ComponentType.MENTIONABLE_SELECT
+    : T extends DefaultValueType.CHANNEL
+      ? ComponentType.CHANNEL_SELECT
+      : T extends DefaultValueType.ROLE
+        ? ComponentType.ROLE_SELECT
+        : ComponentType.USER_SELECT;
+};
 
 type APIMentionableSelectBase<
-    T extends AnyDefaultValueType |
-    DefaultValueType.CHANNEL |
-    DefaultValueType.ROLE |
-    DefaultValueType.USER> =
-{
-    type: APIMentionableSelectComponentType<T>;
-    id?: number;
-    custom_id: string;
-    placeholder?: string;
-    default_values?: APIDefaultValue<T>[];
-    min_values?: number;
-    max_values?: number;
-    required?: boolean;
-    disabled?: boolean;
-}
+  T extends
+    | AnyDefaultValueType
+    | DefaultValueType.CHANNEL
+    | DefaultValueType.ROLE
+    | DefaultValueType.USER,
+> = {
+  type: APIMentionableSelectComponentType<T>;
+  id?: number;
+  custom_id: string;
+  placeholder?: string;
+  default_values?: APIDefaultValue<T>[];
+  min_values?: number;
+  max_values?: number;
+  required?: boolean;
+  disabled?: boolean;
+};
 
 export type APIUserSelect = APIMentionableSelectBase<DefaultValueType.USER>;
 

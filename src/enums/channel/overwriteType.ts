@@ -1,4 +1,4 @@
 export enum OverwriteType {
-    ROLE = 0,
-    MEMBER = 1
+  ROLE = 0,
+  MEMBER = 1,
 }

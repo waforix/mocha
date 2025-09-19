@@ -1,4 +1,4 @@
 export type WebhooksUpdate = {
-    guild_id: string;
-    channel_id: string;
-}
+  guild_id: string;
+  channel_id: string;
+};

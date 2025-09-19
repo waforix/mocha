@@ -1,4 +1,4 @@
 export enum PrivacyLevel {
-    PUBLIC = 1,
-    GUILD_ONLY = 2
+  PUBLIC = 1,
+  GUILD_ONLY = 2,
 }

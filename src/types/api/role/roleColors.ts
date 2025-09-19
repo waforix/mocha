@@ -1,4 +1,4 @@
-import type { Library } from "../../conversion";
+import type { Library } from '../../conversion';
 
 /**@description
  * Holographic Style
@@ -7,9 +7,9 @@ import type { Library } from "../../conversion";
  * Tertiary Color = 16761760
  */
 export type APIRoleColors = {
-    primary_color: number;
-    secondary_color: number | null;
-    tertiary_color: number | null;
-}
+  primary_color: number;
+  secondary_color: number | null;
+  tertiary_color: number | null;
+};
 
 export type RoleColors = Library<APIRoleColors>;

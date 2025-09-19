@@ -1,3 +1,3 @@
 export enum RoleFlag {
-    IN_PROMPT = 1 << 0
+  IN_PROMPT = 1 << 0,
 }

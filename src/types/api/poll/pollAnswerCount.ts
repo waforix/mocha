@@ -1,9 +1,9 @@
-import type { Library } from "../../conversion";
+import type { Library } from '../../conversion';
 
 export type APIPollAnswerCount = {
-    id: number;
-    count: number;
-    me_voted: boolean;
-}
+  id: number;
+  count: number;
+  me_voted: boolean;
+};
 
 export type PollAnswerCount = Library<APIPollAnswerCount>;

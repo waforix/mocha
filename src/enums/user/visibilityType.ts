@@ -1,4 +1,4 @@
 export enum VisibilityType {
-    NONE = 0,
-    EVERYONE = 1
+  NONE = 0,
+  EVERYONE = 1,
 }

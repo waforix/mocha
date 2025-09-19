@@ -1,7 +1,7 @@
-import type { Library } from "../../conversion";
+import type { Library } from '../../conversion';
 
 export type APIGuildScheduledEventEntityMetadata = {
-    location?: string;
-}
+  location?: string;
+};
 
 export type GuildScheduledEventEntityMetadata = Library<APIGuildScheduledEventEntityMetadata>;
