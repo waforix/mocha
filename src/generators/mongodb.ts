@@ -95,36 +95,55 @@ export class MongodbGenerator extends SchemaGenerator {
     const def = (zodType as { _def: ZodInternalDef })._def;
     const type = def.type;
 
-    if (type === 'string') {
-      const checks = def.checks;
-      if (checks?.some((check: { kind: string }) => check.kind === 'uuid')) {
-        return 'z.string().uuid()';
-      }
-      return 'z.string()';
-    }
-    if (type === 'number') {
-      return 'z.number()';
-    }
-    if (type === 'boolean') {
-      return 'z.boolean()';
-    }
-    if (type === 'date') {
-      return 'z.date()';
-    }
-    if (type === 'array') {
-      return 'z.array(z.string())';
+    // Handle basic types
+    const basicType = this.getBasicMongoType(type, def);
+    if (basicType) {
+      return basicType;
     }
 
-    if (type === 'optional') {
-      return def.innerType ? `${this.getMongoFieldType(def.innerType)}.optional()` : 'z.string().optional()';
-    }
-    if (type === 'nullable') {
-      return def.innerType ? `${this.getMongoFieldType(def.innerType)}.nullable()` : 'z.string().nullable()';
-    }
-    if (type === 'default') {
-      return def.innerType ? this.getMongoFieldType(def.innerType) : 'z.string()';
-    }
+    // Handle wrapper types
+    return this.getWrapperMongoType(type, def);
+  }
 
+  private getBasicMongoType(type: string | undefined, def: ZodInternalDef): string | null {
+    switch (type) {
+      case 'string':
+        return this.getStringType(def);
+      case 'number':
+        return 'z.number()';
+      case 'boolean':
+        return 'z.boolean()';
+      case 'date':
+        return 'z.date()';
+      case 'array':
+        return 'z.array(z.string())';
+      default:
+        return null;
+    }
+  }
+
+  private getStringType(def: ZodInternalDef): string {
+    const checks = def.checks;
+    if (checks?.some((check: { kind: string }) => check.kind === 'uuid')) {
+      return 'z.string().uuid()';
+    }
     return 'z.string()';
+  }
+
+  private getWrapperMongoType(type: string | undefined, def: ZodInternalDef): string {
+    switch (type) {
+      case 'optional':
+        return def.innerType
+          ? `${this.getMongoFieldType(def.innerType)}.optional()`
+          : 'z.string().optional()';
+      case 'nullable':
+        return def.innerType
+          ? `${this.getMongoFieldType(def.innerType)}.nullable()`
+          : 'z.string().nullable()';
+      case 'default':
+        return def.innerType ? this.getMongoFieldType(def.innerType) : 'z.string()';
+      default:
+        return 'z.string()';
+    }
   }
 }
