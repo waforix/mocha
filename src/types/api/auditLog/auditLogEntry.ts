@@ -5,8 +5,7 @@ import type { APIOptionalAuditEntryInfo } from './optionalAuditLogEntryInfo';
 
 export type APIAuditLogEntry = {
   target_id: string | null;
-  // biome-ignore lint/suspicious/noExplicitAny: Per Discord API v10 spec, this type is meant to be compatible with any object.
-  changes: APIAuditLogChange<{}>[];
+  changes: APIAuditLogChange<unknown>[];
   user_id: string | null;
   id: string;
   action_type: AuditLogEvent;
