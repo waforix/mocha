@@ -105,7 +105,6 @@ export class GatewayClient extends EventEmitter {
     try {
       const rawData = data as { toString(): string };
       const payload: APIGatewayPayload = JSON.parse(rawData.toString());
-
       if (!this.isValidPayload(payload)) {
         this.emit('error', new Error('Invalid payload received from gateway'));
         return;
