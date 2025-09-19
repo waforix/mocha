@@ -11,9 +11,11 @@ type SnakeCase<T extends string> =
         `${U}_${SnakeCase<V>}` : T;
 
 export type API<T> = {
-    [Property in keyof T as SnakeCase<Property & string>]: T[Property];
+    [Property in keyof T as SnakeCase<Property & string>]:
+    (T[Property] extends Object ? API<T[Property]> : T[Property]);
 }
 
 export type Library<T> = {
-    [Property in keyof T as CamelCase<Property & string>]: T[Property];
+    [Property in keyof T as CamelCase<Property & string>]:
+    (T[Property] extends Object ? Library<T[Property]> : T[Property]);
 }

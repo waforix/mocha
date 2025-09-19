@@ -1,5 +1,5 @@
-import { Locale } from "../../../enums";
-import { Library } from "../../conversion";
+import { Locale } from "../../../../enums";
+import { Library } from "../../../conversion";
 
 export type APIApplicationCommandOptionChoice = {
     name: string;

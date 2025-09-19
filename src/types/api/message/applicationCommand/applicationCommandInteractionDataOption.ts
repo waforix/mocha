@@ -1,5 +1,5 @@
-import { ApplicationCommandOptionType } from "../../../enums";
-import { Library } from "../../conversion";
+import { ApplicationCommandOptionType } from "../../../../enums";
+import { Library } from "../../../conversion";
 
 export type APIApplicationCommandInteractionDataOption = {
     name: string;

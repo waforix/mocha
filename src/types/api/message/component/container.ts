@@ -1,5 +1,5 @@
-import { ComponentType } from "../../../enums";
-import { Library } from "../../conversion";
+import { ComponentType } from "../../../../enums";
+import { Library } from "../../../conversion";
 import { APIFile } from "./file";
 import { APIMediaGallery } from "./mediaGallery";
 import { APISection } from "./section";

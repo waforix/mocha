@@ -1,5 +1,5 @@
-import { ApplicationCommandType, CommandHandlerType, IntegrationType, InteractionContextType, Locale } from "../../../enums";
-import { Library } from "../../conversion";
+import { ApplicationCommandType, CommandHandlerType, IntegrationType, InteractionContextType, Locale } from "../../../../enums";
+import { Library } from "../../../conversion";
 import { APIApplicationCommandOption } from "./applicationCommandOption";
 
 export type APIApplicationCommandData = {

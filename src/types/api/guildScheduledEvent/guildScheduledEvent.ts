@@ -1,4 +1,5 @@
 import { GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildScheduledEventStatus } from "../../../enums";
+import { Library } from "../../conversion";
 import { APIUser } from "../user/user";
 import { APIGuildScheduledEventEntityMetadata } from "./guildScheduledEventEntityMetadata";
 import { APIGuildScheduledEventRecurrenceRule } from "./guildScheduledEventRecurrenceRule";
@@ -22,3 +23,5 @@ export type APIGuildScheduledEvent = {
     image?: string | null;
     recurrence_rule: APIGuildScheduledEventRecurrenceRule;
 }
+
+export type GuildScheduledEvent = Library<APIGuildScheduledEvent>;

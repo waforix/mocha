@@ -1,6 +1,6 @@
-import { ButtonStyle, ComponentType } from "../../../enums";
-import { Library } from "../../conversion";
-import { APIEmoji } from "../emoji/emoji";
+import { ButtonStyle, ComponentType } from "../../../../enums";
+import { Library } from "../../../conversion";
+import { APIEmoji } from "../../emoji/emoji";
 
 export type APIButton = {
     type: ComponentType.BUTTON;

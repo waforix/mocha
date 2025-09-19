@@ -1,3 +1,4 @@
+import { Library } from "../../conversion";
 import { APIAutoModerationRule } from "../autoModeration/autoModerationRule";
 import { APIChannel } from "../channel/channel";
 import { APIIntegration } from "../guild/integration";
@@ -17,3 +18,5 @@ export type APIAuditLog = {
     users: APIUser[];
     webhooks: APIWebhook[];
 }
+
+export type AuditLog = Library<APIAuditLog>;
