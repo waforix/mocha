@@ -12,6 +12,7 @@ import { GatewayClient } from '../gateway/index';
 import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
+import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
 import { TIMEOUTS } from './constants';
 
 export interface StatsClientOptions extends GatewayOptions {
@@ -143,6 +144,12 @@ export class StatsClient extends EventEmitter {
   }
 
   async getUserStats(guildId: string, userId: string, days = 30) {
+    validateGuildId(guildId);
+    validateUserId(userId);
+    if (!Number.isInteger(days) || days < 1 || days > 365) {
+      throw new RangeError('Days must be an integer between 1 and 365');
+    }
+
     await this.waitForInitialization();
     const cached = this.cache.getUserStats(guildId, userId, days);
     if (cached) return cached;
@@ -154,6 +161,11 @@ export class StatsClient extends EventEmitter {
   }
 
   async getGuildStats(guildId: string, days = 30) {
+    validateGuildId(guildId);
+    if (!Number.isInteger(days) || days < 1 || days > 365) {
+      throw new RangeError('Days must be an integer between 1 and 365');
+    }
+
     await this.waitForInitialization();
     const cached = this.cache.getGuildStats(guildId, days);
     if (cached) return cached;
@@ -165,6 +177,15 @@ export class StatsClient extends EventEmitter {
   }
 
   async getLeaderboard(guildId: string, type: 'messages' | 'voice', limit = 10, days = 30) {
+    validateGuildId(guildId);
+    validateLimit(limit, 100);
+    if (!['messages', 'voice'].includes(type)) {
+      throw new TypeError('Type must be either "messages" or "voice"');
+    }
+    if (!Number.isInteger(days) || days < 1 || days > 365) {
+      throw new RangeError('Days must be an integer between 1 and 365');
+    }
+
     await this.waitForInitialization();
     const cached = this.cache.getLeaderboard(guildId, type, limit, days);
     if (cached) return cached;
@@ -176,6 +197,14 @@ export class StatsClient extends EventEmitter {
   }
 
   async getActivityHeatmap(guildId: string, userId?: string, days = 7) {
+    validateGuildId(guildId);
+    if (userId) {
+      validateUserId(userId);
+    }
+    if (!Number.isInteger(days) || days < 1 || days > 90) {
+      throw new RangeError('Days must be an integer between 1 and 90');
+    }
+
     await this.waitForInitialization();
     const key = createHeatmapKey(guildId, userId, days);
     const cached = this.cache.getQuery(key);
