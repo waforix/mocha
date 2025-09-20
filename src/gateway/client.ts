@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { WebSocket } from 'ws';
+import { TIMEOUTS } from '../lib/constants';
 import type { APIGatewayPayload } from '../types/index';
 import { calculateBackoff } from '../utils/backoff';
 import { ConnectionHealthMonitor, ConnectionManager } from './connection';
@@ -42,7 +43,7 @@ export class GatewayClient extends EventEmitter {
     this.options.intents ??=
       INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES;
     this.options.maxReconnects ??= 5;
-    this.options.connectionTimeout ??= 30000;
+    this.options.connectionTimeout ??= TIMEOUTS.CONNECTION;
     this.rateLimiter = new GatewayRateLimiter(this.options.rateLimitConfig);
   }
 
@@ -206,8 +207,7 @@ export class GatewayClient extends EventEmitter {
     }
 
     if (code === CLOSE_CODES.RATE_LIMITED) {
-      const delay = 60000;
-      setTimeout(() => this.reconnect(), delay);
+      setTimeout(() => this.reconnect(), TIMEOUTS.RATE_LIMIT_DELAY);
       return;
     }
 

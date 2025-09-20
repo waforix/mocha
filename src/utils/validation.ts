@@ -164,3 +164,39 @@ export const createValidator = <T>(schema: Record<keyof T, (value: unknown) => b
     );
   };
 };
+
+export function validateSnowflake(id: string, name: string): void {
+  if (!isValidSnowflake(id)) {
+    throw new TypeError(`${name} must be a valid Discord snowflake ID`);
+  }
+}
+
+export function validateGuildId(guildId: string): void {
+  validateSnowflake(guildId, 'Guild ID');
+}
+
+export function validateUserId(userId: string): void {
+  validateSnowflake(userId, 'User ID');
+}
+
+export function validateChannelId(channelId: string): void {
+  validateSnowflake(channelId, 'Channel ID');
+}
+
+export function validateLimit(limit: number, maxLimit = 100): void {
+  if (!Number.isInteger(limit) || limit < 1 || limit > maxLimit) {
+    throw new RangeError(`Limit must be an integer between 1 and ${maxLimit}`);
+  }
+}
+
+export function validateTimeRange(startTime?: Date, endTime?: Date): void {
+  if (startTime && !(startTime instanceof Date)) {
+    throw new TypeError('Start time must be a Date object');
+  }
+  if (endTime && !(endTime instanceof Date)) {
+    throw new TypeError('End time must be a Date object');
+  }
+  if (startTime && endTime && startTime >= endTime) {
+    throw new RangeError('Start time must be before end time');
+  }
+}

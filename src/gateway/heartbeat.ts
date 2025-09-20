@@ -1,4 +1,5 @@
 import { WebSocket } from 'ws';
+import { HEARTBEAT } from '../lib/constants';
 import { OPCODES } from './constants';
 
 export class Heartbeat {
@@ -6,7 +7,7 @@ export class Heartbeat {
   private lastAck = true;
   private lastSent = 0;
   private missedAcks = 0;
-  private readonly maxMissedAcks = 3;
+  private readonly maxMissedAcks = HEARTBEAT.MAX_MISSED_ACKS;
 
   constructor(
     private ws: WebSocket,
@@ -40,7 +41,7 @@ export class Heartbeat {
       this.missedAcks++;
 
       if (this.missedAcks >= this.maxMissedAcks) {
-        this.ws.close(4000, 'Heartbeat timeout - too many missed ACKs');
+        this.ws.close(HEARTBEAT.TIMEOUT_CODE, 'Heartbeat timeout - too many missed ACKs');
         this.onTimeout?.();
         return;
       }

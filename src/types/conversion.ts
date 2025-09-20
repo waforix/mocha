@@ -11,22 +11,19 @@ type SnakeCase<T extends string> =
     ? `${U}_${SnakeCase<V>}`
     : T;
 
-// biome-ignore lint/suspicious/noExplicitAny: Type is meant to be compatible with any Object
 export type API<T> = {
-  [Property in keyof T as SnakeCase<Property & string>]: T[Property] extends {}
+  [Property in keyof T as SnakeCase<Property & string>]: T[Property] extends Record<string, unknown>
     ? API<T[Property]>
     : T[Property];
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: Type is meant to be compatible with any Object
 export type Library<T> = {
-  [Property in keyof T as CamelCase<Property & string>]: T[Property] extends {}
+  [Property in keyof T as CamelCase<Property & string>]: T[Property] extends Record<string, unknown>
     ? Library<T[Property]>
     : T[Property];
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: Function is meant to be compatible with any Object
-export function toLibrary<T extends API<{}>>(object: T): Library<T> {
+export function toLibrary<T extends API<Record<string, unknown>>>(object: T): Library<T> {
   return Object.fromEntries(
     Object.entries(object).map((i) => [
       i[0]
