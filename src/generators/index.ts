@@ -15,5 +15,9 @@ export const generators = {
 } as const;
 
 export function getGenerator(dbType: DatabaseType) {
-  return generators[dbType];
+  const generator = generators[dbType as keyof typeof generators];
+  if (!generator) {
+    throw new Error(`Unsupported database type: ${dbType}`);
+  }
+  return generator;
 }

@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-export type DatabaseType = 'sqlite' | 'postgres' | 'mysql';
+export type DatabaseType = 'sqlite' | 'postgres' | 'mysql' | 'mongodb';
 
 export interface FieldMapping {
   name: string;
