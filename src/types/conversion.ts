@@ -1,10 +1,37 @@
 type Splitter = '_';
 
+
+
+enum CaseType {
+    CAMEL,
+    SNAKE
+}
+
+type Camel<T extends string> = T extends `${infer U extends Lowercase<string>}${infer V extends Capitalize<string>}`
+    ? `${U}${Camel<V>}`
+    : Lowercase<T>;
+
+type Snake<T extends string> = T extends `${infer U extends Lowercase<string>}_${infer V extends Lowercase<string>}`
+    ? `${U}_${Snake<V>}`
+    : Lowercase<T>;
+
+const s = "snake_string";
+const c = "camelString";
+
+function f(s: Snake<string>) {}
+
+f(s);
+f(c);
+
+
+type Case<T extends string> = Camel<T> | Snake<T>;
+
 type CamelCase<T extends string> = T extends `${infer U}${Splitter}${infer V}`
   ? `${Lowercase<CamelCase<U>>}${Capitalize<CamelCase<V>>}`
   : T extends `${infer U}`
     ? `${Lowercase<U>}`
     : T;
+
 
 type SnakeCase<T extends string> =
   T extends `${infer U extends Lowercase<string>}${infer V extends Uppercase<string>}`

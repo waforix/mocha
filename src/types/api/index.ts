@@ -261,6 +261,7 @@ export type { APIUserPrimaryGuild, UserPrimaryGuild } from './user/userPrimaryGu
 /**
  * VOICE
  */
+export type { APICall, Call } from "./voice/call";
 export type { APIVoiceState, VoiceState } from './voice/voiceState';
 
 /**
