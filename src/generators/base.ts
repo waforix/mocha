@@ -2,6 +2,16 @@ import type { z } from 'zod';
 
 export type DatabaseType = 'sqlite' | 'postgres' | 'mysql' | 'mongodb';
 
+// Type for accessing Zod internal structure
+export interface ZodInternalDef {
+  type?: string;
+  typeName?: string;
+  innerType?: z.ZodTypeAny;
+  defaultValue?: unknown;
+  checks?: Array<{ kind: string; [key: string]: unknown }>;
+  shape?: Record<string, z.ZodTypeAny>;
+}
+
 export interface FieldMapping {
   name: string;
   type: string;
@@ -62,8 +72,7 @@ export abstract class SchemaGenerator {
   }
 
   private checkNullable(zodType: z.ZodTypeAny): boolean {
-    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-    const def = (zodType as any)._def;
+    const def = (zodType as { _def: ZodInternalDef })._def;
     const type = def.type;
 
     if (type === 'optional' || type === 'nullable') {
@@ -77,10 +86,8 @@ export abstract class SchemaGenerator {
     return false;
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: Required for Zod default value handling
-  protected getDefaultValue(zodType: z.ZodTypeAny): any {
-    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-    const def = (zodType as any)._def;
+  protected getDefaultValue(zodType: z.ZodTypeAny): unknown {
+    const def = (zodType as { _def: ZodInternalDef })._def;
     if (def.type === 'default' && def.defaultValue !== undefined) {
       return def.defaultValue;
     }
@@ -88,6 +95,5 @@ export abstract class SchemaGenerator {
   }
 
   protected abstract getFieldType(zodType: z.ZodTypeAny): string;
-  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible default value handling across database types
-  protected abstract formatDefaultValue(value: any): string;
+  protected abstract formatDefaultValue(value: unknown): string;
 }
