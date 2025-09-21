@@ -17,6 +17,19 @@ export interface GatewayOptions {
   rateLimitConfig?: Partial<RateLimitConfig>;
 }
 
+export interface PresenceActivity {
+  name: string;
+  type: number; // 0=Playing, 1=Streaming, 2=Listening, 3=Watching, 5=Competing
+  url?: string;
+}
+
+export interface PresenceData {
+  status?: 'online' | 'idle' | 'dnd' | 'invisible';
+  activities?: PresenceActivity[];
+  since?: number | null;
+  afk?: boolean;
+}
+
 export enum ConnectionState {
   DISCONNECTED = 'disconnected',
   CONNECTING = 'connecting',
@@ -442,5 +455,48 @@ export class GatewayClient extends EventEmitter {
 
   resetRateLimits() {
     this.rateLimiter.reset();
+  }
+
+  updatePresence(presence: PresenceData): void {
+    if (!this.isConnected()) {
+      throw new Error('Cannot update presence: not connected to gateway');
+    }
+
+    if (!this.rateLimiter.canUpdatePresence()) {
+      throw new Error('Rate limited: cannot update presence at this time');
+    }
+
+    const payload = {
+      op: OPCODES.PRESENCE_UPDATE,
+      d: {
+        since: presence.since || null,
+        activities: presence.activities || [],
+        status: presence.status || 'online',
+        afk: presence.afk || false,
+      },
+    };
+
+    try {
+      this.ws?.send(JSON.stringify(payload));
+      this.rateLimiter.recordPresenceUpdate();
+    } catch (error) {
+      throw new Error(`Failed to send presence update: ${error}`);
+    }
+  }
+
+  setStatus(status: 'online' | 'idle' | 'dnd' | 'invisible'): void {
+    this.updatePresence({ status });
+  }
+
+  setActivity(name: string, type: number = 0, url?: string): void {
+    this.updatePresence({
+      activities: [{ name, type, url }],
+    });
+  }
+
+  clearActivity(): void {
+    this.updatePresence({
+      activities: [],
+    });
   }
 }
