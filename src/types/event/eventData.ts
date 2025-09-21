@@ -1,10 +1,7 @@
-import { ChannelType, DataMode, InviteTargetType } from "../../../enums";
-import { Application, AuditLogEntry, Channel, Emoji, Entitlement, Guild, GuildMember, GuildMessage, GuildScheduledEvent, Integration, Interaction, Message, MessageReaction, PollVote, Presence, Role, SoundboardSound, StageInstance, Sticker, Subscription, ThreadMember, Typing, User, VoiceChannelEffect, VoiceState } from "../../api";
+import { ChannelType, DataMode, InviteTargetType } from "../../enums";
+import { Application, AuditLogEntry, Channel, Emoji, Entitlement, Guild, GuildMember, GuildMessage, GuildScheduledEvent, Integration, Interaction, Message, MessageReaction, PollVote, Presence, Role, SoundboardSound, StageInstance, Sticker, Subscription, ThreadMember, Typing, User, VoiceChannelEffect, VoiceState } from "../api";
 
-
-export type EventData<T extends unknown> = {
-    d: T;
-}
+export type EventData<T extends unknown> = T;
 
 /**
  * GUILDS

@@ -11,7 +11,7 @@ import {
 } from '../processors/index';
 import type { APIPresenceUpdate, APIVoiceState } from '../types/index';
 import type { APIMessage, Message } from '../types/api';
-import { toLibrary } from '../types/conversion';
+import { library, toLibrary } from '../types/conversion';
 
 export class EventDispatcher extends EventEmitter {
   private messageProcessor: MessageProcessor;
@@ -35,10 +35,12 @@ export class EventDispatcher extends EventEmitter {
     try {
       console.log(event);
       console.log(data);
+      
       switch (event) {
         case EVENTS.MESSAGE_CREATE:
-        const msg = toLibrary(data as APIMessage);
-        console.log(msg);  
+          const parse = library(data as APIMessage);
+          console.log(parse)
+          
         //await this.messageProcessor.process(data as APIMessage);
           break;
         case EVENTS.VOICE_STATE_UPDATE:
