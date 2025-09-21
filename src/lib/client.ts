@@ -269,4 +269,29 @@ export class StatsClient extends EventEmitter {
   isRateLimited(key: string, tokens = 1): boolean {
     return this.rateLimit ? !this.rateLimit.isAllowed(key, tokens) : false;
   }
+
+  setStatus(status: 'online' | 'idle' | 'dnd' | 'invisible'): void {
+    this.gateway.setStatus(status);
+  }
+
+  setActivity(name: string, type: number = 0, url?: string): void {
+    this.gateway.setActivity(name, type, url);
+  }
+
+  clearActivity(): void {
+    this.gateway.clearActivity();
+  }
+
+  updatePresence(presence: {
+    status?: 'online' | 'idle' | 'dnd' | 'invisible';
+    activities?: Array<{
+      name: string;
+      type: number;
+      url?: string;
+    }>;
+    since?: number | null;
+    afk?: boolean;
+  }): void {
+    this.gateway.updatePresence(presence);
+  }
 }
