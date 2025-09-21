@@ -5,7 +5,7 @@ import type { APIOptionalAuditEntryInfo } from './optionalAuditLogEntryInfo';
 
 export type APIAuditLogEntry = {
   target_id: string | null;
-  changes: APIAuditLogChange<unknown>[];
+  changes: APIAuditLogChange<Record<string, unknown>>[];
   user_id: string | null;
   id: string;
   action_type: AuditLogEvent;

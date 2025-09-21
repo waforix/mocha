@@ -61,8 +61,6 @@ export class MigrationManager {
         return `CREATE TABLE ${tableName} (\n  ${columnDefs}\n);`;
       case 'mysql':
         return `CREATE TABLE ${tableName} (\n  ${columnDefs}\n) ENGINE=InnoDB;`;
-      case 'mongodb':
-        return `db.createCollection('${tableName}');`;
       default:
         throw new Error(`Unsupported database type: ${this.dbType}`);
     }
@@ -76,8 +74,6 @@ export class MigrationManager {
         return `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDef};`;
       case 'mysql':
         return `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDef};`;
-      case 'mongodb':
-        return `db.${tableName}.updateMany({}, { $set: { ${columnName}: null } });`;
       default:
         throw new Error(`Unsupported database type: ${this.dbType}`);
     }
@@ -91,8 +87,6 @@ export class MigrationManager {
         return `ALTER TABLE ${tableName} DROP COLUMN ${columnName};`;
       case 'mysql':
         return `ALTER TABLE ${tableName} DROP COLUMN ${columnName};`;
-      case 'mongodb':
-        return `db.${tableName}.updateMany({}, { $unset: { ${columnName}: "" } });`;
       default:
         throw new Error(`Unsupported database type: ${this.dbType}`);
     }
@@ -108,8 +102,6 @@ export class MigrationManager {
         return `CREATE INDEX ${indexName} ON ${tableName} (${columnList});`;
       case 'mysql':
         return `CREATE INDEX ${indexName} ON ${tableName} (${columnList});`;
-      case 'mongodb':
-        return `db.${tableName}.createIndex({ ${columns.map((col) => `${col}: 1`).join(', ')} });`;
       default:
         throw new Error(`Unsupported database type: ${this.dbType}`);
     }

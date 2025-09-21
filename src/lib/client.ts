@@ -2,8 +2,9 @@ import { EventEmitter } from 'node:events';
 import { MetricsCollector } from '../analytics/index';
 import type { CacheConfig } from '../cache/index';
 import { CacheManager, createHeatmapKey } from '../cache/index';
-import { type CommonDatabase, createDatabaseConnection } from '../db/index';
-import type { DatabaseConfig, DatabaseInstance } from '../db/types';
+import type { CommonDatabase } from '../db/index';
+import { DatabaseManager } from '../db/manager';
+import type { DatabaseConfig } from '../db/types';
 import { EventDispatcher } from '../events/index';
 import { DataExporter, type ExportOptions } from '../export/index';
 import type { GatewayOptions } from '../gateway/index';
@@ -11,6 +12,8 @@ import { GatewayClient } from '../gateway/index';
 import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
+import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
+import { TIMEOUTS } from './constants';
 
 export interface StatsClientOptions extends GatewayOptions {
   dbPath?: string;
@@ -26,7 +29,7 @@ export class StatsClient extends EventEmitter {
   private dispatcher!: EventDispatcher;
   private aggregator!: StatsAggregator;
   private cache: CacheManager;
-  private db!: DatabaseInstance;
+  private dbManager = new DatabaseManager();
   private dbAdapter!: CommonDatabase;
   private metrics?: MetricsCollector;
   private notifications?: NotificationEngine;
@@ -37,28 +40,29 @@ export class StatsClient extends EventEmitter {
   constructor(options: StatsClientOptions) {
     super();
     this.gateway = new GatewayClient(options);
-
     this.cache = new CacheManager(options.cache);
-
-    this.initializeDatabase(options)
-      .then(() => {
-        this.setupComponents(options);
-        this.setupEventHandlers();
-        this.initialized = true;
-        this.emit('ready');
-      })
-      .catch((error) => {
-        this.emit('error', error);
-      });
+    this.initializeAsync(options);
   }
 
-  private async initializeDatabase(options: StatsClientOptions) {
+  private async initializeAsync(options: StatsClientOptions): Promise<void> {
+    try {
+      await this.initializeDatabase(options);
+      this.setupComponents(options);
+      this.setupEventHandlers();
+      this.initialized = true;
+      this.emit('ready');
+    } catch (error) {
+      this.emit('error', error);
+    }
+  }
+
+  private async initializeDatabase(options: StatsClientOptions): Promise<void> {
     const config = options.database || {
       type: 'sqlite' as const,
       path: options.dbPath || './data/stats.db',
     };
-    this.db = await createDatabaseConnection(config);
-    this.dbAdapter = this.db.db as CommonDatabase;
+    const db = await this.dbManager.initialize(config);
+    this.dbAdapter = db.db as CommonDatabase;
   }
 
   private setupComponents(options: StatsClientOptions) {
@@ -113,13 +117,19 @@ export class StatsClient extends EventEmitter {
     this.gateway.disconnect();
   }
 
+  async close(): Promise<void> {
+    this.disconnect();
+    await this.dbManager.close();
+    this.initialized = false;
+  }
+
   private async waitForInitialization(): Promise<void> {
     if (this.initialized) return;
 
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Database initialization timeout'));
-      }, 10000);
+      }, TIMEOUTS.DATABASE_INIT);
 
       this.once('ready', () => {
         clearTimeout(timeout);
@@ -134,6 +144,12 @@ export class StatsClient extends EventEmitter {
   }
 
   async getUserStats(guildId: string, userId: string, days = 30) {
+    validateGuildId(guildId);
+    validateUserId(userId);
+    if (!Number.isInteger(days) || days < 1 || days > 365) {
+      throw new RangeError('Days must be an integer between 1 and 365');
+    }
+
     await this.waitForInitialization();
     const cached = this.cache.getUserStats(guildId, userId, days);
     if (cached) return cached;
@@ -145,6 +161,11 @@ export class StatsClient extends EventEmitter {
   }
 
   async getGuildStats(guildId: string, days = 30) {
+    validateGuildId(guildId);
+    if (!Number.isInteger(days) || days < 1 || days > 365) {
+      throw new RangeError('Days must be an integer between 1 and 365');
+    }
+
     await this.waitForInitialization();
     const cached = this.cache.getGuildStats(guildId, days);
     if (cached) return cached;
@@ -156,6 +177,15 @@ export class StatsClient extends EventEmitter {
   }
 
   async getLeaderboard(guildId: string, type: 'messages' | 'voice', limit = 10, days = 30) {
+    validateGuildId(guildId);
+    validateLimit(limit, 100);
+    if (!['messages', 'voice'].includes(type)) {
+      throw new TypeError('Type must be either "messages" or "voice"');
+    }
+    if (!Number.isInteger(days) || days < 1 || days > 365) {
+      throw new RangeError('Days must be an integer between 1 and 365');
+    }
+
     await this.waitForInitialization();
     const cached = this.cache.getLeaderboard(guildId, type, limit, days);
     if (cached) return cached;
@@ -167,6 +197,14 @@ export class StatsClient extends EventEmitter {
   }
 
   async getActivityHeatmap(guildId: string, userId?: string, days = 7) {
+    validateGuildId(guildId);
+    if (userId) {
+      validateUserId(userId);
+    }
+    if (!Number.isInteger(days) || days < 1 || days > 90) {
+      throw new RangeError('Days must be an integer between 1 and 90');
+    }
+
     await this.waitForInitialization();
     const key = createHeatmapKey(guildId, userId, days);
     const cached = this.cache.getQuery(key);
@@ -188,7 +226,7 @@ export class StatsClient extends EventEmitter {
 
   async getDatabase() {
     await this.waitForInitialization();
-    return this.db;
+    return this.dbManager.getInstance();
   }
 
   getMetrics() {
