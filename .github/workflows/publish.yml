@@ -8,7 +8,7 @@ jobs:
   # Publish to NPM (individual check workflows run separately)
   publish:
     name: Publish to NPM
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
       - name: Checkout code
