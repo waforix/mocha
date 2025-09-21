@@ -53,7 +53,7 @@ export const getCloseCodeMessage = (code: number): string => {
     case CLOSE_CODES.NOT_AUTHENTICATED:
       return 'Payload sent before authentication';
     case CLOSE_CODES.AUTHENTICATION_FAILED:
-      return 'Invalid token provided';
+      return 'Authentication failed - Invalid Discord bot token provided. Please check your token and ensure it has the correct permissions.';
     case CLOSE_CODES.ALREADY_AUTHENTICATED:
       return 'Already authenticated';
     case CLOSE_CODES.INVALID_SEQUENCE:

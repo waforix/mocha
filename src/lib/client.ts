@@ -39,9 +39,29 @@ export class StatsClient extends EventEmitter {
 
   constructor(options: StatsClientOptions) {
     super();
+    this.validateOptions(options);
     this.gateway = new GatewayClient(options);
     this.cache = new CacheManager(options.cache);
-    this.initializeAsync(options);
+    this.initializeAsync(options).catch((error) => {
+      this.emit('error', error);
+    });
+  }
+
+  private validateOptions(options: StatsClientOptions) {
+    if (!options.token) {
+      throw new Error('Discord token is required');
+    }
+
+    if (typeof options.token !== 'string') {
+      throw new Error('Discord token must be a string');
+    }
+    const tokenRegex = /^[A-Za-z0-9_-]{24,}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,}$/;
+
+    if (!tokenRegex.test(options.token)) {
+      throw new Error(
+        'Invalid Discord token format. Expected format: MTxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxx'
+      );
+    }
   }
 
   private async initializeAsync(options: StatsClientOptions): Promise<void> {
@@ -248,5 +268,30 @@ export class StatsClient extends EventEmitter {
 
   isRateLimited(key: string, tokens = 1): boolean {
     return this.rateLimit ? !this.rateLimit.isAllowed(key, tokens) : false;
+  }
+
+  setStatus(status: 'online' | 'idle' | 'dnd' | 'invisible'): void {
+    this.gateway.setStatus(status);
+  }
+
+  setActivity(name: string, type: number = 0, url?: string): void {
+    this.gateway.setActivity(name, type, url);
+  }
+
+  clearActivity(): void {
+    this.gateway.clearActivity();
+  }
+
+  updatePresence(presence: {
+    status?: 'online' | 'idle' | 'dnd' | 'invisible';
+    activities?: Array<{
+      name: string;
+      type: number;
+      url?: string;
+    }>;
+    since?: number | null;
+    afk?: boolean;
+  }): void {
+    this.gateway.updatePresence(presence);
   }
 }
