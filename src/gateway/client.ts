@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { WebSocket } from 'ws';
+import { TIMEOUTS } from '../lib/constants';
 import type { APIGatewayPayload } from '../types/index';
 import { calculateBackoff } from '../utils/backoff';
 import { ConnectionHealthMonitor, ConnectionManager } from './connection';
@@ -14,6 +15,19 @@ export interface GatewayOptions {
   maxReconnects?: number;
   connectionTimeout?: number;
   rateLimitConfig?: Partial<RateLimitConfig>;
+}
+
+export interface PresenceActivity {
+  name: string;
+  type: number; // 0=Playing, 1=Streaming, 2=Listening, 3=Watching, 5=Competing
+  url?: string;
+}
+
+export interface PresenceData {
+  status?: 'online' | 'idle' | 'dnd' | 'invisible';
+  activities?: PresenceActivity[];
+  since?: number | null;
+  afk?: boolean;
 }
 
 export enum ConnectionState {
@@ -39,12 +53,29 @@ export class GatewayClient extends EventEmitter {
 
   constructor(private options: GatewayOptions) {
     super();
-    this.options.token = "MTQxNjYxNDI0OTQ0MjMxMjQxNQ.GEbuZk.h-gAy0AlEWI2gYXpW8GRj8u9xcMJR9TgggrNAY";
+    this.validateToken(options.token);
     this.options.intents ??=
       INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES | INTENTS.MESSAGE_CONTENT;
     this.options.maxReconnects ??= 5;
-    this.options.connectionTimeout ??= 30000;
+    this.options.connectionTimeout ??= TIMEOUTS.CONNECTION;
     this.rateLimiter = new GatewayRateLimiter(this.options.rateLimitConfig);
+  }
+
+  private validateToken(token: string) {
+    if (!token || typeof token !== 'string') {
+      throw new Error('Discord token is required and must be a string');
+    }
+
+    if (token === 'your_discord_token_here' || token === 'YOUR_BOT_TOKEN') {
+      throw new Error('Please provide a valid Discord bot token');
+    }
+
+    const tokenRegex = /^[A-Za-z0-9_-]{24,}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,}$/;
+    if (!tokenRegex.test(token)) {
+      throw new Error(
+        'Invalid Discord token format. Expected format: MTxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxx'
+      );
+    }
   }
 
   connect() {
@@ -208,8 +239,7 @@ export class GatewayClient extends EventEmitter {
     }
 
     if (code === CLOSE_CODES.RATE_LIMITED) {
-      const delay = 60000;
-      setTimeout(() => this.reconnect(), delay);
+      setTimeout(() => this.reconnect(), TIMEOUTS.RATE_LIMIT_DELAY);
       return;
     }
 
@@ -251,6 +281,14 @@ export class GatewayClient extends EventEmitter {
 
     if (!this.rateLimiter.canIdentify()) {
       this.emit('error', new Error('Cannot identify: Rate limited'));
+      return;
+    }
+
+    // Re-validate token format before sending
+    try {
+      this.validateToken(this.options.token);
+    } catch (error) {
+      this.emit('error', error);
       return;
     }
 
@@ -418,5 +456,48 @@ export class GatewayClient extends EventEmitter {
 
   resetRateLimits() {
     this.rateLimiter.reset();
+  }
+
+  updatePresence(presence: PresenceData): void {
+    if (!this.isConnected()) {
+      throw new Error('Cannot update presence: not connected to gateway');
+    }
+
+    if (!this.rateLimiter.canUpdatePresence()) {
+      throw new Error('Rate limited: cannot update presence at this time');
+    }
+
+    const payload = {
+      op: OPCODES.PRESENCE_UPDATE,
+      d: {
+        since: presence.since || null,
+        activities: presence.activities || [],
+        status: presence.status || 'online',
+        afk: presence.afk || false,
+      },
+    };
+
+    try {
+      this.ws?.send(JSON.stringify(payload));
+      this.rateLimiter.recordPresenceUpdate();
+    } catch (error) {
+      throw new Error(`Failed to send presence update: ${error}`);
+    }
+  }
+
+  setStatus(status: 'online' | 'idle' | 'dnd' | 'invisible'): void {
+    this.updatePresence({ status });
+  }
+
+  setActivity(name: string, type: number = 0, url?: string): void {
+    this.updatePresence({
+      activities: [{ name, type, url }],
+    });
+  }
+
+  clearActivity(): void {
+    this.updatePresence({
+      activities: [],
+    });
   }
 }

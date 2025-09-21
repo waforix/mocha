@@ -1,2 +1,4 @@
-export const calculateBackoff = (attempt: number, maxDelay = 30000): number =>
-  Math.min(1000 * 2 ** attempt, maxDelay);
+import { BACKOFF } from '../lib/constants';
+
+export const calculateBackoff = (attempt: number, maxDelay = BACKOFF.MAX_DELAY): number =>
+  Math.min(BACKOFF.BASE_DELAY * BACKOFF.MULTIPLIER ** attempt, maxDelay);

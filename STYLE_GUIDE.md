@@ -98,8 +98,9 @@ export const INTENTS = {
 
 ## Type Definitions
 
-### Interfaces vs Types
-- **Interfaces** for object shapes that might be extended or implemented
+### Types vs Interfaces
+- **Types** are preferred for most use cases (general preference)
+- **Interfaces** only when extending or implementing is specifically needed
 - **Types** for unions, intersections, and computed types
 - **Types** for string literals and template literals
 

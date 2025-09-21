@@ -12,7 +12,7 @@ export class SchemaManager {
   }
 
   generateAll() {
-    const databases: DatabaseType[] = ['sqlite', 'postgres', 'mysql', 'mongodb'];
+    const databases: DatabaseType[] = ['sqlite', 'postgres', 'mysql'];
 
     for (const dbType of databases) {
       this.generateForDatabase(dbType);
