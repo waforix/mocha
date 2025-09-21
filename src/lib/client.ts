@@ -52,8 +52,9 @@ export class StatsClient extends EventEmitter {
 
     if (typeof options.token !== 'string') {
       throw new Error('Discord token must be a string');
-    }const tokenRegex = /^[A-Za-z0-9_-]{23,26}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,38}$/;
-    
+    }
+    const tokenRegex = /^[A-Za-z0-9_-]{23,26}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,38}$/;
+
     if (!tokenRegex.test(options.token)) {
       throw new Error(
         'Invalid Discord token format. Expected format: MTxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxx'
