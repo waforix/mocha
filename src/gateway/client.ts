@@ -40,11 +40,27 @@ export class GatewayClient extends EventEmitter {
 
   constructor(private options: GatewayOptions) {
     super();
+    this.validateToken(options.token);
     this.options.intents ??=
       INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES;
     this.options.maxReconnects ??= 5;
     this.options.connectionTimeout ??= TIMEOUTS.CONNECTION;
     this.rateLimiter = new GatewayRateLimiter(this.options.rateLimitConfig);
+  }
+
+  private validateToken(token: string) {
+    if (!token || typeof token !== 'string') {
+      throw new Error('Discord token is required and must be a string');
+    }
+
+    if (token === 'your_discord_token_here' || token === 'YOUR_BOT_TOKEN') {
+      throw new Error('Please provide a valid Discord bot token');
+    }
+
+    const tokenRegex = /^[A-Za-z0-9_-]{24}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27}$/;
+    if (!tokenRegex.test(token)) {
+      throw new Error('Invalid Discord token format. Expected format: MTxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    }
   }
 
   connect() {
@@ -249,6 +265,14 @@ export class GatewayClient extends EventEmitter {
 
     if (!this.rateLimiter.canIdentify()) {
       this.emit('error', new Error('Cannot identify: Rate limited'));
+      return;
+    }
+
+    // Re-validate token format before sending
+    try {
+      this.validateToken(this.options.token);
+    } catch (error) {
+      this.emit('error', error);
       return;
     }
 
