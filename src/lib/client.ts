@@ -42,7 +42,9 @@ export class StatsClient extends EventEmitter {
     this.validateOptions(options);
     this.gateway = new GatewayClient(options);
     this.cache = new CacheManager(options.cache);
-    this.initializeAsync(options);
+    this.initializeAsync(options).catch((error) => {
+      this.emit('error', error);
+    });
   }
 
   private validateOptions(options: StatsClientOptions) {
