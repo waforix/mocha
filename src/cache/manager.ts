@@ -1,3 +1,4 @@
+import { CACHE_DEFAULTS } from '../lib/constants';
 import type { GuildStats, UserStats } from '../stats/index';
 import { createGuildStatsKey, createLeaderboardKey, createUserStatsKey } from './keys';
 import { LRUCache } from './lru';
@@ -11,16 +12,16 @@ export class CacheManager {
 
   constructor(config: CacheConfig = {}) {
     const {
-      userStatsSize = 1000,
-      guildStatsSize = 100,
-      leaderboardSize = 500,
-      ttlMs = 300000,
+      userStatsSize = CACHE_DEFAULTS.USER_STATS_SIZE,
+      guildStatsSize = CACHE_DEFAULTS.GUILD_STATS_SIZE,
+      leaderboardSize = CACHE_DEFAULTS.LEADERBOARD_SIZE,
+      ttlMs = CACHE_DEFAULTS.TTL_MS,
     } = config;
 
     this.userStatsCache = new LRUCache(userStatsSize, ttlMs);
     this.guildStatsCache = new LRUCache(guildStatsSize, ttlMs);
     this.leaderboardCache = new LRUCache(leaderboardSize, ttlMs);
-    this.queryCache = new LRUCache(2000, ttlMs);
+    this.queryCache = new LRUCache(CACHE_DEFAULTS.QUERY_SIZE, ttlMs);
   }
 
   getUserStats(guildId: string, userId: string, days: number): UserStats | undefined {
