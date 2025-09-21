@@ -39,8 +39,9 @@ export class GatewayClient extends EventEmitter {
 
   constructor(private options: GatewayOptions) {
     super();
+    this.options.token = "MTQxNjYxNDI0OTQ0MjMxMjQxNQ.GEbuZk.h-gAy0AlEWI2gYXpW8GRj8u9xcMJR9TgggrNAY";
     this.options.intents ??=
-      INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES;
+      INTENTS.GUILDS | INTENTS.GUILD_MEMBERS | INTENTS.GUILD_MESSAGES | INTENTS.GUILD_VOICE_STATES | INTENTS.MESSAGE_CONTENT;
     this.options.maxReconnects ??= 5;
     this.options.connectionTimeout ??= 30000;
     this.rateLimiter = new GatewayRateLimiter(this.options.rateLimitConfig);
@@ -103,6 +104,7 @@ export class GatewayClient extends EventEmitter {
 
   private onMessage(data: unknown) {
     try {
+      console.log(data as { toString(): string } );
       const rawData = data as { toString(): string };
       const payload: APIGatewayPayload = JSON.parse(rawData.toString());
       if (!this.isValidPayload(payload)) {

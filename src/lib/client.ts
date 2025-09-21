@@ -53,6 +53,7 @@ export class StatsClient extends EventEmitter {
   }
 
   private async initializeDatabase(options: StatsClientOptions) {
+    return;
     const config = options.database || {
       type: 'sqlite' as const,
       path: options.dbPath || './data/stats.db',

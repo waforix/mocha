@@ -1,12 +1,5 @@
 type Splitter = '_';
 
-
-
-enum CaseType {
-    CAMEL,
-    SNAKE
-}
-
 type Camel<T extends string> = T extends `${infer U extends Lowercase<string>}${infer V extends Capitalize<string>}`
     ? `${U}${Camel<V>}`
     : Lowercase<T>;
@@ -14,15 +7,6 @@ type Camel<T extends string> = T extends `${infer U extends Lowercase<string>}${
 type Snake<T extends string> = T extends `${infer U extends Lowercase<string>}_${infer V extends Lowercase<string>}`
     ? `${U}_${Snake<V>}`
     : Lowercase<T>;
-
-const s = "snake_string";
-const c = "camelString";
-
-function f(s: Snake<string>) {}
-
-f(s);
-f(c);
-
 
 type Case<T extends string> = Camel<T> | Snake<T>;
 
@@ -34,7 +18,7 @@ type CamelCase<T extends string> = T extends `${infer U}${Splitter}${infer V}`
 
 
 type SnakeCase<T extends string> =
-  T extends `${infer U extends Lowercase<string>}${infer V extends Uppercase<string>}`
+  T extends `${infer U extends Lowercase<string>}${infer V extends Capitalize<string>}`
     ? `${U}_${SnakeCase<V>}`
     : T;
 
@@ -50,12 +34,27 @@ export type Library<T> = {
     : T[Property];
 };
 
+function capitalize(input: string): string {
+    return input.length > 0
+        ? input[0].toUpperCase().concat(input.length > 1 ? input.slice(1) : "")
+        : "";
+}
+
+function library<T extends API<any>>(object: T): Library<T> {
+    return Object.fromEntries(
+        Object.entries(object).map((i) => [
+            i[0].split("_").map((i, j) => j > 0 ? capitalize(i) : i),
+            typeof(i[1] === "object" ? library(i[1]) : i[1])
+        ])
+    );
+}
+
 export function toLibrary<T extends API<Record<string, unknown>>>(object: T): Library<T> {
   return Object.fromEntries(
     Object.entries(object).map((i) => [
       i[0]
         .split('_')
-        .map((j) => j[0].toUpperCase().concat(j.length > 0 ? j.slice(1) : ''))
+        .map((i) =>  j[0].toUpperCase().concat(j.length > 0 ? j.slice(1) : ''))
         .join('')
         .toLowerCase(),
       i[1],

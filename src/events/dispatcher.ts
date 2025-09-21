@@ -9,7 +9,9 @@ import {
   ReactionProcessor,
   VoiceProcessor,
 } from '../processors/index';
-import type { APIMessage, APIPresenceUpdate, APIVoiceState } from '../types/index';
+import type { APIPresenceUpdate, APIVoiceState } from '../types/index';
+import type { APIMessage, Message } from '../types/api';
+import { toLibrary } from '../types/conversion';
 
 export class EventDispatcher extends EventEmitter {
   private messageProcessor: MessageProcessor;
@@ -31,9 +33,13 @@ export class EventDispatcher extends EventEmitter {
 
   async dispatch(event: string, data: unknown) {
     try {
+      console.log(event);
+      console.log(data);
       switch (event) {
         case EVENTS.MESSAGE_CREATE:
-          await this.messageProcessor.process(data as APIMessage);
+        const msg = toLibrary(data as APIMessage);
+        console.log(msg);  
+        //await this.messageProcessor.process(data as APIMessage);
           break;
         case EVENTS.VOICE_STATE_UPDATE:
           await this.voiceProcessor.process(data as APIVoiceState);
