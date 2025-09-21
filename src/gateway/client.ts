@@ -59,7 +59,9 @@ export class GatewayClient extends EventEmitter {
 
     const tokenRegex = /^[A-Za-z0-9_-]{24}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27}$/;
     if (!tokenRegex.test(token)) {
-      throw new Error('Invalid Discord token format. Expected format: MTxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      throw new Error(
+        'Invalid Discord token format. Expected format: MTxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxx'
+      );
     }
   }
 
