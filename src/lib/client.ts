@@ -14,6 +14,7 @@ import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
 import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
+import { CommandHandlerManager } from './commands/handler';
 import { TIMEOUTS } from './constants';
 
 export interface ClientOptions extends GatewayOptions {
@@ -37,6 +38,7 @@ export class Client extends EventEmitter {
   private rateLimit?: RateLimitManager;
   private exporter!: DataExporter;
   private autocomplete: AutocompleteManager;
+  private commandHandlers: CommandHandlerManager;
   private initialized = false;
 
   constructor(options: ClientOptions) {
@@ -45,6 +47,7 @@ export class Client extends EventEmitter {
     this.gateway = new GatewayClient(options);
     this.cache = new CacheManager(options.cache);
     this.autocomplete = new AutocompleteManager();
+    this.commandHandlers = new CommandHandlerManager();
     this.initializeAsync(options).catch((error) => {
       this.emit('error', error);
     });
@@ -300,5 +303,9 @@ export class Client extends EventEmitter {
 
   getAutocompleteManager(): AutocompleteManager {
     return this.autocomplete;
+  }
+
+  getCommandHandlerManager(): CommandHandlerManager {
+    return this.commandHandlers;
   }
 }
