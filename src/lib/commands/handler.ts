@@ -1,4 +1,5 @@
 export interface CommandHandler {
+  // biome-ignore lint/suspicious/noExplicitAny: Discord interaction types are complex and dynamic, return type varies based on interaction response
   execute(interaction: any): Promise<any>;
 }
 
@@ -22,6 +23,7 @@ export class CommandHandlerManager {
     return this.handlers.get(commandName);
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Discord interaction types are complex and dynamic, return type varies based on interaction response
   async handleCommand(interaction: any): Promise<any> {
     const commandName = interaction.data?.name;
     if (!commandName) {

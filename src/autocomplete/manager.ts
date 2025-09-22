@@ -9,8 +9,10 @@ export class AutocompleteManager {
     this.registry.register(commandName, optionName, handler);
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Discord interaction types are complex and dynamic
   async handleAutocomplete(interaction: any): Promise<AutocompleteResponse> {
     const commandName = interaction.data?.name;
+    // biome-ignore lint/suspicious/noExplicitAny: Discord option types are dynamic
     const focusedOption = interaction.data?.options?.find((opt: any) => opt.focused);
 
     if (!commandName || !focusedOption) {
