@@ -11,12 +11,12 @@ export class AutocompleteProcessor {
   ): AutocompleteHandler {
     return (query: string) => {
       if (!query) return choices;
-      
+
       const defaultFilter = (choice: AutocompleteChoice, q: string) =>
         choice.name.toLowerCase().includes(q.toLowerCase());
-      
+
       const filter = filterFn || defaultFilter;
-      return choices.filter(choice => filter(choice, query));
+      return choices.filter((choice) => filter(choice, query));
     };
   }
 

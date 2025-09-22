@@ -1,6 +1,6 @@
-import type { AutocompleteContext, AutocompleteHandler, AutocompleteResponse } from './types';
 import { AutocompleteRegistry } from './registry';
 import { createAutocompleteResponse } from './response';
+import type { AutocompleteContext, AutocompleteHandler, AutocompleteResponse } from './types';
 
 export class AutocompleteManager {
   private registry = new AutocompleteRegistry();
@@ -12,7 +12,7 @@ export class AutocompleteManager {
   async handleAutocomplete(interaction: any): Promise<AutocompleteResponse> {
     const commandName = interaction.data?.name;
     const focusedOption = interaction.data?.options?.find((opt: any) => opt.focused);
-    
+
     if (!commandName || !focusedOption) {
       return createAutocompleteResponse([]);
     }
