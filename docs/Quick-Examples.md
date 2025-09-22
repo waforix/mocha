@@ -1,441 +1,409 @@
 # Quick Examples
 
-This guide provides practical examples to help you get started with @waforix/mocha quickly.
+Get started quickly with these practical examples of using Waforix in your Discord bot.
 
-## Basic Bot Setup
+## 🤖 Discord.js Integration
 
-### Simple Statistics Bot
-
+### Complete Bot Example
 ```typescript
-import { Client } from '@waforix/mocha';
+import { Client, GatewayIntentBits } from 'discord.js';
+import { StatsClient } from 'waforix';
 
-const client = new Client({
-  token: process.env.DISCORD_TOKEN!,
-  database: {
-    type: 'sqlite',
-    path: './data/stats.db'
-  },
-  enableMetrics: true
-});
-
-client.on('ready', () => {
-  console.log('Bot is ready!');
-});
-
-client.on('error', console.error);
-
-await client.connect();
-```
-
-## Command Examples
-
-### User Statistics Command
-
-```typescript
-import { SlashCommandBuilder } from '@waforix/mocha';
-
-// Build the command
-const userStatsCommand = new SlashCommandBuilder('userstats', 'Get user statistics')
-  .addUserOption('user', 'The user to get stats for', true)
-  .addStringOption('period', 'Time period')
-    .addChoice('7 days', '7')
-    .addChoice('30 days', '30')
-    .addChoice('All time', 'all');
-
-// Register command handler
-client.getCommandHandlerManager().register('userstats', {
-  async execute(interaction) {
-    const userId = interaction.data.options?.find(opt => opt.name === 'user')?.value;
-    const period = interaction.data.options?.find(opt => opt.name === 'period')?.value || '30';
-    
-    try {
-      const days = period === 'all' ? undefined : parseInt(period);
-      const stats = await client.getUserStats(interaction.guild_id, userId, days);
-      
-      return {
-        type: 4,
-        data: {
-          content: `📊 **User Statistics**\n` +
-                  `Messages: ${stats.messageCount}\n` +
-                  `Voice Time: ${Math.round(stats.voiceTime)} minutes\n` +
-                  `Reactions: ${stats.reactionCount}`
-        }
-      };
-    } catch (error) {
-      return {
-        type: 4,
-        data: {
-          content: 'Failed to fetch user statistics.',
-          flags: 64 // Ephemeral
-        }
-      };
-    }
-  }
-});
-```
-
-### Server Leaderboard Command
-
-```typescript
-const leaderboardCommand = new SlashCommandBuilder('leaderboard', 'Show server leaderboard')
-  .addStringOption('type', 'Leaderboard type', true)
-    .addChoice('Messages', 'messages')
-    .addChoice('Voice Time', 'voice')
-    .addChoice('Reactions', 'reactions')
-  .addIntegerOption('limit', 'Number of users to show')
-    .setMinValue(5)
-    .setMaxValue(25);
-
-client.getCommandHandlerManager().register('leaderboard', {
-  async execute(interaction) {
-    const type = interaction.data.options?.find(opt => opt.name === 'type')?.value;
-    const limit = interaction.data.options?.find(opt => opt.name === 'limit')?.value || 10;
-    
-    const guildStats = await client.getGuildStats(interaction.guild_id);
-    
-    let leaderboard = '';
-    let title = '';
-    
-    switch (type) {
-      case 'messages':
-        title = '📝 Message Leaderboard';
-        guildStats.topUsers.slice(0, limit).forEach((user, index) => {
-          leaderboard += `${index + 1}. ${user.username}: ${user.messageCount} messages\n`;
-        });
-        break;
-        
-      case 'voice':
-        title = '🎤 Voice Time Leaderboard';
-        // This would require additional voice time data
-        leaderboard = 'Voice leaderboard coming soon!';
-        break;
-        
-      case 'reactions':
-        title = '⭐ Reaction Leaderboard';
-        // This would require additional reaction data
-        leaderboard = 'Reaction leaderboard coming soon!';
-        break;
-    }
-    
-    return {
-      type: 4,
-      data: {
-        content: `${title}\n\`\`\`\n${leaderboard}\`\`\``
-      }
-    };
-  }
-});
-```
-
-## Autocomplete Examples
-
-### User Search Autocomplete
-
-```typescript
-import { createAsyncChoices } from '@waforix/mocha';
-
-// Register autocomplete for user search
-client.getAutocompleteManager().register(
-  'userstats',
-  'user',
-  createAsyncChoices(async (query, context) => {
-    if (!context.guildId || query.length < 2) {
-      return [];
-    }
-
-    const leaderboard = await client.getLeaderboard(context.guildId, 'messages', 25);
-
-    return leaderboard
-      .filter(user => user.username.toLowerCase().includes(query.toLowerCase()))
-      .map(user => ({
-        name: `${user.username} (${user.messageCount} messages)`,
-        value: user.userId
-      })).slice(0, 25);
-  })
-);
-```
-
-### Channel Search Autocomplete
-
-```typescript
-client.getAutocompleteManager().register('channelstats', 'channel', async (query, context) => {
-  if (!context.guildId) return [];
-  
-  // This would typically fetch from Discord API or your database
-  const channels = [
-    { id: '123', name: 'general', messageCount: 1500 },
-    { id: '456', name: 'random', messageCount: 800 },
-    { id: '789', name: 'bot-commands', messageCount: 300 }
-  ];
-  
-  return channels
-    .filter(channel => 
-      channel.name.toLowerCase().includes(query.toLowerCase())
-    )
-    .map(channel => ({
-      name: `#${channel.name} (${channel.messageCount} messages)`,
-      value: channel.id
-    }));
-});
-```
-
-## Advanced Examples
-
-### Embed Response with Statistics
-
-```typescript
-import { EmbedBuilder } from '@waforix/mocha';
-
-client.getCommandHandlerManager().register('serverstats', {
-  async execute(interaction) {
-    const stats = await client.getGuildStats(interaction.guild_id);
-    
-    const embed = new EmbedBuilder()
-      .setTitle('📊 Server Statistics')
-      .setDescription('Comprehensive server activity statistics')
-      .addField('Total Messages', stats.totalMessages.toLocaleString(), true)
-      .addField('Active Users', stats.activeUsers.toString(), true)
-      .addField('Voice Time', `${Math.round(stats.totalVoiceTime)} minutes`, true)
-      .addField('Top Channel', stats.topChannels[0]?.channelName || 'None', true)
-      .addField('Top User', stats.topUsers[0]?.username || 'None', true)
-      .addField('Total Reactions', stats.totalReactions.toLocaleString(), true)
-      .setColor(0x00ff00)
-      .setTimestamp()
-      .setFooter('Statistics updated in real-time');
-    
-    return {
-      type: 4,
-      data: {
-        embeds: [embed.build()]
-      }
-    };
-  }
-});
-```
-
-### Subcommand Example
-
-```typescript
-const configCommand = new SlashCommandBuilder('config', 'Bot configuration commands')
-  .addSubcommand('view', 'View current configuration')
-  .addSubcommand('set', 'Set configuration value')
-    .addStringOption('key', 'Configuration key', true)
-      .setAutocomplete(true)
-    .addStringOption('value', 'Configuration value', true);
-
-client.getCommandHandlerManager().register('config', {
-  async execute(interaction) {
-    const subcommand = interaction.data.options?.[0];
-    
-    if (!subcommand) {
-      return { type: 4, data: { content: 'Subcommand required!' } };
-    }
-    
-    switch (subcommand.name) {
-      case 'view':
-        return {
-          type: 4,
-          data: {
-            content: '⚙️ **Current Configuration**\n' +
-                    '```json\n' +
-                    JSON.stringify({
-                      prefix: '!',
-                      welcomeChannel: 'general',
-                      logChannel: 'mod-log'
-                    }, null, 2) +
-                    '\n```'
-          }
-        };
-        
-      case 'set':
-        const key = subcommand.options?.find(opt => opt.name === 'key')?.value;
-        const value = subcommand.options?.find(opt => opt.name === 'value')?.value;
-        
-        // Save configuration logic here
-        
-        return {
-          type: 4,
-          data: {
-            content: `✅ Configuration updated: \`${key}\` = \`${value}\``
-          }
-        };
-    }
-  }
-});
-
-// Autocomplete for configuration keys
-client.getAutocompleteManager().register('config', 'key', async (query) => {
-  const configKeys = [
-    { name: 'Bot Prefix', value: 'prefix' },
-    { name: 'Welcome Channel', value: 'welcomeChannel' },
-    { name: 'Log Channel', value: 'logChannel' },
-    { name: 'Auto Role', value: 'autoRole' }
-  ];
-  
-  return configKeys.filter(key =>
-    key.name.toLowerCase().includes(query.toLowerCase())
-  );
-});
-```
-
-### Data Export Example
-
-```typescript
-client.getCommandHandlerManager().register('export', {
-  async execute(interaction) {
-    // Defer response for long operation
-    await interaction.deferReply();
-    
-    try {
-      const exportData = await client.exportData({
-        format: 'json',
-        guildId: interaction.guild_id,
-        dateRange: {
-          start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-          end: new Date()
-        },
-        includeUsers: true,
-        includeMessages: true
-      });
-
-      // In a real implementation, you'd upload the file or provide a download link
-      return {
-        type: 4,
-        data: {
-          content: `📁 **Data Export Complete**\n` +
-                  `Guild: ${exportData.metadata.guildId}\n` +
-                  `Records: ${exportData.metadata.recordCount}\n` +
-                  `Date Range: ${exportData.metadata.dateRange.start.toDateString()} - ${exportData.metadata.dateRange.end.toDateString()}\n` +
-                  `Exported: ${exportData.metadata.exportDate.toISOString()}`
-        }
-      };
-    } catch (error) {
-      return {
-        type: 4,
-        data: {
-          content: '❌ Export failed. Please try again later.',
-          flags: 64
-        }
-      };
-    }
-  }
-});
-```
-
-## Error Handling Examples
-
-### Comprehensive Error Handling
-
-```typescript
-client.getCommandHandlerManager().register('robust-command', {
-  async execute(interaction) {
-    try {
-      // Validate permissions
-      if (!interaction.member?.permissions?.includes('MANAGE_GUILD')) {
-        return {
-          type: 4,
-          data: {
-            content: '❌ You need Manage Server permission to use this command.',
-            flags: 64
-          }
-        };
-      }
-      
-      // Validate input
-      const userId = interaction.data.options?.find(opt => opt.name === 'user')?.value;
-      if (!userId) {
-        return {
-          type: 4,
-          data: {
-            content: '❌ Please specify a user.',
-            flags: 64
-          }
-        };
-      }
-      
-      // Perform operation with timeout
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Operation timeout')), 5000)
-      );
-      
-      const operationPromise = client.getUserStats(interaction.guild_id, userId);
-      
-      const stats = await Promise.race([operationPromise, timeoutPromise]);
-      
-      return {
-        type: 4,
-        data: {
-          content: `✅ Operation completed successfully!\nUser has ${stats.messageCount} messages.`
-        }
-      };
-      
-    } catch (error) {
-      console.error('Command error:', error);
-      
-      let errorMessage = '❌ An unexpected error occurred.';
-      
-      if (error.message === 'Operation timeout') {
-        errorMessage = '⏱️ Operation timed out. Please try again.';
-      } else if (error.message.includes('not found')) {
-        errorMessage = '❌ User not found in this server.';
-      }
-      
-      return {
-        type: 4,
-        data: {
-          content: errorMessage,
-          flags: 64
-        }
-      };
-    }
-  }
-});
-```
-
-## Integration Examples
-
-### Discord.js Integration
-
-```typescript
-import { Client as DiscordClient, GatewayIntentBits } from 'discord.js';
-import { Client as MochaClient } from '@waforix/mocha';
-
-// Discord.js client
-const discord = new DiscordClient({
+// Initialize Discord client
+const discord = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMembers
   ]
 });
 
-// Mocha client
-const mocha = new MochaClient({
-  token: process.env.DISCORD_TOKEN!,
+// Initialize Waforix
+const stats = new StatsClient({
   database: {
     type: 'sqlite',
     path: './data/stats.db'
   }
 });
 
-// Connect both clients
-await Promise.all([
-  discord.login(process.env.DISCORD_TOKEN!),
-  mocha.connect()
-]);
+// Initialize both clients
+async function initialize() {
+  await stats.initialize();
+  await discord.login('YOUR_BOT_TOKEN');
+  console.log('Bot and Waforix initialized!');
+}
 
-// Use Discord.js for complex interactions, Mocha for statistics
+// Track message events
 discord.on('messageCreate', async (message) => {
-  if (message.content === '!stats') {
-    const stats = await mocha.getUserStats(message.guild.id, message.author.id);
-    message.reply(`You have sent ${stats.messageCount} messages!`);
+  if (message.author.bot) return;
+  
+  try {
+    await stats.trackMessage({
+      id: message.id,
+      userId: message.author.id,
+      guildId: message.guild?.id || '',
+      channelId: message.channel.id,
+      content: message.content,
+      timestamp: message.createdTimestamp,
+      attachmentCount: message.attachments.size,
+      embedCount: message.embeds.length
+    });
+  } catch (error) {
+    console.error('Failed to track message:', error);
+  }
+});
+
+// Track voice events
+discord.on('voiceStateUpdate', async (oldState, newState) => {
+  const userId = newState.id;
+  const guildId = newState.guild.id;
+  
+  try {
+    if (!oldState.channelId && newState.channelId) {
+      // User joined voice
+      await stats.trackVoice({
+        id: `${userId}-${Date.now()}`,
+        userId,
+        guildId,
+        channelId: newState.channelId,
+        action: 'join',
+        timestamp: Date.now()
+      });
+    } else if (oldState.channelId && !newState.channelId) {
+      // User left voice
+      await stats.trackVoice({
+        id: `${userId}-${Date.now()}`,
+        userId,
+        guildId,
+        channelId: oldState.channelId,
+        action: 'leave',
+        timestamp: Date.now()
+      });
+    }
+  } catch (error) {
+    console.error('Failed to track voice event:', error);
+  }
+});
+
+initialize();
+```
+
+### Simple Message Tracking
+```typescript
+import { Client, GatewayIntentBits } from 'discord.js';
+import { StatsClient } from 'waforix';
+
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
+});
+
+const stats = new StatsClient({
+  database: { type: 'sqlite', path: './stats.db' }
+});
+
+client.on('ready', async () => {
+  await stats.initialize();
+  console.log('Ready to track messages!');
+});
+
+client.on('messageCreate', async (message) => {
+  if (message.author.bot || !message.guild) return;
+  
+  await stats.trackMessage({
+    id: message.id,
+    userId: message.author.id,
+    guildId: message.guild.id,
+    channelId: message.channel.id,
+    content: message.content,
+    timestamp: message.createdTimestamp,
+    attachmentCount: message.attachments.size,
+    embedCount: message.embeds.length
+  });
+});
+
+client.login('YOUR_BOT_TOKEN');
+```
+
+## 📊 Basic Analytics Examples
+
+### Server Statistics Command
+```typescript
+// Slash command to get server stats
+discord.on('interactionCreate', async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  
+  if (interaction.commandName === 'stats') {
+    const days = interaction.options.getInteger('days') || 30;
+    
+    try {
+      const serverStats = await stats.getServerStats(interaction.guildId!, days);
+      
+      const embed = new EmbedBuilder()
+        .setTitle(`📊 Server Statistics (Last ${days} days)`)
+        .addFields(
+          { name: '💬 Total Messages', value: serverStats.totalMessages.toLocaleString(), inline: true },
+          { name: '👥 Active Users', value: serverStats.activeUsers.toString(), inline: true },
+          { name: '🎤 Voice Time', value: `${Math.round(serverStats.totalVoiceTime / 3600000)} hours`, inline: true }
+        )
+        .setColor('#0099ff')
+        .setTimestamp();
+      
+      await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      await interaction.reply('Failed to get server statistics.');
+    }
   }
 });
 ```
 
-For more comprehensive guides, see:
+### User Statistics Command
+```typescript
+discord.on('interactionCreate', async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  
+  if (interaction.commandName === 'userstats') {
+    const user = interaction.options.getUser('user') || interaction.user;
+    const days = interaction.options.getInteger('days') || 30;
+    
+    try {
+      const userStats = await stats.getUserStats(interaction.guildId!, user.id, days);
+      
+      const embed = new EmbedBuilder()
+        .setTitle(`📈 ${user.username}'s Statistics`)
+        .addFields(
+          { name: '💬 Messages', value: userStats.messages.toString(), inline: true },
+          { name: '🎤 Voice Time', value: `${Math.round(userStats.voiceTime / 3600000)} hours`, inline: true },
+          { name: '📊 Server Rank', value: `#${userStats.rank}`, inline: true }
+        )
+        .setThumbnail(user.displayAvatarURL())
+        .setColor('#00ff99');
+      
+      await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      await interaction.reply('Failed to get user statistics.');
+    }
+  }
+});
+```
 
-- [Getting Started](https://github.com/waforix/mocha/wiki/Getting-Started)
-- [Command System](https://github.com/waforix/mocha/wiki/Command-System)
-- [Autocomplete System](https://github.com/waforix/mocha/wiki/Autocomplete-System)
-- [API Reference](https://github.com/waforix/mocha/wiki/API-Reference)
+### Leaderboard Command
+```typescript
+discord.on('interactionCreate', async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  
+  if (interaction.commandName === 'leaderboard') {
+    const type = interaction.options.getString('type') || 'messages';
+    const limit = interaction.options.getInteger('limit') || 10;
+    
+    try {
+      const leaderboard = await stats.getLeaderboard(
+        interaction.guildId!, 
+        type as 'messages' | 'voice', 
+        { limit, days: 30 }
+      );
+      
+      const description = leaderboard
+        .map((user, index) => {
+          const emoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '📍';
+          const value = type === 'voice' 
+            ? `${Math.round(user.count / 3600000)} hours`
+            : `${user.count} messages`;
+          return `${emoji} **${user.username}** - ${value}`;
+        })
+        .join('\n');
+      
+      const embed = new EmbedBuilder()
+        .setTitle(`🏆 ${type.charAt(0).toUpperCase() + type.slice(1)} Leaderboard`)
+        .setDescription(description)
+        .setColor('#ffaa00');
+      
+      await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      await interaction.reply('Failed to get leaderboard.');
+    }
+  }
+});
+```
+
+## 🎯 Event Tracking Examples
+
+### Track All Event Types
+```typescript
+// Message tracking
+discord.on('messageCreate', async (message) => {
+  if (message.author.bot || !message.guild) return;
+  
+  await stats.trackMessage({
+    id: message.id,
+    userId: message.author.id,
+    guildId: message.guild.id,
+    channelId: message.channel.id,
+    content: message.content,
+    timestamp: message.createdTimestamp,
+    attachmentCount: message.attachments.size,
+    embedCount: message.embeds.length
+  });
+});
+
+// Reaction tracking
+discord.on('messageReactionAdd', async (reaction, user) => {
+  if (user.bot) return;
+  
+  await stats.trackReaction({
+    id: `${reaction.message.id}-${user.id}-${Date.now()}`,
+    userId: user.id,
+    guildId: reaction.message.guild?.id || '',
+    channelId: reaction.message.channel.id,
+    messageId: reaction.message.id,
+    action: 'add',
+    emojiId: reaction.emoji.id,
+    emojiName: reaction.emoji.name || '',
+    emojiAnimated: reaction.emoji.animated || false,
+    timestamp: Date.now()
+  });
+});
+
+// Member join/leave tracking
+discord.on('guildMemberAdd', async (member) => {
+  await stats.trackMember({
+    id: `${member.id}-join-${Date.now()}`,
+    userId: member.id,
+    guildId: member.guild.id,
+    action: 'join',
+    timestamp: Date.now()
+  });
+});
+
+discord.on('guildMemberRemove', async (member) => {
+  await stats.trackMember({
+    id: `${member.id}-leave-${Date.now()}`,
+    userId: member.id,
+    guildId: member.guild.id,
+    action: 'leave',
+    timestamp: Date.now()
+  });
+});
+```
+
+## 📈 Analytics Dashboard Example
+
+### Simple Web Dashboard
+```typescript
+import express from 'express';
+import { StatsClient } from 'waforix';
+
+const app = express();
+const stats = new StatsClient({
+  database: { type: 'sqlite', path: './stats.db' }
+});
+
+await stats.initialize();
+
+// API endpoint for server stats
+app.get('/api/stats/:guildId', async (req, res) => {
+  try {
+    const { guildId } = req.params;
+    const days = parseInt(req.query.days as string) || 30;
+    
+    const serverStats = await stats.getServerStats(guildId, days);
+    const leaderboard = await stats.getLeaderboard(guildId, 'messages', { limit: 10, days });
+    
+    res.json({
+      stats: serverStats,
+      leaderboard
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get statistics' });
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Dashboard running on http://localhost:3000');
+});
+```
+
+## 🔧 Utility Examples
+
+### Batch Processing
+```typescript
+// Process multiple events at once for better performance
+const events = [
+  { type: 'message', data: messageData1 },
+  { type: 'message', data: messageData2 },
+  { type: 'voice', data: voiceData1 }
+];
+
+await stats.batchProcess(events);
+```
+
+### Data Export
+```typescript
+// Export server data for backup
+const exportData = await stats.exportData('guild_id', {
+  format: 'json',
+  days: 30,
+  includeMessages: true,
+  includeVoice: true
+});
+
+console.log(`Exported ${exportData.totalRecords} records`);
+```
+
+### Health Monitoring
+```typescript
+// Monitor system health
+setInterval(async () => {
+  const health = await stats.healthCheck();
+  
+  if (health.database !== 'healthy') {
+    console.warn('Database health issue:', health.database);
+  }
+  
+  const metrics = await stats.getPerformanceMetrics();
+  console.log(`Cache hit rate: ${metrics.cacheHitRate}%`);
+}, 60000); // Check every minute
+```
+
+## 🚀 Advanced Examples
+
+### Custom Analytics Query
+```typescript
+// Get hourly activity for the last 7 days
+const hourlyActivity = await stats.getHourlyActivity('guild_id', 7);
+
+// Find peak activity hour
+const peakHour = hourlyActivity.reduce((max, hour) => 
+  hour.activity > max.activity ? hour : max
+);
+
+console.log(`Peak activity: ${peakHour.hour}:00 with ${peakHour.activity} messages`);
+```
+
+### Real-time Activity Monitoring
+```typescript
+// Set up real-time monitoring
+stats.on('activityUpdate', (data) => {
+  console.log(`Current activity: ${data.activeUsers} users, ${data.recentMessages} messages/hour`);
+});
+
+await stats.startRealTimeMonitoring('guild_id');
+```
+
+## 📚 Next Steps
+
+Ready to dive deeper? Check out these guides:
+
+- **[Event Tracking](https://github.com/waforix/mocha/wiki/Event-Tracking)** - Comprehensive event tracking guide
+- **[Analytics & Insights](https://github.com/waforix/mocha/wiki/Analytics-&-Insights)** - Advanced analytics features
+- **[Database Configuration](https://github.com/waforix/mocha/wiki/Database-Configuration)** - Optimize your database setup
+- **[Performance Optimization](https://github.com/waforix/mocha/wiki/Performance-Optomization)** - Scale for production
+
+## 💡 Pro Tips
+
+- **Use batch processing** for high-volume bots
+- **Enable caching** to improve query performance
+- **Monitor memory usage** in production
+- **Set up error handling** for all tracking operations
+- **Use environment variables** for configuration

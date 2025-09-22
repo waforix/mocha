@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
-import { Client } from '../../lib/client';
+import { StatsClient } from '../../lib/client';
 import { setupTestDb } from '../utils/setup';
 
-describe('Client', () => {
+describe('StatsClient', () => {
   const dbManager = setupTestDb();
-  let client: Client;
+  let client: StatsClient;
 
   beforeEach(async () => {
     await dbManager.setup();
-    client = new Client({
+    client = new StatsClient({
       database: {
         type: 'sqlite',
         path: ':memory:',
@@ -28,7 +28,7 @@ describe('Client', () => {
     });
 
     it('initializes with default options', () => {
-      expect(client).toBeInstanceOf(Client);
+      expect(client).toBeInstanceOf(StatsClient);
     });
   });
 
