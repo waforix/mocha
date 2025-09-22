@@ -5,11 +5,13 @@ Welcome to the comprehensive documentation for Waforix, a powerful Discord bot s
 ## 📚 Documentation Index
 
 ### Getting Started
+
 - **[README](https://github.com/waforix/mocha/blob/main/README.md)** - Quick start guide and overview
 - **[Getting Started Guide](https://github.com/waforix/mocha/wiki/Getting-Started)** - Installation and basic setup
 - **[Quick Examples](https://github.com/waforix/mocha/wiki/Quick-Examples)** - Simple examples to get you started
 
 ### Core Documentation
+
 - **[Database Configuration](https://github.com/waforix/mocha/wiki/Database-Configuration)** - SQLite and PostgreSQL setup and optimization
 - **[Event Tracking](https://github.com/waforix/mocha/wiki/Event-Tracking)** - Comprehensive guide to tracking Discord events
 - **[Analytics & Insights](https://github.com/waforix/mocha/wiki/Analytics-&-Insights)** - Advanced analytics and reporting features
@@ -18,6 +20,7 @@ Welcome to the comprehensive documentation for Waforix, a powerful Discord bot s
 - **[API Reference](https://github.com/waforix/mocha/wiki/API-Reference)** - Complete API documentation
 
 ### Advanced Topics
+
 - **[Migration Guide](https://github.com/waforix/mocha/wiki/Migration-Guide)** - Upgrading from older versions
 - **[Production Deployment](https://github.com/waforix/mocha/wiki/Production-Deployment)** - Production-ready configurations
 - **[Troubleshooting](https://github.com/waforix/mocha/wiki/Troubleshooting)** - Common issues and solutions
@@ -26,6 +29,7 @@ Welcome to the comprehensive documentation for Waforix, a powerful Discord bot s
 ## 🚀 Installation & Setup
 
 ### Prerequisites
+
 - Node.js 18+ or Bun
 - TypeScript 5.0+
 - SQLite 3.x or PostgreSQL 12+
@@ -46,9 +50,9 @@ yarn add waforix
 
 #### SQLite (Recommended for Development)
 ```typescript
-import { StatsClient } from 'waforix';
+import { Client } from 'waforix';
 
-const client = new StatsClient({
+const client = new Client({
   database: {
     type: 'sqlite',
     path: './data/stats.db'
@@ -71,9 +75,9 @@ sudo -u postgres createuser --interactive stats_user
 ```
 
 ```typescript
-import { StatsClient } from 'waforix';
+import { Client } from 'waforix';
 
-const client = new StatsClient({
+const client = new Client({
   database: {
     type: 'postgres',
     host: 'localhost',
@@ -91,11 +95,11 @@ await client.initialize();
 
 ### Discord.js Integration
 ```typescript
-import { Client, GatewayIntentBits } from 'discord.js';
-import { StatsClient } from 'waforix';
+import { Client as DiscordClient, GatewayIntentBits } from 'discord.js';
+import { Client } from 'waforix';
 
 // Initialize Discord client
-const discord = new Client({
+const discord = new DiscordClient({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -106,7 +110,7 @@ const discord = new Client({
 });
 
 // Initialize Waforix
-const stats = new StatsClient({
+const stats = new Client({
   database: {
     type: 'sqlite',
     path: './data/stats.db'
