@@ -15,7 +15,7 @@ import { StatsAggregator } from '../stats/index';
 import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
 import { TIMEOUTS } from './constants';
 
-export interface StatsClientOptions extends GatewayOptions {
+export interface ClientOptions extends GatewayOptions {
   dbPath?: string;
   database?: DatabaseConfig;
   cache?: CacheConfig;
@@ -24,7 +24,7 @@ export interface StatsClientOptions extends GatewayOptions {
   enableRateLimit?: boolean;
 }
 
-export class StatsClient extends EventEmitter {
+export class Client extends EventEmitter {
   private gateway: GatewayClient;
   private dispatcher!: EventDispatcher;
   private aggregator!: StatsAggregator;
@@ -37,7 +37,7 @@ export class StatsClient extends EventEmitter {
   private exporter!: DataExporter;
   private initialized = false;
 
-  constructor(options: StatsClientOptions) {
+  constructor(options: ClientOptions) {
     super();
     this.validateOptions(options);
     this.gateway = new GatewayClient(options);
@@ -47,7 +47,7 @@ export class StatsClient extends EventEmitter {
     });
   }
 
-  private validateOptions(options: StatsClientOptions) {
+  private validateOptions(options: ClientOptions) {
     if (!options.token) {
       throw new Error('Discord token is required');
     }
@@ -64,7 +64,7 @@ export class StatsClient extends EventEmitter {
     }
   }
 
-  private async initializeAsync(options: StatsClientOptions): Promise<void> {
+  private async initializeAsync(options: ClientOptions): Promise<void> {
     try {
       await this.initializeDatabase(options);
       this.setupComponents(options);
@@ -76,7 +76,7 @@ export class StatsClient extends EventEmitter {
     }
   }
 
-  private async initializeDatabase(options: StatsClientOptions): Promise<void> {
+  private async initializeDatabase(options: ClientOptions): Promise<void> {
     const config = options.database || {
       type: 'sqlite' as const,
       path: options.dbPath || './data/stats.db',
@@ -85,7 +85,7 @@ export class StatsClient extends EventEmitter {
     this.dbAdapter = db.db as CommonDatabase;
   }
 
-  private setupComponents(options: StatsClientOptions) {
+  private setupComponents(options: ClientOptions) {
     this.dispatcher = new EventDispatcher(this.dbAdapter);
     this.aggregator = new StatsAggregator(this.dbAdapter);
     this.exporter = new DataExporter(this.dbAdapter);
