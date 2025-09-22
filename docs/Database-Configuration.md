@@ -5,6 +5,7 @@
 ## Overview
 
 The database system handles:
+
 - Event storage (messages, voice, reactions, etc.)
 - User and guild statistics
 - Configuration data
@@ -366,6 +367,7 @@ const client = new Client({
 ### Common Issues
 
 **Connection Timeout:**
+
 ```typescript
 database: {
   // ... other options
@@ -377,6 +379,7 @@ database: {
 ```
 
 **Too Many Connections:**
+
 ```typescript
 database: {
   // ... other options
@@ -388,6 +391,7 @@ database: {
 ```
 
 **SSL Certificate Issues:**
+
 ```typescript
 database: {
   // ... other options

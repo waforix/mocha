@@ -434,6 +434,7 @@ discord.on('messageCreate', async (message) => {
 ```
 
 For more comprehensive guides, see:
+
 - [Getting Started](https://github.com/waforix/mocha/wiki/Getting-Started)
 - [Command System](https://github.com/waforix/mocha/wiki/Command-System)
 - [Autocomplete System](https://github.com/waforix/mocha/wiki/Autocomplete-System)

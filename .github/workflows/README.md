@@ -85,17 +85,20 @@ rm -rf temp-wiki/
 
 ### Troubleshooting
 
-**Wiki not updating**: 
+**Wiki not updating**:
+
 - Check that the repository wiki is enabled in Settings
 - Verify the workflow has the correct permissions
 - Check the Actions logs for error messages
 
 **Missing pages**:
+
 - Ensure `.md` files exist in the `docs/` directory
 - Check that file names don't contain special characters
 - Verify the workflow completed successfully
 
 **Navigation issues**:
+
 - The sidebar is regenerated on each sync
 - Custom sidebar modifications will be overwritten
 - Edit the workflow file to customize navigation structure
