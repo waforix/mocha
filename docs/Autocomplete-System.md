@@ -115,14 +115,16 @@ client.getAutocompleteManager().register(
     if (!context.guildId || query.length < 2) {
       return [];
     }
-    
-    // Search users in database
-    const users = await client.searchUsers(context.guildId, query);
-    
-    return users.map(user => ({
-      name: user.displayName || user.username,
-      value: user.id
-    }));
+
+    // Get leaderboard data to find active users
+    const leaderboard = await client.getLeaderboard(context.guildId, 'messages', 25);
+
+    return leaderboard
+      .filter(user => user.username.toLowerCase().includes(query.toLowerCase()))
+      .map(user => ({
+        name: `${user.username} (${user.messageCount} messages)`,
+        value: user.userId
+      }));
   })
 );
 ```
@@ -159,15 +161,17 @@ client.getAutocompleteManager().register('stats', 'user', async (query, context)
   if (!context.guildId || query.length < 2) {
     return [];
   }
-  
+
   try {
-    // Search active users
-    const users = await client.searchActiveUsers(context.guildId, query);
-    
-    return users.map(user => ({
-      name: `${user.displayName} (${user.messageCount} messages)`,
-      value: user.id
-    }));
+    // Get active users from leaderboard
+    const leaderboard = await client.getLeaderboard(context.guildId, 'messages', 25);
+
+    return leaderboard
+      .filter(user => user.username.toLowerCase().includes(query.toLowerCase()))
+      .map(user => ({
+        name: `${user.username} (${user.messageCount} messages)`,
+        value: user.userId
+      }));
   } catch (error) {
     console.error('User autocomplete error:', error);
     return [];
@@ -355,11 +359,13 @@ const userCommand = new SlashCommandBuilder('userinfo', 'Get information about a
 
 // Autocomplete handler
 client.getAutocompleteManager().register('userinfo', 'user', async (query, context) => {
-  const users = await client.searchUsers(context.guildId, query);
-  return users.map(user => ({
-    name: `${user.displayName} (${user.username})`,
-    value: user.id
-  }));
+  const leaderboard = await client.getLeaderboard(context.guildId, 'messages', 25);
+  return leaderboard
+    .filter(user => user.username.toLowerCase().includes(query.toLowerCase()))
+    .map(user => ({
+      name: `${user.username} (${user.messageCount} messages)`,
+      value: user.userId
+    }));
 });
 
 // Command handler

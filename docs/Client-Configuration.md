@@ -81,6 +81,7 @@ cache: {
 ```
 
 **Cache Options:**
+
 - `strategy`: Cache strategy (`'lru'` or `'memory'`)
 - `maxSize`: Maximum number of cached items
 - `ttl`: Time to live in milliseconds
@@ -227,7 +228,7 @@ const commands = client.getCommandHandlerManager();
 commands.register('command', handler);
 ```
 
-#### `getDatabase(): Promise<CommonDatabase>`
+#### `getDatabase(): Promise<DatabaseInstance>`
 
 Get direct database access (advanced usage).
 
@@ -255,6 +256,24 @@ const stats = await client.getGuildStats('guild123', 7);
 console.log(`Total messages: ${stats.totalMessages}`);
 ```
 
+#### `getLeaderboard(guildId: string, type: 'messages' | 'voice', limit?: number, days?: number): Promise<LeaderboardEntry[]>`
+
+Get leaderboard data for a guild.
+
+```typescript
+const leaderboard = await client.getLeaderboard('guild123', 'messages', 10, 30);
+console.log(`Top user: ${leaderboard[0].username}`);
+```
+
+#### `getActivityHeatmap(guildId: string, userId?: string, days?: number): Promise<HeatmapData>`
+
+Get activity heatmap data.
+
+```typescript
+const heatmap = await client.getActivityHeatmap('guild123', 'user456', 7);
+console.log(`Peak activity: ${heatmap.peakHour}`);
+```
+
 ### Data Export
 
 #### `exportData(options: ExportOptions): Promise<ExportData>`
@@ -265,8 +284,12 @@ Export data in various formats.
 const data = await client.exportData({
   format: 'json',
   guildId: 'guild123',
-  startDate: new Date('2024-01-01'),
-  endDate: new Date('2024-12-31')
+  dateRange: {
+    start: new Date('2024-01-01'),
+    end: new Date('2024-12-31')
+  },
+  includeUsers: true,
+  includeMessages: true
 });
 ```
 
