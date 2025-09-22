@@ -7,11 +7,6 @@ on:
       - 'docs/**'
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pages: write
-  actions: write
-
 jobs:
   sync-wiki:
     runs-on: ubuntu-latest
@@ -28,6 +23,20 @@ jobs:
           repository: ${{ github.repository }}.wiki
           path: wiki
           token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Initialize wiki if checkout failed
+        if: failure()
+        run: |
+          echo "Wiki checkout failed, initializing new wiki directory..."
+          rm -rf wiki
+          git clone "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki || {
+            echo "Creating new wiki directory..."
+            mkdir -p wiki
+            cd wiki
+            git init
+            git remote add origin "https://${{ secrets.WIKI_TOKEN || secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git"
+          }
 
       - name: Configure git
         run: |
