@@ -1,0 +1,1 @@
+export type GuildEvent<T> = { guild_id: string } & T;

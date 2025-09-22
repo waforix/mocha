@@ -47,8 +47,6 @@ export type { APITriggerMetadata, TriggerMetadata } from './autoModeration/trigg
  * CHANNEL
  */
 export type { APIChannel, Channel } from './channel/channel';
-export type { APIChannelStatus, ChannelStatus } from './channel/channelStatus';
-export type { APIChannelStatuses, ChannelStatuses } from "./channel/channelStatuses";
 export type { APIDefaultReaction, DefaultReaction } from './channel/defaultReaction';
 export type { APIForumTag, ForumTag } from './channel/forumTag';
 export type { APIOverwrite, Overwrite } from './channel/overwrite';
@@ -74,7 +72,6 @@ export type { APIGuildMember, GuildMember } from './guild/guildMember';
 export type { APIIncidentsData, IncidentsData } from './guild/incidentsData';
 export type { APIIntegration, Integration } from './guild/integration';
 export type { APIIntegrationAccount, IntegrationAccount } from './guild/integrationAccount';
-export type { APIPresence, Presence } from "./guild/presence";
 export type { APIWelcomeScreen, WelcomeScreen } from './guild/welcomeScreen';
 export type { APIWelcomeScreenChannel, WelcomeScreenChannel } from './guild/welcomeScreenChannel';
 
@@ -123,6 +120,11 @@ export type {
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionChoice,
 } from './message/applicationCommand/applicationCommandOptionChoice';
+/**
+ * MESSAGE
+ */
+export type { APIAttachment, Attachment } from './message/attachment';
+export type { AuthorizingIntegrationOwner } from './message/authorizingIntegrationOwner';
 /**
  * MESSAGE: COMPONENT
  */
@@ -180,19 +182,6 @@ export type {
   APIInteractionCallbackResource,
   InteractionCallbackResource,
 } from './message/interaction/interactionCallbackResource';
-/**
- * MESSAGE: REACTION
- */
-export type { APIMessageReaction, MessageReaction } from "./message/reaction/messageReaction";
-export type { APIReaction, Reaction } from "./message/reaction/reaction";
-export type { APIReactionCountDetails, ReactionCountDetails } from "./message/reaction/reactionCountDetails";
-/**
- * MESSAGE
- */
-export type { APIAttachment, Attachment } from './message/attachment';
-export type { AuthorizingIntegrationOwner } from './message/authorizingIntegrationOwner';
-export type { APIGuildMessage, GuildMessage } from "./message/guildMessage";
-export type { APIMention, Mention } from "./message/mention";
 export type { APIMessage, Message } from './message/message';
 export type { APIMessageActivity, MessageActivity } from './message/messageActivity';
 export type { APIMessageCall, MessageCall } from './message/messageCall';
@@ -223,7 +212,6 @@ export type { APIPollAnswer, PollAnswer } from './poll/pollAnswer';
 export type { APIPollAnswerCount, PollAnswerCount } from './poll/pollAnswerCount';
 export type { APIPollMedia, PollMedia } from './poll/pollMedia';
 export type { APIPollResults, PollResults } from './poll/pollResults';
-export type { APIPollVote, PollVote } from "./poll/pollVote";
 
 /**
  * ROLE
@@ -267,15 +255,12 @@ export type { APIAvatarDecorationData, AvatarDecorationData } from './user/avata
 export type { APICollectibles, Collectibles } from './user/collectibles';
 export type { APIConnection, Connection } from './user/connection';
 export type { APINameplate, Nameplate } from './user/nameplate';
-export type { APITyping, Typing } from "./user/typing";
 export type { APIUser, User } from './user/user';
 export type { APIUserPrimaryGuild, UserPrimaryGuild } from './user/userPrimaryGuild';
 
 /**
  * VOICE
  */
-export type { APICall, Call } from "./voice/call";
-export type { APIVoiceChannelEffect, VoiceChannelEffect } from "./voice/voiceChannelEffect";
 export type { APIVoiceState, VoiceState } from './voice/voiceState';
 
 /**

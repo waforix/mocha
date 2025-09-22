@@ -10,9 +10,3 @@ export { Client, Client as StatsClient } from './lib/index';
 export type { NotificationEvent, NotificationRule } from './notifications/index';
 export type { RateLimitConfig } from './ratelimit/index';
 export type { GuildStats, UserStats } from './stats/index';
-
-const client = new StatsClient({});
-
-await client.connect();
-
-export { StatsClient }
