@@ -224,16 +224,19 @@ Now that you have a basic setup:
 ### Common Issues
 
 **Bot doesn't respond to commands:**
+
 - Ensure the bot has the necessary permissions in your server
 - Check that intents are properly configured
 - Verify the bot token is correct
 
 **Database connection errors:**
+
 - Check database credentials and connection string
 - Ensure the database server is running
 - Verify network connectivity
 
 **TypeScript compilation errors:**
+
 - Ensure you're using TypeScript 5.0+
 - Check that all dependencies are installed
 - Verify your tsconfig.json configuration

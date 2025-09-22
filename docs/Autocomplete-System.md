@@ -5,6 +5,7 @@
 ## Overview
 
 The autocomplete system consists of:
+
 - **AutocompleteManager** - Manages autocomplete handlers
 - **AutocompleteHandler** - Functions that generate suggestions
 - **Helper Functions** - Utilities for creating common autocomplete patterns

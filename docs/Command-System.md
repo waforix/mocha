@@ -5,6 +5,7 @@
 ## Overview
 
 The command system consists of:
+
 - **SlashCommandBuilder** - For building command structures
 - **CommandHandlerManager** - For handling command execution
 - **Command Registration** - For registering commands with Discord

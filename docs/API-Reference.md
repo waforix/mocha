@@ -485,6 +485,7 @@ class ValidationError extends Error {
 ```
 
 For more detailed examples and usage patterns, see the specific guides:
+
 - [Getting Started](https://github.com/waforix/mocha/wiki/Getting-Started)
 - [Client Configuration](https://github.com/waforix/mocha/wiki/Client-Configuration)
 - [Command System](https://github.com/waforix/mocha/wiki/Command-System)
