@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { MetricsCollector } from '../analytics/index';
+import { AutocompleteManager } from '../autocomplete/index';
 import type { CacheConfig } from '../cache/index';
 import { CacheManager, createHeatmapKey } from '../cache/index';
 import type { CommonDatabase } from '../db/index';
@@ -35,6 +36,7 @@ export class Client extends EventEmitter {
   private notifications?: NotificationEngine;
   private rateLimit?: RateLimitManager;
   private exporter!: DataExporter;
+  private autocomplete: AutocompleteManager;
   private initialized = false;
 
   constructor(options: ClientOptions) {
@@ -42,6 +44,7 @@ export class Client extends EventEmitter {
     this.validateOptions(options);
     this.gateway = new GatewayClient(options);
     this.cache = new CacheManager(options.cache);
+    this.autocomplete = new AutocompleteManager();
     this.initializeAsync(options).catch((error) => {
       this.emit('error', error);
     });
@@ -293,5 +296,9 @@ export class Client extends EventEmitter {
     afk?: boolean;
   }): void {
     this.gateway.updatePresence(presence);
+  }
+
+  getAutocompleteManager(): AutocompleteManager {
+    return this.autocomplete;
   }
 }

@@ -1,4 +1,5 @@
 export type { Metrics } from './analytics/index';
+export * from './autocomplete/index';
 export * from './builders/index';
 export type { CacheConfig } from './cache/index';
 export type { ExportData, ExportOptions } from './export/index';
