@@ -12,6 +12,7 @@ export interface SlashCommandOption {
   choices?: SlashCommandChoice[];
   min_value?: number;
   max_value?: number;
+  autocomplete?: boolean;
   options?: SlashCommandOption[];
 }
 
