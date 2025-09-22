@@ -1,244 +1,295 @@
 # Getting Started
 
-This guide will help you get up and running with @waforix/mocha quickly.
+Welcome to Waforix! This guide will help you get up and running with the Discord bot statistics library.
 
-## Prerequisites
+## 🚀 Installation & Setup
 
-Before you begin, ensure you have:
+### Prerequisites
+- Node.js 18+ or Bun
+- TypeScript 5.0+
+- SQLite 3.x or PostgreSQL 12+
 
-- Node.js 18+ or Bun installed
-- A Discord application and bot token
-- Basic knowledge of TypeScript/JavaScript
-- A database (SQLite for development, PostgreSQL/MySQL for production)
-
-## Installation
-
-Install @waforix/mocha using your preferred package manager:
-
+### Package Installation
 ```bash
+# Using Bun (recommended)
+bun add waforix
+
 # Using npm
-npm install @waforix/mocha
+npm install waforix
 
 # Using yarn
-yarn add @waforix/mocha
-
-# Using bun (recommended)
-bun add @waforix/mocha
+yarn add waforix
 ```
 
-## Creating a Discord Application
+### Database Setup
 
-1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click "New Application" and give it a name
-3. Go to the "Bot" section
-4. Click "Add Bot"
-5. Copy the bot token (keep this secure!)
-6. Enable the necessary intents (see below)
-
-### Required Bot Intents
-
-For full functionality, enable these intents:
-
-- `GUILDS` - Access to guild information
-- `GUILD_MESSAGES` - Track message events
-- `GUILD_VOICE_STATES` - Track voice activity
-- `GUILD_MESSAGE_REACTIONS` - Track reactions
-- `GUILD_MEMBERS` - Access to member information (if needed)
-
-## Basic Setup
-
-Create a new file (e.g., `bot.ts`) and add the following:
+#### SQLite (Recommended for Development)
+SQLite is perfect for getting started quickly with zero configuration required.
 
 ```typescript
-import { Client } from '@waforix/mocha';
+import { StatsClient } from 'waforix';
 
-const client = new Client({
-  token: 'your-discord-bot-token',
+const client = new StatsClient({
   database: {
     type: 'sqlite',
     path: './data/stats.db'
-  },
-  // Optional: Enable additional features
-  enableMetrics: true,
-  enableNotifications: true,
-  enableRateLimit: true
-});
-
-// Event handlers
-client.on('ready', () => {
-  console.log(`Bot is ready! Logged in as ${client.user?.tag}`);
-});
-
-client.on('error', (error) => {
-  console.error('Client error:', error);
-});
-
-// Start the client
-async function start() {
-  try {
-    await client.connect();
-  } catch (error) {
-    console.error('Failed to start client:', error);
   }
-}
+});
 
-start();
+await client.initialize();
 ```
 
-## Environment Variables
+**Advantages of SQLite:**
+- Zero configuration required
+- Single file database
+- Perfect for development and small servers
+- Automatic schema creation
 
-For security, use environment variables for sensitive data:
+#### PostgreSQL (Recommended for Production)
+PostgreSQL offers better performance and scalability for larger Discord servers.
 
+**Step 1: Install PostgreSQL**
 ```bash
-# .env file
-DISCORD_TOKEN=your-discord-bot-token
-DATABASE_URL=sqlite:./data/stats.db
-```
-
-```typescript
-import { Client } from '@waforix/mocha';
-import 'dotenv/config';
-
-const client = new Client({
-  token: process.env.DISCORD_TOKEN!,
-  database: {
-    type: 'sqlite',
-    path: './data/stats.db'
-  }
-});
-```
-
-## Database Setup
-
-### SQLite (Development)
-
-SQLite requires no additional setup - the database file will be created automatically:
-
-```typescript
-const client = new Client({
-  token: process.env.DISCORD_TOKEN!,
-  database: {
-    type: 'sqlite',
-    path: './data/stats.db'
-  }
-});
-```
-
-### PostgreSQL (Production)
-
-First, install PostgreSQL and create a database:
-
-```bash
-# Install PostgreSQL (Ubuntu/Debian)
+# Ubuntu/Debian
 sudo apt update
 sudo apt install postgresql postgresql-contrib
 
-# Create database and user
-sudo -u postgres createdb mocha_stats
-sudo -u postgres createuser --interactive mocha_user
+# macOS
+brew install postgresql
+
+# Windows - Download from https://www.postgresql.org/download/windows/
 ```
 
-Then configure the client:
+**Step 2: Create Database and User**
+```bash
+# Connect as postgres user
+sudo -u postgres psql
 
+# Create database
+CREATE DATABASE discord_stats;
+
+# Create user
+CREATE USER stats_user WITH PASSWORD 'your_secure_password';
+
+# Grant permissions
+GRANT ALL PRIVILEGES ON DATABASE discord_stats TO stats_user;
+
+# Exit
+\q
+```
+
+**Step 3: Configure Waforix**
 ```typescript
-const client = new Client({
-  token: process.env.DISCORD_TOKEN!,
+import { StatsClient } from 'waforix';
+
+const client = new StatsClient({
   database: {
     type: 'postgres',
     host: 'localhost',
     port: 5432,
-    database: 'mocha_stats',
-    username: 'mocha_user',
-    password: 'your_password'
+    database: 'discord_stats',
+    username: 'stats_user',
+    password: 'your_secure_password'
+  }
+});
+
+await client.initialize();
+```
+
+**Advantages of PostgreSQL:**
+- Better performance for large datasets
+- Superior concurrent access
+- Advanced query capabilities
+- Horizontal scaling support
+
+## 🔧 Basic Configuration
+
+### Environment Variables (Recommended)
+For security and flexibility, use environment variables:
+
+```bash
+# .env file
+DB_TYPE=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=discord_stats
+DB_USER=stats_user
+DB_PASSWORD=your_secure_password
+```
+
+```typescript
+import { StatsClient } from 'waforix';
+
+const client = new StatsClient({
+  database: {
+    type: process.env.DB_TYPE as 'sqlite' | 'postgres',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT || '5432'),
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    // For SQLite
+    path: process.env.DB_PATH || './data/stats.db'
   }
 });
 ```
 
-## Your First Command
-
-Let's create a simple stats command:
-
+### Optional Configuration
 ```typescript
-import { Client, SlashCommandBuilder } from '@waforix/mocha';
+const client = new StatsClient({
+  database: {
+    type: 'sqlite',
+    path: './data/stats.db'
+  },
+  // Optional: Enable caching for better performance
+  cache: {
+    size: 10000,        // Cache 10k items
+    ttl: 300000         // 5 minute TTL
+  },
+  // Optional: Configure batch processing
+  processing: {
+    batchSize: 1000,    // Process 1000 events at once
+    batchTimeout: 5000  // Flush batch every 5 seconds
+  }
+});
+```
 
-const client = new Client({
-  token: process.env.DISCORD_TOKEN!,
+## 🎯 First Steps
+
+### 1. Initialize the Client
+```typescript
+import { StatsClient } from 'waforix';
+
+const stats = new StatsClient({
   database: {
     type: 'sqlite',
     path: './data/stats.db'
   }
 });
 
-// Create a command
-const statsCommand = new SlashCommandBuilder('stats', 'Get server statistics')
-  .addStringOption('type', 'Type of stats to show', true)
-  .addChoice('messages', 'messages')
-  .addChoice('voice', 'voice')
-  .addChoice('members', 'members');
-
-// Register command handler
-client.getCommandHandlerManager().register('stats', {
-  async execute(interaction) {
-    const type = interaction.data.options?.[0]?.value;
-    
-    if (type === 'messages') {
-      const stats = await client.getGuildStats(interaction.guild_id);
-      return {
-        type: 4,
-        data: {
-          content: `Total messages: ${stats.totalMessages}`
-        }
-      };
-    }
-    
-    // Handle other types...
-    return {
-      type: 4,
-      data: {
-        content: 'Stats command executed!'
-      }
-    };
-  }
-});
-
-client.on('ready', async () => {
-  console.log('Bot is ready!');
-  
-  // Register the command with Discord
-  // This would typically be done through Discord's API
-});
+// Initialize the database connection
+await stats.initialize();
+console.log('Waforix initialized successfully!');
 ```
 
-## Next Steps
+### 2. Track Your First Event
+```typescript
+// Track a message event
+await stats.trackMessage({
+  id: 'message_123',
+  userId: 'user_456',
+  guildId: 'guild_789',
+  channelId: 'channel_101',
+  content: 'Hello, world!',
+  timestamp: Date.now(),
+  attachmentCount: 0,
+  embedCount: 0
+});
 
-Now that you have a basic setup:
+console.log('Message tracked successfully!');
+```
 
-1. **Explore Commands** - Learn about the [Command System](https://github.com/waforix/mocha/wiki/Command-System)
-2. **Add Autocomplete** - Implement [Autocomplete System](https://github.com/waforix/mocha/wiki/Autocomplete-System)
-3. **Configure Database** - Set up [Database Configuration](https://github.com/waforix/mocha/wiki/Database-Configuration)
-4. **Track Events** - Enable [Event Tracking](https://github.com/waforix/mocha/wiki/Event-Tracking)
-5. **View Analytics** - Explore [Analytics & Statistics](https://github.com/waforix/mocha/wiki/Analytics-Statistics)
+### 3. Get Your First Statistics
+```typescript
+// Get server statistics for the last 30 days
+const stats = await client.getServerStats('guild_789', 30);
 
-## Troubleshooting
+console.log(`Total messages: ${stats.totalMessages}`);
+console.log(`Active users: ${stats.activeUsers}`);
+console.log(`Total voice time: ${Math.round(stats.totalVoiceTime / 3600000)} hours`);
+```
 
-### Common Issues
+## 🔍 Verification
 
-**Bot doesn't respond to commands:**
+### Test Database Connection
+```typescript
+// Check if everything is working
+const health = await client.healthCheck();
 
-- Ensure the bot has the necessary permissions in your server
-- Check that intents are properly configured
-- Verify the bot token is correct
+if (health.database === 'healthy') {
+  console.log('✅ Database connection is healthy');
+} else {
+  console.error('❌ Database connection issues:', health);
+}
+```
 
-**Database connection errors:**
+### Test Data Insertion
+```typescript
+// Insert test data and verify
+await stats.trackMessage({
+  id: 'test_message',
+  userId: 'test_user',
+  guildId: 'test_guild',
+  channelId: 'test_channel',
+  content: 'Test message',
+  timestamp: Date.now(),
+  attachmentCount: 0,
+  embedCount: 0
+});
 
-- Check database credentials and connection string
-- Ensure the database server is running
-- Verify network connectivity
+// Verify the data was inserted
+const testStats = await stats.getServerStats('test_guild', 1);
+console.log('Test message count:', testStats.totalMessages);
+```
 
-**TypeScript compilation errors:**
+## 🚨 Common Setup Issues
 
-- Ensure you're using TypeScript 5.0+
-- Check that all dependencies are installed
-- Verify your tsconfig.json configuration
+### SQLite Issues
+**Problem**: `SQLITE_CANTOPEN: unable to open database file`
+**Solution**: Ensure the directory exists and has write permissions
+```bash
+mkdir -p ./data
+chmod 755 ./data
+```
 
-For more help, check the [API Reference](https://github.com/waforix/mocha/wiki/API-Reference) or open an issue on [GitHub](https://github.com/waforix/mocha/issues).
+**Problem**: `database is locked`
+**Solution**: Ensure no other processes are accessing the database file
+
+### PostgreSQL Issues
+**Problem**: `connection refused`
+**Solution**: Check if PostgreSQL is running
+```bash
+sudo systemctl status postgresql
+sudo systemctl start postgresql  # if not running
+```
+
+**Problem**: `authentication failed`
+**Solution**: Verify username and password
+```bash
+# Test connection manually
+psql -h localhost -U stats_user -d discord_stats
+```
+
+**Problem**: `database does not exist`
+**Solution**: Create the database
+```bash
+sudo -u postgres createdb discord_stats
+```
+
+## 📚 Next Steps
+
+Once you have Waforix set up and running:
+
+1. **[Quick Examples](https://github.com/waforix/mocha/wiki/Quick-Examples)** - See practical usage examples
+2. **[Event Tracking](https://github.com/waforix/mocha/wiki/Event-Tracking)** - Learn about tracking different Discord events
+3. **[Database Configuration](https://github.com/waforix/mocha/wiki/Database-Configuration)** - Advanced database setup and optimization
+4. **[Analytics & Insights](https://github.com/waforix/mocha/wiki/Analytics-&-Insights)** - Explore analytics capabilities
+
+## 💡 Tips for Success
+
+- **Start with SQLite** for development and testing
+- **Use environment variables** for sensitive configuration
+- **Enable debug logging** during setup: `debug: true` in client options
+- **Test with small datasets** before processing large amounts of data
+- **Monitor performance** as your data grows
+
+## 🆘 Need Help?
+
+If you run into issues:
+- Check the [Troubleshooting Guide](https://github.com/waforix/mocha/wiki/Troubleshooting)
+- Open an [Issue](https://github.com/waforix/mocha/issues) on GitHub
+- Join our [Discord Community](https://discord.gg/your-invite) for real-time help
+
+---
+
+**Ready to start tracking?** Head over to [Quick Examples](https://github.com/waforix/mocha/wiki/Quick-Examples) to see Waforix in action!
