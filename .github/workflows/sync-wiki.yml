@@ -1,0 +1,150 @@
+name: Sync Documentation to Wiki
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+          token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Initialize wiki if checkout failed
+        if: failure()
+        run: |
+          echo "Wiki checkout failed, initializing new wiki directory..."
+          rm -rf wiki
+          git clone "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki || {
+            echo "Creating new wiki directory..."
+            mkdir -p wiki
+            cd wiki
+            git init
+            git remote add origin "https://${{ secrets.WIKI_TOKEN || secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git"
+          }
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync documentation files
+        run: |
+          # Remove existing wiki files (except .git)
+          find wiki -type f -name "*.md" -delete
+          
+          # Copy all markdown files from docs to wiki
+          for file in docs/*.md; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              # Convert filename to wiki page name (remove .md extension)
+              pagename="${filename%.md}"
+              
+              # Copy file to wiki directory
+              cp "$file" "wiki/${pagename}.md"
+              
+              echo "Synced: $filename -> ${pagename}.md"
+            fi
+          done
+
+      - name: Update wiki Home page
+        run: |
+          # Create or update Home.md if README.md exists
+          if [ -f "wiki/README.md" ]; then
+            mv "wiki/README.md" "wiki/Home.md"
+            echo "Created Home.md from README.md"
+          fi
+
+      - name: Commit and push wiki changes
+        run: |
+          cd wiki
+          
+          # Check if there are any changes
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Auto-sync documentation from docs/ directory
+            
+            Synced from commit: ${{ github.sha }}
+            Triggered by: ${{ github.event_name }}
+            "
+            git push origin master
+            echo "Wiki updated successfully!"
+          else
+            echo "No changes to sync"
+          fi
+
+      - name: Create wiki navigation
+        run: |
+          cd wiki
+
+          # Always regenerate _Sidebar.md for up-to-date navigation
+          echo "# @waforix/mocha Documentation" > _Sidebar.md
+          echo "" >> _Sidebar.md
+          echo "## Quick Links" >> _Sidebar.md
+          echo "- [Home](Home)" >> _Sidebar.md
+          echo "- [Getting Started](Getting-Started)" >> _Sidebar.md
+          echo "- [API Reference](API-Reference)" >> _Sidebar.md
+          echo "" >> _Sidebar.md
+          echo "## Guides" >> _Sidebar.md
+
+          # Add organized links to documentation pages
+          declare -A sections
+          sections["Setup"]="Getting-Started Client-Configuration Database-Configuration"
+          sections["Usage"]="Quick-Examples Command-System Autocomplete-System"
+          sections["Reference"]="API-Reference"
+
+          for section in "${!sections[@]}"; do
+            echo "### $section" >> _Sidebar.md
+            for page in ${sections[$section]}; do
+              if [ -f "${page}.md" ]; then
+                title=$(echo "$page" | sed 's/-/ /g')
+                echo "- [$title]($page)" >> _Sidebar.md
+              fi
+            done
+            echo "" >> _Sidebar.md
+          done
+
+          # Add any remaining pages not in sections
+          echo "### Other" >> _Sidebar.md
+          for file in *.md; do
+            if [ "$file" != "_Sidebar.md" ] && [ "$file" != "Home.md" ]; then
+              pagename="${file%.md}"
+              # Check if page is already in sections
+              found=false
+              for section_pages in "${sections[@]}"; do
+                if [[ " $section_pages " =~ " $pagename " ]]; then
+                  found=true
+                  break
+                fi
+              done
+
+              if [ "$found" = false ]; then
+                title=$(echo "$pagename" | sed 's/-/ /g')
+                echo "- [$title]($pagename)" >> _Sidebar.md
+              fi
+            fi
+          done
+
+          # Commit sidebar if it changed
+          if [ -n "$(git status --porcelain _Sidebar.md)" ]; then
+            git add _Sidebar.md
+            git commit -m "Update wiki navigation sidebar" || true
+            git push origin master || true
+          fi

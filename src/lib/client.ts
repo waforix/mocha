@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { MetricsCollector } from '../analytics/index';
+import { AutocompleteManager } from '../autocomplete/index';
 import type { CacheConfig } from '../cache/index';
 import { CacheManager, createHeatmapKey } from '../cache/index';
 import type { CommonDatabase } from '../db/index';
@@ -13,9 +14,10 @@ import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
 import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
+import { CommandHandlerManager } from './commands/handler';
 import { TIMEOUTS } from './constants';
 
-export interface StatsClientOptions extends GatewayOptions {
+export interface ClientOptions extends GatewayOptions {
   dbPath?: string;
   database?: DatabaseConfig;
   cache?: CacheConfig;
@@ -24,7 +26,7 @@ export interface StatsClientOptions extends GatewayOptions {
   enableRateLimit?: boolean;
 }
 
-export class StatsClient extends EventEmitter {
+export class Client extends EventEmitter {
   private gateway: GatewayClient;
   private dispatcher!: EventDispatcher;
   private aggregator!: StatsAggregator;
@@ -35,19 +37,23 @@ export class StatsClient extends EventEmitter {
   private notifications?: NotificationEngine;
   private rateLimit?: RateLimitManager;
   private exporter!: DataExporter;
+  private autocomplete: AutocompleteManager;
+  private commandHandlers: CommandHandlerManager;
   private initialized = false;
 
-  constructor(options: StatsClientOptions) {
+  constructor(options: ClientOptions) {
     super();
     this.validateOptions(options);
     this.gateway = new GatewayClient(options);
     this.cache = new CacheManager(options.cache);
+    this.autocomplete = new AutocompleteManager();
+    this.commandHandlers = new CommandHandlerManager();
     this.initializeAsync(options).catch((error) => {
       this.emit('error', error);
     });
   }
 
-  private validateOptions(options: StatsClientOptions) {
+  private validateOptions(options: ClientOptions) {
     if (!options.token) {
       throw new Error('Discord token is required');
     }
@@ -64,7 +70,7 @@ export class StatsClient extends EventEmitter {
     }
   }
 
-  private async initializeAsync(options: StatsClientOptions): Promise<void> {
+  private async initializeAsync(options: ClientOptions): Promise<void> {
     try {
       await this.initializeDatabase(options);
       this.setupComponents(options);
@@ -76,7 +82,7 @@ export class StatsClient extends EventEmitter {
     }
   }
 
-  private async initializeDatabase(options: StatsClientOptions): Promise<void> {
+  private async initializeDatabase(options: ClientOptions): Promise<void> {
     const config = options.database || {
       type: 'sqlite' as const,
       path: options.dbPath || './data/stats.db',
@@ -85,7 +91,7 @@ export class StatsClient extends EventEmitter {
     this.dbAdapter = db.db as CommonDatabase;
   }
 
-  private setupComponents(options: StatsClientOptions) {
+  private setupComponents(options: ClientOptions) {
     this.dispatcher = new EventDispatcher(this.dbAdapter);
     this.aggregator = new StatsAggregator(this.dbAdapter);
     this.exporter = new DataExporter(this.dbAdapter);
@@ -293,5 +299,13 @@ export class StatsClient extends EventEmitter {
     afk?: boolean;
   }): void {
     this.gateway.updatePresence(presence);
+  }
+
+  getAutocompleteManager(): AutocompleteManager {
+    return this.autocomplete;
+  }
+
+  getCommandHandlerManager(): CommandHandlerManager {
+    return this.commandHandlers;
   }
 }

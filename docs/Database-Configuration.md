@@ -1,25 +1,28 @@
 # Database Configuration
 
-Waforix supports both SQLite and PostgreSQL databases, allowing you to choose the best option for your use case.
+@waforix/mocha supports multiple database systems: SQLite, PostgreSQL, and MySQL. This guide covers setup, configuration, and optimization for each database type.
 
 ## Overview
 
-| Feature | SQLite | PostgreSQL |
-|---------|--------|------------|
-| **Setup Complexity** | Zero config | Requires server setup |
-| **Performance** | Good for small-medium servers | Excellent for large servers |
-| **Concurrent Users** | Limited | High concurrency |
-| **Storage** | Single file | Server-based |
-| **Backup** | Copy file | Database dumps |
-| **Scaling** | Vertical only | Horizontal + Vertical |
+The database system handles:
+
+- Event storage (messages, voice, reactions, etc.)
+- User and guild statistics
+- Configuration data
+- Analytics and metrics
+- Automatic migrations
 
 ## SQLite Configuration
 
-### Basic Setup
-```typescript
-import { StatsClient } from 'waforix';
+SQLite is perfect for development and small to medium deployments.
 
-const client = new StatsClient({
+### Basic Setup
+
+```typescript
+import { Client } from '@waforix/mocha';
+
+const client = new Client({
+  token: process.env.DISCORD_TOKEN!,
   database: {
     type: 'sqlite',
     path: './data/stats.db'
@@ -28,231 +31,405 @@ const client = new StatsClient({
 ```
 
 ### Advanced SQLite Options
+
 ```typescript
-const client = new StatsClient({
-  database: {
-    type: 'sqlite',
-    path: './data/stats.db',
-    // Optional: Custom SQLite options
-    options: {
-      timeout: 5000,
-      verbose: console.log // Enable query logging
-    }
+database: {
+  type: 'sqlite',
+  path: './data/stats.db',
+  // Optional SQLite-specific options
+  options: {
+    busyTimeout: 30000,
+    journal: 'WAL', // Write-Ahead Logging for better performance
+    synchronous: 'NORMAL',
+    cacheSize: 2000,
+    tempStore: 'MEMORY'
   }
-});
+}
 ```
 
 ### SQLite Best Practices
-- **File Location**: Store database files outside your application directory
-- **Backups**: Regularly copy the `.db` file to backup location
-- **Permissions**: Ensure proper file system permissions
-- **WAL Mode**: Enabled by default for better concurrent access
+
+- Use WAL mode for better concurrent access
+- Place database file on fast storage (SSD)
+- Regular VACUUM operations for maintenance
+- Consider file-based backups
 
 ## PostgreSQL Configuration
 
-### Basic Setup
-```typescript
-import { StatsClient } from 'waforix';
+PostgreSQL is recommended for production deployments with high load.
 
-const client = new StatsClient({
-  database: {
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    database: 'discord_stats',
-    username: 'stats_user',
-    password: 'secure_password'
-  }
-});
-```
+### Installation
 
-### Advanced PostgreSQL Options
-```typescript
-const client = new StatsClient({
-  database: {
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    database: 'discord_stats',
-    username: 'stats_user',
-    password: 'secure_password',
-    // Connection pool settings
-    pool: {
-      min: 2,
-      max: 10,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000
-    },
-    // SSL configuration
-    ssl: {
-      rejectUnauthorized: false
-    }
-  }
-});
-```
-
-### Environment Variables
-For production deployments, use environment variables:
-
-```typescript
-const client = new StatsClient({
-  database: {
-    type: 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    database: process.env.DB_NAME || 'discord_stats',
-    username: process.env.DB_USER || 'stats_user',
-    password: process.env.DB_PASSWORD || 'password'
-  }
-});
-```
-
-### PostgreSQL Setup Guide
-
-#### 1. Install PostgreSQL
 ```bash
 # Ubuntu/Debian
 sudo apt update
 sudo apt install postgresql postgresql-contrib
 
+# CentOS/RHEL
+sudo yum install postgresql postgresql-server postgresql-contrib
+
 # macOS
 brew install postgresql
-
-# Windows
-# Download from https://www.postgresql.org/download/windows/
 ```
 
-#### 2. Create Database and User
-```sql
--- Connect as postgres user
+### Database Setup
+
+```bash
+# Switch to postgres user
 sudo -u postgres psql
 
 -- Create database
-CREATE DATABASE discord_stats;
+CREATE DATABASE mocha_stats;
 
 -- Create user
-CREATE USER stats_user WITH PASSWORD 'secure_password';
+CREATE USER mocha_user WITH PASSWORD 'secure_password';
 
--- Grant permissions
-GRANT ALL PRIVILEGES ON DATABASE discord_stats TO stats_user;
+-- Grant privileges
+GRANT ALL PRIVILEGES ON DATABASE mocha_stats TO mocha_user;
 
 -- Exit
 \q
 ```
 
-#### 3. Initialize Schema
-```bash
-# Run the initialization script
-bun run db:init
+### Basic Configuration
 
-# Or manually run migrations
-bunx drizzle-kit push:pg --config=drizzle.postgres.config.ts
+```typescript
+database: {
+  type: 'postgres',
+  host: 'localhost',
+  port: 5432,
+  database: 'mocha_stats',
+  username: 'mocha_user',
+  password: 'secure_password'
+}
 ```
 
-## Migration Between Databases
+### Advanced PostgreSQL Options
 
-### SQLite to PostgreSQL
 ```typescript
-import { StatsClient } from 'waforix';
-
-// Export from SQLite
-const sqliteClient = new StatsClient({
-  database: { type: 'sqlite', path: './old-stats.db' }
-});
-
-const data = await sqliteClient.exportData('guild_id', {
-  format: 'json',
-  includeAll: true
-});
-
-// Import to PostgreSQL
-const pgClient = new StatsClient({
-  database: {
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    database: 'discord_stats',
-    username: 'stats_user',
-    password: 'password'
-  }
-});
-
-// Manual data import would be required
-// (Automatic migration tools coming in future versions)
-```
-
-## Performance Optimization
-
-### SQLite Optimizations
-```typescript
-const client = new StatsClient({
-  database: {
-    type: 'sqlite',
-    path: './data/stats.db'
+database: {
+  type: 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME || 'mocha_stats',
+  username: process.env.DB_USER || 'mocha_user',
+  password: process.env.DB_PASSWORD!,
+  
+  // SSL Configuration
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false
+  } : false,
+  
+  // Connection Pool Settings
+  pool: {
+    min: 2,
+    max: 10,
+    acquireTimeoutMillis: 30000,
+    idleTimeoutMillis: 30000
   },
-  cache: {
-    size: 10000,        // Increase cache size
-    ttl: 300000         // 5 minute TTL
+  
+  // Additional options
+  options: {
+    connectTimeout: 60000,
+    commandTimeout: 30000,
+    requestTimeout: 30000
   }
-});
+}
 ```
 
-### PostgreSQL Optimizations
+### PostgreSQL Performance Tuning
+
+```sql
+-- Recommended postgresql.conf settings
+shared_buffers = 256MB
+effective_cache_size = 1GB
+maintenance_work_mem = 64MB
+checkpoint_completion_target = 0.9
+wal_buffers = 16MB
+default_statistics_target = 100
+random_page_cost = 1.1
+effective_io_concurrency = 200
+```
+
+## MySQL Configuration
+
+MySQL is supported for organizations already using MySQL infrastructure.
+
+### Installation
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install mysql-server
+
+# CentOS/RHEL
+sudo yum install mysql-server
+
+# macOS
+brew install mysql
+```
+
+### Database Setup
+
+```sql
+-- Connect to MySQL
+mysql -u root -p
+
+-- Create database
+CREATE DATABASE mocha_stats CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Create user
+CREATE USER 'mocha_user'@'localhost' IDENTIFIED BY 'secure_password';
+
+-- Grant privileges
+GRANT ALL PRIVILEGES ON mocha_stats.* TO 'mocha_user'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Exit
+EXIT;
+```
+
+### Basic Configuration
+
 ```typescript
-const client = new StatsClient({
+database: {
+  type: 'mysql',
+  host: 'localhost',
+  port: 3306,
+  database: 'mocha_stats',
+  username: 'mocha_user',
+  password: 'secure_password'
+}
+```
+
+### Advanced MySQL Options
+
+```typescript
+database: {
+  type: 'mysql',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '3306'),
+  database: process.env.DB_NAME || 'mocha_stats',
+  username: process.env.DB_USER || 'mocha_user',
+  password: process.env.DB_PASSWORD!,
+  
+  // SSL Configuration
+  ssl: process.env.NODE_ENV === 'production' ? {
+    ca: process.env.DB_SSL_CA,
+    cert: process.env.DB_SSL_CERT,
+    key: process.env.DB_SSL_KEY
+  } : undefined,
+  
+  // Connection Pool Settings
+  pool: {
+    min: 2,
+    max: 10,
+    acquireTimeoutMillis: 30000,
+    idleTimeoutMillis: 30000
+  },
+  
+  // MySQL-specific options
+  options: {
+    charset: 'utf8mb4',
+    timezone: 'Z',
+    acquireTimeout: 60000,
+    timeout: 60000,
+    reconnect: true
+  }
+}
+```
+
+## Environment-Based Configuration
+
+Use environment variables for different environments:
+
+```typescript
+// .env file
+DB_TYPE=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=mocha_stats
+DB_USER=mocha_user
+DB_PASSWORD=secure_password
+DB_SSL=true
+
+// Configuration
+database: {
+  type: process.env.DB_TYPE as 'sqlite' | 'postgres' | 'mysql',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME!,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  path: process.env.DB_PATH, // For SQLite
+  ssl: process.env.DB_SSL === 'true'
+}
+```
+
+## Migrations
+
+@waforix/mocha automatically handles database migrations:
+
+```typescript
+const client = new Client({
+  token: process.env.DISCORD_TOKEN!,
   database: {
     type: 'postgres',
     // ... connection details
-    pool: {
-      min: 5,             // Minimum connections
-      max: 20,            // Maximum connections
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000
+  }
+});
+
+// Migrations run automatically on client initialization
+await client.connect();
+```
+
+### Manual Migration Control
+
+```typescript
+// Get database instance for advanced operations
+const db = await client.getDatabase();
+
+// Migrations are handled automatically by the client
+// For manual database operations, use the database instance directly
+```
+
+## Backup and Maintenance
+
+### SQLite Backup
+
+```bash
+# Simple file copy (when database is not in use)
+cp ./data/stats.db ./backups/stats-$(date +%Y%m%d).db
+
+# Online backup using SQLite command
+sqlite3 ./data/stats.db ".backup ./backups/stats-$(date +%Y%m%d).db"
+```
+
+### PostgreSQL Backup
+
+```bash
+# Full database backup
+pg_dump -h localhost -U mocha_user mocha_stats > backup-$(date +%Y%m%d).sql
+
+# Compressed backup
+pg_dump -h localhost -U mocha_user mocha_stats | gzip > backup-$(date +%Y%m%d).sql.gz
+
+# Restore
+psql -h localhost -U mocha_user mocha_stats < backup.sql
+```
+
+### MySQL Backup
+
+```bash
+# Full database backup
+mysqldump -h localhost -u mocha_user -p mocha_stats > backup-$(date +%Y%m%d).sql
+
+# Compressed backup
+mysqldump -h localhost -u mocha_user -p mocha_stats | gzip > backup-$(date +%Y%m%d).sql.gz
+
+# Restore
+mysql -h localhost -u mocha_user -p mocha_stats < backup.sql
+```
+
+## Performance Monitoring
+
+### Database Statistics
+
+```typescript
+// Get database statistics
+const stats = await client.getDatabaseStats();
+
+console.log('Database Statistics:', {
+  totalEvents: stats.totalEvents,
+  totalUsers: stats.totalUsers,
+  totalGuilds: stats.totalGuilds,
+  databaseSize: stats.databaseSize,
+  lastOptimized: stats.lastOptimized
+});
+```
+
+### Query Performance
+
+```typescript
+// Enable query logging (development only)
+const client = new Client({
+  database: {
+    // ... connection details
+    options: {
+      logging: process.env.NODE_ENV === 'development'
     }
-  },
-  cache: {
-    size: 50000,        // Larger cache for PostgreSQL
-    ttl: 600000         // 10 minute TTL
   }
 });
 ```
 
 ## Troubleshooting
 
-### Common SQLite Issues
-- **Database locked**: Ensure no other processes are accessing the file
-- **Permission denied**: Check file system permissions
-- **Disk full**: Monitor available disk space
+### Common Issues
 
-### Common PostgreSQL Issues
-- **Connection refused**: Check if PostgreSQL service is running
-- **Authentication failed**: Verify username/password
-- **Too many connections**: Adjust `max_connections` in postgresql.conf
-
-### Debug Mode
-Enable debug logging to troubleshoot issues:
+**Connection Timeout:**
 
 ```typescript
-const client = new StatsClient({
-  database: {
-    // ... your config
-  },
-  debug: true  // Enable debug logging
-});
+database: {
+  // ... other options
+  options: {
+    connectTimeout: 60000,
+    acquireTimeout: 60000
+  }
+}
 ```
 
-## Schema Management
+**Too Many Connections:**
 
-Both database types use the same logical schema but with different implementations:
+```typescript
+database: {
+  // ... other options
+  pool: {
+    min: 1,
+    max: 5 // Reduce max connections
+  }
+}
+```
 
-### Tables Created
-- `users` - Discord user information
-- `guilds` - Discord server information  
-- `channels` - Channel information
-- `message_events` - Message tracking data
-- `voice_events` - Voice activity data
-- `reaction_events` - Reaction tracking data
-- `member_events` - Member join/leave events
+**SSL Certificate Issues:**
 
-### Automatic Migrations
-Waforix automatically handles schema creation and updates. No manual migration is required when upgrading versions.
+```typescript
+database: {
+  // ... other options
+  ssl: {
+    rejectUnauthorized: false // Only for development
+  }
+}
+```
+
+### Health Checks
+
+```typescript
+// Check database connectivity
+async function checkDatabaseHealth() {
+  try {
+    const db = await client.getDatabase();
+    await db.select().from('users').limit(1);
+    console.log('Database connection: OK');
+    return true;
+  } catch (error) {
+    console.error('Database connection: FAILED', error);
+    return false;
+  }
+}
+
+// Run health check periodically
+setInterval(checkDatabaseHealth, 60000); // Every minute
+```
+
+## Best Practices
+
+1. **Use Environment Variables** - Never hardcode credentials
+2. **Enable SSL in Production** - Encrypt database connections
+3. **Configure Connection Pooling** - Optimize connection usage
+4. **Regular Backups** - Implement automated backup strategies
+5. **Monitor Performance** - Track query performance and database size
+6. **Use Appropriate Database** - SQLite for development, PostgreSQL/MySQL for production
+7. **Keep Updated** - Regularly update database software
+8. **Security** - Use strong passwords and limit access
+
+For more information on client configuration, see [Client Configuration](https://github.com/waforix/mocha/wiki/Client-Configuration).
