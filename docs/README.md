@@ -107,4 +107,4 @@ await client.connect();
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/waforix/mocha/blob/main/LICENSE) file for details.
 
-Thanks for using Mocha <3
+From Waforix, thanks for using Mocha <3
