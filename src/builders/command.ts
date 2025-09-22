@@ -192,6 +192,11 @@ export class SlashCommandOptionBuilder {
     return this;
   }
 
+  setAutocomplete(autocomplete: boolean): this {
+    this.option.autocomplete = autocomplete;
+    return this;
+  }
+
   build(): SlashCommandOption {
     return { ...this.option };
   }

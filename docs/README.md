@@ -1,200 +1,108 @@
-# Waforix Documentation
+# @waforix/mocha Documentation
 
-Welcome to the comprehensive documentation for Waforix, a powerful Discord bot statistics library with dual database support.
+Welcome to the comprehensive documentation for **@waforix/mocha**, a powerful and flexible Discord bot framework with advanced statistics tracking, autocomplete functionality, and multi-database support.
 
 ## 📚 Documentation Index
 
 ### Getting Started
-- **[README](https://github.com/waforix/mocha/blob/main/README.md)** - Quick start guide and overview
-- **[Getting Started Guide](https://github.com/waforix/mocha/wiki/Getting-Started)** - Installation and basic setup
+
+- **[Getting Started](https://github.com/waforix/mocha/wiki/Getting-Started)** - Installation and basic setup
 - **[Quick Examples](https://github.com/waforix/mocha/wiki/Quick-Examples)** - Simple examples to get you started
 
 ### Core Documentation
-- **[Database Configuration](https://github.com/waforix/mocha/wiki/Database-Configuration)** - SQLite and PostgreSQL setup and optimization
-- **[Event Tracking](https://github.com/waforix/mocha/wiki/Event-Tracking)** - Comprehensive guide to tracking Discord events
-- **[Analytics & Insights](https://github.com/waforix/mocha/wiki/Analytics-&-Insights)** - Advanced analytics and reporting features
-- **[Data Export](https://github.com/waforix/mocha/wiki/Data-Export)** - Export data for backup, analysis, and compliance
-- **[Performance Optimization](https://github.com/waforix/mocha/wiki/Performance-Optomization)** - Best practices for production deployments
-- **[API Reference](https://github.com/waforix/mocha/wiki/API-Reference)** - Complete API documentation
+
+- **[Client Configuration](https://github.com/waforix/mocha/wiki/Client-Configuration)** - Complete client setup and configuration options
+- **[Database Configuration](https://github.com/waforix/mocha/wiki/Database-Configuration)** - SQLite, PostgreSQL, and MySQL setup
+- **[Command System](https://github.com/waforix/mocha/wiki/Command-System)** - Building and handling slash commands
+- **[Autocomplete System](https://github.com/waforix/mocha/wiki/Autocomplete-System)** - Dynamic autocomplete functionality
+- **[Event Tracking](https://github.com/waforix/mocha/wiki/Event-Tracking)** - Comprehensive Discord event tracking
+- **[Analytics & Statistics](https://github.com/waforix/mocha/wiki/Analytics-Statistics)** - Advanced analytics and reporting
 
 ### Advanced Topics
+
+- **[Data Export](https://github.com/waforix/mocha/wiki/Data-Export)** - Export data for backup and analysis
+- **[Performance Optimization](https://github.com/waforix/mocha/wiki/Performance-Optimization)** - Production optimization tips
 - **[Migration Guide](https://github.com/waforix/mocha/wiki/Migration-Guide)** - Upgrading from older versions
 - **[Production Deployment](https://github.com/waforix/mocha/wiki/Production-Deployment)** - Production-ready configurations
-- **[Troubleshooting](https://github.com/waforix/mocha/wiki/Troubleshooting)** - Common issues and solutions
+
+### Reference
+
+- **[API Reference](https://github.com/waforix/mocha/wiki/API-Reference)** - Complete API documentation
 - **[Contributing](https://github.com/waforix/mocha/wiki/Contributing)** - How to contribute to the project
 
-## 🚀 Installation & Setup
+## 🚀 Quick Start
 
-### Prerequisites
-- Node.js 18+ or Bun
-- TypeScript 5.0+
-- SQLite 3.x or PostgreSQL 12+
+### Installation
 
-### Package Installation
 ```bash
-# Using Bun (recommended)
-bun add waforix
-
 # Using npm
-npm install waforix
+npm install @waforix/mocha
 
 # Using yarn
-yarn add waforix
+yarn add @waforix/mocha
+
+# Using bun (recommended)
+bun add @waforix/mocha
 ```
 
-### Database Setup
+### Basic Setup
 
-#### SQLite (Recommended for Development)
 ```typescript
-import { StatsClient } from 'waforix';
+import { Client } from '@waforix/mocha';
 
-const client = new StatsClient({
+const client = new Client({
+  token: 'your-discord-bot-token',
   database: {
     type: 'sqlite',
     path: './data/stats.db'
   }
 });
 
-await client.initialize();
+// Wait for client to be ready
+client.on('ready', () => {
+  console.log('Client is ready!');
+});
+
+// Start the client
+await client.connect();
 ```
 
-#### PostgreSQL (Recommended for Production)
-```bash
-# 1. Install PostgreSQL
-sudo apt install postgresql postgresql-contrib
+## ✨ Key Features
 
-# 2. Create database
-sudo -u postgres createdb discord_stats
+- **🎯 Modern Discord Bot Framework** - Built with TypeScript and modern Discord API features
+- **📊 Advanced Statistics Tracking** - Track messages, voice activity, reactions, and more
+- **🔍 Dynamic Autocomplete** - Flexible autocomplete system for slash commands
+- **🗄️ Multi-Database Support** - SQLite, PostgreSQL, and MySQL support
+- **⚡ High Performance** - Optimized for production use with caching and rate limiting
+- **🛠️ Developer Friendly** - Comprehensive TypeScript support and intuitive API
+- **📈 Analytics & Insights** - Built-in analytics and data export capabilities
+- **🔧 Highly Configurable** - Extensive configuration options for all use cases
 
-# 3. Create user
-sudo -u postgres createuser --interactive stats_user
-```
+## 🏗️ Architecture
 
-```typescript
-import { StatsClient } from 'waforix';
+@waforix/mocha is built with a modular architecture:
 
-const client = new StatsClient({
-  database: {
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    database: 'discord_stats',
-    username: 'stats_user',
-    password: 'your_password'
-  }
-});
+- **Client** - Main client class that orchestrates all functionality
+- **Command System** - Slash command builders and handlers
+- **Autocomplete System** - Dynamic autocomplete for command options
+- **Database Layer** - Multi-database abstraction with migrations
+- **Event System** - Comprehensive Discord event tracking
+- **Analytics Engine** - Statistics aggregation and insights
+- **Cache System** - Intelligent caching for performance
+- **Export System** - Data export in multiple formats
 
-await client.initialize();
-```
+## 📋 Requirements
 
-## 📖 Basic Usage Examples
+- Node.js 18+ or Bun
+- TypeScript 5.0+
+- One of: SQLite 3.x, PostgreSQL 12+, or MySQL 8.0+
 
-### Discord.js Integration
-```typescript
-import { Client, GatewayIntentBits } from 'discord.js';
-import { StatsClient } from 'waforix';
+## 🤝 Community
 
-// Initialize Discord client
-const discord = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildMembers
-  ]
-});
-
-// Initialize Waforix
-const stats = new StatsClient({
-  database: {
-    type: 'sqlite',
-    path: './data/stats.db'
-  }
-});
-
-await stats.initialize();
-
-// Track message events
-discord.on('messageCreate', async (message) => {
-  if (message.author.bot) return;
-  
-  await stats.trackMessage({
-    id: message.id,
-    userId: message.author.id,
-    guildId: message.guild?.id || '',
-    channelId: message.channel.id,
-    content: message.content,
-    timestamp: message.createdTimestamp,
-    attachmentCount: message.attachments.size,
-    embedCount: message.embeds.length
-  });
-});
-
-// Get server statistics
-const serverStats = await stats.getServerStats('guild_id', 30);
-console.log(`Total messages: ${serverStats.totalMessages}`);
-console.log(`Active users: ${serverStats.activeUsers}`);
-```
-
-### Basic Analytics
-```typescript
-// Get user leaderboard
-const leaderboard = await stats.getLeaderboard('guild_id', 'messages', {
-  limit: 10,
-  days: 30
-});
-
-leaderboard.forEach((user, index) => {
-  console.log(`${index + 1}. ${user.username}: ${user.count} messages`);
-});
-
-// Get activity insights
-const insights = await stats.getServerInsights('guild_id', {
-  days: 30,
-  includeHourlyActivity: true,
-  includeGrowthTrend: true
-});
-
-console.log('Peak activity hour:', insights.hourlyActivity?.reduce((max, hour) => 
-  hour.activity > max.activity ? hour : max
-));
-```
-
-## 🔄 Migration Guide
-
-See the complete [Migration Guide](https://github.com/waforix/mocha/wiki/Migration-Guide) for detailed instructions on upgrading between versions.
-
-## 🏭 Production Deployment
-
-See the complete [Production Deployment Guide](https://github.com/waforix/mocha/wiki/Production-Deployment) for Docker, environment variables, and scaling strategies.
-
-## 🔧 Troubleshooting
-
-See the complete [Troubleshooting Guide](https://github.com/waforix/mocha/wiki/Troubleshooting) for common issues, error codes, and solutions.
-
-## 🤝 Contributing
-
-See the complete [Contributing Guide](https://github.com/waforix/mocha/wiki/Contributing) for development setup, code style, and submission guidelines.
+- **GitHub**: [waforix/mocha](https://github.com/waforix/mocha)
+- **Issues**: [Report bugs or request features](https://github.com/waforix/mocha/issues)
+- **Discussions**: [Community discussions](https://github.com/waforix/mocha/discussions)
 
 ## 📄 License
 
-MIT License - see [LICENSE](../LICENSE) file for details.
-
-## 🆘 Support
-
-- **Documentation**: [GitHub Wiki](https://github.com/waforix/mocha/wiki)
-- **Issues**: [GitHub Issues](https://github.com/waforix/mocha/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/waforix/mocha/discussions)
-- **Discord**: [Community Server](https://discord.gg/your-invite)
-
-## 📊 Project Status
-
-- ✅ **Stable**: Core functionality is stable and production-ready
-- ✅ **Active Development**: Regular updates and new features
-- ✅ **Community Support**: Active community and maintainer support
-- ✅ **Documentation**: Comprehensive documentation and examples
-
----
-
-*Last updated: September 2025*
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/waforix/mocha/blob/main/LICENSE) file for details.
