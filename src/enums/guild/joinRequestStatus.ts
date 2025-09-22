@@ -1,6 +1,6 @@
 export enum JoinRequestStatus {
-    STARTED,
-    SUBMITTED,
-    REJECTED,
-    APPROVED
+  STARTED,
+  SUBMITTED,
+  REJECTED,
+  APPROVED,
 }

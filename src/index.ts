@@ -14,4 +14,4 @@ const client = new StatsClient({});
 
 await client.connect();
 
-export { StatsClient }
+export { StatsClient };

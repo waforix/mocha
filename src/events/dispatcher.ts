@@ -198,11 +198,8 @@ export class EventDispatcher extends EventEmitter {
   }
 }
 
-
-
-
-import { Event } from '../enums';
-import { EventHandler } from '../types/eventHandler';
+import type { Event } from '../enums';
+import type { EventHandler } from '../types/eventHandler';
 
 export class Dispatcher {
   private static instance: Dispatcher;
@@ -213,13 +210,13 @@ export class Dispatcher {
   }
 
   public static getInstance(): Dispatcher {
-    if (this.instance === undefined) {
-      this.instance = new Dispatcher();
+    if (Dispatcher.instance === undefined) {
+      Dispatcher.instance = new Dispatcher();
     }
-    return this.instance;
+    return Dispatcher.instance;
   }
 
-  public async handle(event: Event, ...args: unknown[]): Promise<void> {
+  public async handle(event: Event, ...args: any): Promise<void> {
     if (this.eventHandlers[event]) {
       this.eventHandlers[event].forEach(async (eventHandler) => {
         await eventHandler(args);
@@ -227,10 +224,8 @@ export class Dispatcher {
     }
   }
 
-  public on(event: Event, callback: (...args: unknown[]) => Promise<void>) {
-    if (this.eventHandlers[event] &&
-      this.eventHandlers[event].length > 0
-    ) {
+  public on(event: Event, callback: (...args: any) => Promise<void>) {
+    if (this.eventHandlers[event] && this.eventHandlers[event].length > 0) {
       this.eventHandlers[event].push(callback);
     } else {
       this.eventHandlers[event] = [callback];

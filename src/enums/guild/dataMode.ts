@@ -1,5 +1,5 @@
 export enum DataMode {
-    FULL = "full",
-    PARTIAL = "partial",
-    UNAVAILABLE = "unavailable"
+  FULL = 'full',
+  PARTIAL = 'partial',
+  UNAVAILABLE = 'unavailable',
 }

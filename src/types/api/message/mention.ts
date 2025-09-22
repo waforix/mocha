@@ -1,6 +1,6 @@
-import { Member } from "../../../schemas";
-import { APIGuildMember } from "../guild/guildMember";
-import { APIUser, User } from "../user/user";
+import type { Member } from '../../../schemas';
+import type { APIGuildMember } from '../guild/guildMember';
+import type { APIUser, User } from '../user/user';
 
 export type APIMention = APIUser & { member: Partial<APIGuildMember> };
 

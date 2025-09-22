@@ -1,5 +1,1 @@
-
-
-export class Handler {
-    
-}
+export class Handler {}
