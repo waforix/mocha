@@ -12,6 +12,7 @@ export { Scope } from './application/scope';
 export { TeamMembershipState } from './application/teamMembershipState';
 export { AuditLogEvent } from './auditLog/auditLogEvent';
 export { ActionType } from './autoModeration/actionType';
+export { AutoModDecisionOutcome } from "./autoModeration/autoModDecisionOutcome";
 export { EventType } from './autoModeration/eventType';
 export { KeywordPresetType } from './autoModeration/keywordPresetType';
 export { TriggerType } from './autoModeration/triggerType';

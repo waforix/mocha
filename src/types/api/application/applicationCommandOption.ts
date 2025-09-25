@@ -1,5 +1,5 @@
-import type { ApplicationCommandOptionType, ChannelType, Locale } from '../../../../enums';
-import type { Library } from '../../../conversion';
+import type { ApplicationCommandOptionType, ChannelType, Locale } from '../../../enums';
+import type { Library } from '../../conversion';
 import type { APIApplicationCommandOptionChoice } from './applicationCommandOptionChoice';
 
 export type APIApplicationCommandOption = {

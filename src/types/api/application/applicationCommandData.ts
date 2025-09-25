@@ -4,8 +4,8 @@ import type {
   IntegrationType,
   InteractionContextType,
   Locale,
-} from '../../../../enums';
-import type { Library } from '../../../conversion';
+} from '../../../enums';
+import type { Library } from '../../conversion';
 import type { APIApplicationCommandOption } from './applicationCommandOption';
 
 export type APIApplicationCommandData = {
