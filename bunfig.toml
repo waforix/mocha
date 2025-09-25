@@ -4,4 +4,4 @@ timeout = 30000
 
 [test.env]
 NODE_ENV = "test"
-BIOME_CONFIG_PATH=biome_madeline.json
+BIOME_CONFIG_PATH="biome_madeline.json"
