@@ -1,86 +1,91 @@
-import { WebSocket } from 'ws';
-import { HEARTBEAT } from '../lib/constants';
-import { OPCODES } from './constants';
+import { WebSocket } from "ws";
+import { OpCode, WebSocketCloseCode } from "../enums/gateway";
+
+const MAX_MISSED_ACKS = 3;
 
 export class Heartbeat {
-  private interval?: NodeJS.Timeout;
-  private lastAck = true;
-  private lastSent = 0;
-  private missedAcks = 0;
-  private readonly maxMissedAcks = HEARTBEAT.MAX_MISSED_ACKS;
+    private interval?: NodeJS.Timeout;
+    private intervalMs: number;
+    private lastAck: boolean;
+    private lastSent: number;
+    private missed: number;
+    private sequence: () => number | null;
+    private timeout: () => void;
+    private webSocket: WebSocket;
 
-  constructor(
-    private ws: WebSocket,
-    private intervalMs: number,
-    private sequence: () => number | null,
-    private onTimeout?: () => void
-  ) {}
-
-  start() {
-    if (this.interval) {
-      this.stop();
+    public constructor(
+        webSocket: WebSocket,
+        intervalMs: number,
+        sequence: () => number | null,
+        timeout: () => void
+    ) {
+        this.lastAck = false;
+        this.lastSent = 0;
+        this.intervalMs = intervalMs;
+        this.missed = 0;
+        this.sequence = sequence;
+        this.timeout = timeout;
+        this.webSocket = webSocket;
     }
 
-    this.lastAck = true;
-    this.missedAcks = 0;
-
-    this.interval = setInterval(() => {
-      this.sendHeartbeat();
-    }, this.intervalMs);
-
-    this.sendHeartbeat();
-  }
-
-  private sendHeartbeat() {
-    if (this.ws.readyState !== WebSocket.OPEN) {
-      this.stop();
-      return;
+    public sendHeartbeat() {
+        if (this.webSocket.readyState !== WebSocket.OPEN) {
+            this.stop();
+            return;
+        }
+        if (!this.lastAck) {
+            this.missed++;
+            if (this.missed >= MAX_MISSED_ACKS) {
+                this.webSocket.close(
+                    WebSocketCloseCode.TIMEOUT,
+                    "Heartbeat timed out: too many missed ACKs.");
+                this.timeout();
+                return;
+            }
+        }
+        try {
+            this.lastAck = false;
+            this.lastSent = Date.now();
+            this.webSocket.send(JSON.stringify({
+                op: OpCode.HEARTBEAT,
+                d: this.sequence()
+            }));
+        } catch (error) {
+            this.stop();
+            this.timeout();
+        }
     }
 
-    if (!this.lastAck) {
-      this.missedAcks++;
-
-      if (this.missedAcks >= this.maxMissedAcks) {
-        this.ws.close(HEARTBEAT.TIMEOUT_CODE, 'Heartbeat timeout - too many missed ACKs');
-        this.onTimeout?.();
-        return;
-      }
+    public start(): void {
+        if (this.interval) {
+            this.stop();
+        }
+        this.lastAck = true;
+        this.missed = 0;
+        this.interval = setInterval(() => {
+            this.sendHeartbeat();
+        }, this.intervalMs);
+        this.sendHeartbeat();
     }
 
-    try {
-      this.lastAck = false;
-      this.lastSent = Date.now();
-
-      this.ws.send(
-        JSON.stringify({
-          op: OPCODES.HEARTBEAT,
-          d: this.sequence(),
-        })
-      );
-    } catch (_error) {
-      this.stop();
-      this.onTimeout?.();
+    public ack(): void {
+        this.lastAck = true;
+        this.missed = 0;
     }
-  }
 
-  ack() {
-    this.lastAck = true;
-    this.missedAcks = 0;
-  }
-
-  stop() {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = undefined;
+    public stop(): void {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = undefined;
+        }
     }
-  }
 
-  getStats() {
-    return {
-      lastSent: this.lastSent,
-      lastAck: this.lastAck,
-      missedAcks: this.missedAcks,
-      intervalMs: this.intervalMs,
-    };
-  }
+    public getStats() {
+        return {
+            intervalMs: this.intervalMs,
+            lastAck: this.lastAck,
+            lastSent: this.lastSent,
+            missed: this.missed
+        }
+    }
 }
