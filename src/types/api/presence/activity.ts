@@ -3,7 +3,7 @@ import { Library } from "../../conversion";
 import { APIActivityTimestamps } from "./activityTimestamps";
 
 export type APIActivity = {
-    id: string;
+    id?: string;
     name: string;
     type: ActivityType;
     url?: string | null;

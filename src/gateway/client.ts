@@ -6,13 +6,20 @@ import { RateLimiter } from "./rateLimiter";
 import { CloseCode, ConnectionState, Events, OpCode, WebSocketEvent } from "../enums/gateway";
 import { FATAL_CLOSE_CODES, RESUMABLE_CLOSE_CODES, CLOSE_CODE_MESSAGES } from "./constants";
 import { Payload } from "./types/payload";
-
+import { PresenceUpdate } from "../types/event";
 
 const GATEWAY_ADDRESS = "wss://gateway.discord.gg/?v=10&encoding=json";
 const BACKOFF_BASE_DELAY = 1_000;
 const BACKOFF_MAX_DELAY = 3_000;
 const BACKOFF_MULTIPLIER = 2;
+const RATE_LIMIT_DELAY = 60_000;
 
+export interface GatewayOptions {
+  token: string;
+  intents: number;
+  maxReconnects?: number;
+  timeout?: number;
+}
 
 export class GatewayClient extends EventEmitter {
     private connection: Connection;
@@ -30,22 +37,17 @@ export class GatewayClient extends EventEmitter {
     private token: string;
     private webSocket: WebSocket;
 
-    public constructor(
-        token: string,
-        intents: number,
-        maxReconnects = 5,
-        timeout: number = 30_000
-    ) {
+    public constructor(options: GatewayOptions) {
         super();
         this.connection = new Connection();
-        this.intents = intents;
-        this.maxReconnects = maxReconnects;
+        this.intents = options.intents;
+        this.maxReconnects = options.maxReconnects ?? 5;
         this.rateLimiter = new RateLimiter();
         this.reconnectAttempts = 0;
         this.sequence = null;
         this.state = ConnectionState.DISCONNECTED;
-        this.timeout = timeout;
-        this.token = token;
+        this.timeout = options.timeout ?? 30_000;
+        this.token = options.token;
         this.webSocket = new WebSocket(GATEWAY_ADDRESS);
         this.validateToken();
     }
@@ -83,7 +85,7 @@ export class GatewayClient extends EventEmitter {
             return;
         }
         if (code === CloseCode.RATE_LIMITED) {
-            setTimeout(() => this.reconnect(), TIMEOUTS.RATE_LIMIT_DELAY);
+            setTimeout(() => this.reconnect(), RATE_LIMIT_DELAY);
             return;
         }
         if (!(code in RESUMABLE_CLOSE_CODES)) {

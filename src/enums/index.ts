@@ -11,11 +11,22 @@ export { EntryPointCommandHandlerType } from './application/entryPointCommandHan
 export { Scope } from './application/scope';
 export { TeamMembershipState } from './application/teamMembershipState';
 export { AuditLogEvent } from './auditLog/auditLogEvent';
-export { ActionType } from './autoModeration/actionType';
-export { AutoModDecisionOutcome } from "./autoModeration/autoModDecisionOutcome";
-export { EventType } from './autoModeration/eventType';
-export { KeywordPresetType } from './autoModeration/keywordPresetType';
-export { TriggerType } from './autoModeration/triggerType';
+export {
+    AutoModActionType,
+    AutoModAlertActionType,
+    AutoModDecisionOutcome,
+    AutoModEventType,
+    AutoModIncidentNotificationType,
+    AutoModInteractionCallbackType,
+    AutoModKeywordPresetType,
+    AutoModProfileUpdate,
+    AutoModQuarantineEventType,
+    AutoModQuarantineUserAction,
+    AutoModQuarantineUserReason,
+    AutoModRaidResolution,
+    AutoModRaidType,
+    AutoModTriggerType
+} from './autoModeration';
 export { ChannelFlag } from './channel/channelFlag';
 export { ChannelType } from './channel/channelType';
 export { ForumLayoutType } from './channel/forumLayoutType';
@@ -26,7 +37,7 @@ export { VideoQualityMode } from './channel/videoQualityMode';
 export { EntitlementType } from './entitlement/entitlementType';
 export { SKUFlag } from './entitlement/skuFlag';
 export { SKUType } from './entitlement/skuType';
-export { Event } from './event';
+export { Events } from './gateway';
 export { DefaultMessageNotificationLevel } from './guild/defaultMessageNotificationLevel';
 export { ExplicitContentFilter } from './guild/explicitContentFilter';
 export { GuildFeature } from './guild/guildFeature';
@@ -67,14 +78,19 @@ export { PrivacyLevel } from './stageInstance/privacyLevel';
 export { StickerFormat } from './sticker/stickerFormat';
 export { StickerType } from './sticker/stickerType';
 export { SubscriptionStatus } from './subscription/subscriptionStatus';
-export { ActivityFlag } from './user/activityFlag';
-export { ActivityType } from './user/activityType';
-export { ClientStatus } from './user/clientStatus';
 export { IntegrationType } from './user/integrationType';
-export { Status } from './user/status';
-export { StatusDisplayType } from './user/statusDisplayType';
 export { UserFlag } from './user/userFlag';
 export { UserPremiumType } from './user/userPremiumType';
 export { VisibilityType } from './user/visibilityType';
 export { AnimationType } from './voice/animationType';
 export { WebhookType } from './webhook/webhookType';
+export {
+    ActivityActionType,
+    ActivityFlag,
+    ActivityPlatformType,
+    ActivityType,
+    ClientType,
+    OperatingSystemType,
+    StatusDisplayType,
+    StatusType
+} from "./presence"

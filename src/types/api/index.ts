@@ -25,23 +25,23 @@ export type { APIAuditLog, AuditLog } from './auditLog/auditLog';
 export type { APIAuditLogChange, AuditLogChange } from './auditLog/auditLogChange';
 export type { APIAuditLogEntry, AuditLogEntry } from './auditLog/auditLogEntry';
 export type {
-  APIOptionalAuditEntryInfo,
-  OptionalAuditEntryInfo,
+  APIOptionalAuditLogEntryInfo,
+  OptionalAuditLogEntryInfo,
 } from './auditLog/optionalAuditLogEntryInfo';
 
 /**
  * AUTO MODERATION
  */
-export type { ActionMetadata, APIActionMetadata } from './autoModeration/actionMetadata';
-export type {
-  APIAutoModerationAction,
-  AutoModerationAction,
-} from './autoModeration/autoModerationAction';
-export type {
-  APIAutoModerationRule,
-  AutoModerationRule,
-} from './autoModeration/autoModerationRule';
-export type { APITriggerMetadata, TriggerMetadata } from './autoModeration/triggerMetadata';
+export {
+  AutoModAction,
+  AutoModActionMetadata,
+  AutoModAlert,
+  AutoModAlertAction,
+  AutoModAlertActionsExecution,
+  AutoModIncidentsData,
+  AutoModRule,
+  AutoModTriggerMetadata
+} from "./autoModeration";
 
 /**
  * CHANNEL
@@ -107,24 +107,27 @@ export type { APIInviteMetadata, InviteMetadata } from './invite/inviteMetadata'
 export type {
   APIApplicationCommandData,
   ApplicationCommandData,
-} from './message/applicationCommand/applicationCommandData';
+} from './application/applicationCommandData';
 export type {
   APIApplicationCommandInteractionDataOption,
   ApplicationCommandInteractionDataOption,
-} from './message/applicationCommand/applicationCommandInteractionDataOption';
+} from './application/applicationCommandInteractionDataOption';
 export type {
   APIApplicationCommandOption,
   ApplicationCommandOption,
-} from './message/applicationCommand/applicationCommandOption';
+} from './application/applicationCommandOption';
 export type {
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionChoice,
-} from './message/applicationCommand/applicationCommandOptionChoice';
+} from './application/applicationCommandOptionChoice';
 /**
  * MESSAGE
  */
 export type { APIAttachment, Attachment } from './message/attachment';
-export type { AuthorizingIntegrationOwner } from './message/authorizingIntegrationOwner';
+export type { APIMention, Mention } from "./message/mention";
+export type { APIGuildMessage, GuildMessage } from "./message/guildMessage";
+export type { APIMessageReaction, MessageReaction } from "./message/reaction/messageReaction";
+
 /**
  * MESSAGE: COMPONENT
  */
@@ -212,6 +215,7 @@ export type { APIPollAnswer, PollAnswer } from './poll/pollAnswer';
 export type { APIPollAnswerCount, PollAnswerCount } from './poll/pollAnswerCount';
 export type { APIPollMedia, PollMedia } from './poll/pollMedia';
 export type { APIPollResults, PollResults } from './poll/pollResults';
+export type { APIPollVote, PollVote } from "./poll/pollVote";
 
 /**
  * ROLE
@@ -261,6 +265,7 @@ export type { APIUserPrimaryGuild, UserPrimaryGuild } from './user/userPrimaryGu
 /**
  * VOICE
  */
+export type { APIVoiceChannelEffect, VoiceChannelEffect } from "./voice/voiceChannelEffect";
 export type { APIVoiceState, VoiceState } from './voice/voiceState';
 
 /**

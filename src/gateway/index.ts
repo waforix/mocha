@@ -1,7 +1,7 @@
-export * from './client';
-export * from './connection';
-export * from './constants';
-export * from './errors';
-export * from './heartbeat';
-export * from './ratelimit';
-export { GatewayStateManager, type SessionInfo } from './state';
+export { Payload } from "./types/payload";
+export { RateLimit } from "./types/rateLimit";
+export { RequestLimit } from "./types/requestLimit";
+export { GatewayClient, GatewayOptions } from "./client";
+export { Connection } from "./connection";
+export { Heartbeat } from "./heartbeat";
+export { RateLimiter } from "./rateLimiter";
