@@ -1,5 +1,3 @@
-import { Intents } from './enums/gateway';
-
 export type { Metrics } from './analytics/index';
 export * from './autocomplete/index';
 export * from './builders/index';

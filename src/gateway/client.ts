@@ -4,6 +4,7 @@ import { CloseCode, ConnectionState, Events, OpCode, WebSocketEvent } from '../e
 import type { PresenceUpdate } from '../types/event';
 import { Connection } from './connection';
 import { CLOSE_CODE_MESSAGES, FATAL_CLOSE_CODES, RESUMABLE_CLOSE_CODES } from './constants';
+import { GatewayQueue } from './gatewayQueue';
 import { Heartbeat } from './heartbeat';
 import { RateLimiter } from './rateLimiter';
 import type { Payload } from './types/payload';
@@ -27,6 +28,7 @@ export class GatewayClient extends EventEmitter {
   private heartbeat?: Heartbeat;
   private intents: number;
   private maxReconnects: number;
+  private queue: GatewayQueue;
   private rateLimiter: RateLimiter;
   private reconnectAttempts: number;
   private resumeUrl?: string;
@@ -43,12 +45,13 @@ export class GatewayClient extends EventEmitter {
     this.intents = options.intents;
     this.maxReconnects = options.maxReconnects ?? 5;
     this.rateLimiter = new RateLimiter();
+    this.webSocket = new WebSocket(GATEWAY_ADDRESS);
+    this.queue = new GatewayQueue(this.rateLimiter, this.webSocket);
     this.reconnectAttempts = 0;
     this.sequence = null;
     this.state = ConnectionState.DISCONNECTED;
     this.timeout = options.timeout ?? 30_000;
     this.token = options.token;
-    this.webSocket = new WebSocket(GATEWAY_ADDRESS);
     this.validateToken();
   }
 
@@ -308,6 +311,18 @@ export class GatewayClient extends EventEmitter {
     }
   }
 
+  private send(payload: Payload): void {
+    if (payload.t && typeof payload.t === 'string') {
+      if (this.rateLimiter.isRequestLimited(payload.t)) {
+        this.queue.enqueue(payload, 0);
+        return;
+      }
+      this.webSocket.send(JSON.stringify(payload));
+    } else {
+      this.emit('error', new Error('Invalid payload: missing event name.'));
+    }
+  }
+
   private setState(state: ConnectionState): void {
     this.state = state;
     this.emit('stateChange', this.state);
@@ -371,6 +386,10 @@ export class GatewayClient extends EventEmitter {
       },
     };
     try {
+      if (this.rateLimiter.isRateLimited(OpCode.PRESENCE_UPDATE)) {
+        this.queue.enqueue(payload, 0);
+        return;
+      }
       this.webSocket.send(JSON.stringify(payload));
       this.rateLimiter.handleOp(OpCode.PRESENCE_UPDATE);
     } catch (error) {

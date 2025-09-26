@@ -1,4 +1,4 @@
-import { CloseCode } from '../enums/gateway';
+import { CloseCode, Events } from '../enums/gateway';
 
 export const GATEWAY_URL = 'wss://gateway.discord.gg/?v=10&encoding=json';
 
@@ -38,3 +38,13 @@ export const CLOSE_CODE_MESSAGES: Record<CloseCode, string> = {
   [CloseCode.INVALID_INTENTS]: 'Invalid intents.',
   [CloseCode.DISALLOWED_INTENTS]: 'You do not have permission to use these intents.',
 };
+
+export const SEND_EVENTS: Events[] = [
+  Events.IDENTIFY,
+  Events.RESUME,
+  Events.HEARTBEAT,
+  Events.REQUEST_GUILD_MEMBERS,
+  Events.REQUEST_SOUNDBOARD_SOUNDS,
+  Events.UPDATE_VOICE_STATE,
+  Events.UPDATE_PRESENCE,
+];
