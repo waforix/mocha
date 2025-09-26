@@ -1,6 +1,6 @@
-import { AutoModActionType } from '../../../enums/autoModeration';
+import type { AutoModActionType } from '../../../enums/autoModeration';
 import type { Library } from '../../conversion';
-import { APIAutoModActionMetadata } from './autoModActionMetadata';
+import type { APIAutoModActionMetadata } from './autoModActionMetadata';
 
 export type APIAutoModAction = {
   type: AutoModActionType;

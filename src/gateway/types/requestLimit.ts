@@ -1,8 +1,8 @@
-import { OpCode } from "../../enums/gateway";
+import type { OpCode } from '../../enums/gateway';
 
 export type RequestLimit = {
-    data: number[];
-    interval: number;
-    limit: number;
-    opCode: OpCode;
-}
+  data: number[];
+  interval: number;
+  limit: number;
+  opCode: OpCode;
+};

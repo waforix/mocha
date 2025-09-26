@@ -1,4 +1,4 @@
 export enum AutoModRaidType {
-    JOIN_RAID,
-    MENTION_RAID
+  JOIN_RAID,
+  MENTION_RAID,
 }

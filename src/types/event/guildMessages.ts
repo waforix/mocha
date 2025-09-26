@@ -1,5 +1,5 @@
-import { GuildMessage, Message } from "../api";
-import { Event } from "./event";
+import type { GuildMessage, Message } from '../api';
+import type { Event } from './event';
 
 export type MessageCreate = Event<GuildMessage>;
 

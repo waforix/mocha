@@ -12,20 +12,20 @@ export { Scope } from './application/scope';
 export { TeamMembershipState } from './application/teamMembershipState';
 export { AuditLogEvent } from './auditLog/auditLogEvent';
 export {
-    AutoModActionType,
-    AutoModAlertActionType,
-    AutoModDecisionOutcome,
-    AutoModEventType,
-    AutoModIncidentNotificationType,
-    AutoModInteractionCallbackType,
-    AutoModKeywordPresetType,
-    AutoModProfileUpdate,
-    AutoModQuarantineEventType,
-    AutoModQuarantineUserAction,
-    AutoModQuarantineUserReason,
-    AutoModRaidResolution,
-    AutoModRaidType,
-    AutoModTriggerType
+  AutoModActionType,
+  AutoModAlertActionType,
+  AutoModDecisionOutcome,
+  AutoModEventType,
+  AutoModIncidentNotificationType,
+  AutoModInteractionCallbackType,
+  AutoModKeywordPresetType,
+  AutoModProfileUpdate,
+  AutoModQuarantineEventType,
+  AutoModQuarantineUserAction,
+  AutoModQuarantineUserReason,
+  AutoModRaidResolution,
+  AutoModRaidType,
+  AutoModTriggerType,
 } from './autoModeration';
 export { ChannelFlag } from './channel/channelFlag';
 export { ChannelType } from './channel/channelType';
@@ -72,6 +72,16 @@ export { MessageReferenceType } from './message/messageReferenceType';
 export { MessageType } from './message/messageType';
 export { ReactionType } from './message/reactionType';
 export { TextInputStyle } from './message/textInputStyle';
+export {
+  ActivityActionType,
+  ActivityFlag,
+  ActivityPlatformType,
+  ActivityType,
+  ClientType,
+  OperatingSystemType,
+  StatusDisplayType,
+  StatusType,
+} from './presence';
 export { Permission } from './role/permission';
 export { RoleFlag } from './role/roleFlag';
 export { PrivacyLevel } from './stageInstance/privacyLevel';
@@ -84,13 +94,3 @@ export { UserPremiumType } from './user/userPremiumType';
 export { VisibilityType } from './user/visibilityType';
 export { AnimationType } from './voice/animationType';
 export { WebhookType } from './webhook/webhookType';
-export {
-    ActivityActionType,
-    ActivityFlag,
-    ActivityPlatformType,
-    ActivityType,
-    ClientType,
-    OperatingSystemType,
-    StatusDisplayType,
-    StatusType
-} from "./presence"

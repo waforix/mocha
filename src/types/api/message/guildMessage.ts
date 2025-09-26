@@ -1,14 +1,14 @@
-import type { APIGuildMember, GuildMember } from "../guild/guildMember";
-import type { APIMention, Mention } from "./mention";
+import type { APIGuildMember, GuildMember } from '../guild/guildMember';
+import type { APIMention, Mention } from './mention';
 
 export type APIGuildMessage = {
-    guild_id?: string;
-    member: Partial<APIGuildMember>;
-    mentions: APIMention[];
+  guild_id?: string;
+  member: Partial<APIGuildMember>;
+  mentions: APIMention[];
 };
 
 export type GuildMessage = {
-    guildId: string;
-    member: Partial<GuildMember>;
-    mentions: Mention[];
+  guildId: string;
+  member: Partial<GuildMember>;
+  mentions: Mention[];
 };

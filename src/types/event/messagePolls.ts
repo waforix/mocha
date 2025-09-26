@@ -1,5 +1,5 @@
-import { PollVote } from "../api";
-import { Event } from "./event";
+import type { PollVote } from '../api';
+import type { Event } from './event';
 
 export type MessagePollVoteAdd = Event<PollVote>;
 

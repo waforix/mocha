@@ -1,4 +1,4 @@
-import { IntegrationType, OverwriteType } from '../../../enums';
+import type { IntegrationType, OverwriteType } from '../../../enums';
 import type { Library } from '../../conversion';
 
 export type APIOptionalAuditLogEntryInfo = {

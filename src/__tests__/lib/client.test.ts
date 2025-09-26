@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+import { Intents } from '../../enums/gateway';
 import { Client } from '../../lib/client';
 import { setupTestDb } from '../utils/setup';
 
@@ -14,6 +15,12 @@ describe('Client', () => {
         path: ':memory:',
       },
       token: 'test-token',
+      intents:
+        Intents.GUILDS |
+        Intents.GUILD_MEMBERS |
+        Intents.GUILD_MESSAGES |
+        Intents.GUILD_MESSAGE_REACTIONS |
+        Intents.MESSAGE_CONTENT,
     });
   });
 

@@ -1,6 +1,7 @@
 export type Payload = {
-    op: number;
-    d: any;
-    s?: number;
-    t?: string;
-}
+  op: number;
+  // biome-ignore lint/suspicious/noExplicitAny: any type expected for gateway payload data
+  d: any;
+  s?: number;
+  t?: string;
+};

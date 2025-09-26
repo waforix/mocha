@@ -14,5 +14,5 @@ export enum ChannelType {
   GUILD_FORUM = 15,
   GUILD_MEDIA = 16,
   LOBBY = 17,
-  EPHEMERAL_DM = 18
+  EPHEMERAL_DM = 18,
 }

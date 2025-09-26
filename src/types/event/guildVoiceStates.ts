@@ -1,5 +1,5 @@
-import { VoiceChannelEffect, VoiceState } from "../api";
-import { Event } from "./event";
+import type { VoiceChannelEffect, VoiceState } from '../api';
+import type { Event } from './event';
 
 export type VoiceChannelEffectSend = Event<VoiceChannelEffect>;
 

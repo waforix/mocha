@@ -1,10 +1,10 @@
-import { StatusType } from "../../enums/presence";
-import { Activity } from "../api";
-import { Event } from "./event";
+import type { StatusType } from '../../enums/presence';
+import type { Activity } from '../api';
+import type { Event } from './event';
 
 export type PresenceUpdate = Event<{
-    since?: number | null;
-    activities?: Activity[];
-    status?: StatusType;
-    afk?: boolean;
+  since?: number | null;
+  activities?: Activity[];
+  status?: StatusType;
+  afk?: boolean;
 }>;

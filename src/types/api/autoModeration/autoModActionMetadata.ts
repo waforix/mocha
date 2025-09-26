@@ -1,9 +1,9 @@
-import { Library } from "../../conversion";
+import type { Library } from '../../conversion';
 
 export type APIAutoModActionMetadata = {
-    channel_id: string;
-    duration_seconds: number;
-    custom_message?: string;
-}
+  channel_id: string;
+  duration_seconds: number;
+  custom_message?: string;
+};
 
 export type AutoModActionMetadata = Library<APIAutoModActionMetadata>;

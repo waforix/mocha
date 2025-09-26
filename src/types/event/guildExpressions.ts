@@ -1,5 +1,5 @@
-import { Emoji, SoundboardSound, Sticker } from "../api";
-import { Event } from "./event";
+import type { Emoji, SoundboardSound, Sticker } from '../api';
+import type { Event } from './event';
 
 export type GuildEmojisUpdate = Event<{ guildId: string; emojis: Emoji[] }>;
 
@@ -12,6 +12,6 @@ export type GuildSoundboardSoundUpdate = Event<SoundboardSound>;
 export type GuildSoundboardSoundDelete = Event<SoundboardSound>;
 
 export type GuildSoundboardSoundsUpdate = Event<{
-    guildId: string;
-    soundboardSounds: SoundboardSound[];
+  guildId: string;
+  soundboardSounds: SoundboardSound[];
 }>;

@@ -1,5 +1,5 @@
-import { Integration } from "../api";
-import { Event } from "./event";
+import type { Integration } from '../api';
+import type { Event } from './event';
 
 export type GuildIntegrationsUpdate = Event<{ guildId: string }>;
 

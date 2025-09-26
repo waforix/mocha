@@ -1,14 +1,20 @@
-
-import { ChannelType, ForumLayoutType, RecipientFlag, SearchTagSetting, SortOrderType, VideoQualityMode } from '../../../enums/channel';
+import type {
+  ChannelType,
+  ForumLayoutType,
+  RecipientFlag,
+  SearchTagSetting,
+  SortOrderType,
+  VideoQualityMode,
+} from '../../../enums/channel';
 import type { Library } from '../../conversion';
 import type { APIUser } from '../user/user';
-import { APIChannelNick } from './channelNick';
+import type { APIChannelNick } from './channelNick';
 import type { APIDefaultReaction } from './defaultReaction';
 import type { APIForumTag } from './forumTag';
-import { APIIconEmoji } from './iconEmoji';
-import { APILinkedLobby } from './linkedLobby';
+import type { APIIconEmoji } from './iconEmoji';
+import type { APILinkedLobby } from './linkedLobby';
 import type { APIOverwrite } from './overwrite';
-import { APISafetyWarning } from './safetyWarning';
+import type { APISafetyWarning } from './safetyWarning';
 import type { APIThreadMember } from './threadMember';
 import type { APIThreadMetadata } from './threadMetadata';
 import type { APIVoiceRegion } from './voiceRegion';

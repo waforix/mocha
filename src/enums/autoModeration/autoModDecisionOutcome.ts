@@ -1,4 +1,4 @@
 export enum AutoModDecisionOutcome {
-    FLAGGED = "flagged",
-    BLOCKED = "blocked"
+  FLAGGED = 'flagged',
+  BLOCKED = 'blocked',
 }

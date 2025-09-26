@@ -1,4 +1,4 @@
-import { AutoModKeywordPresetType } from '../../../enums/autoModeration';
+import type { AutoModKeywordPresetType } from '../../../enums/autoModeration';
 import type { Library } from '../../conversion';
 
 export type APIAutoModTriggerMetadata = {

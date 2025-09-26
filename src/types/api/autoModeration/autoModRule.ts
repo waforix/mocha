@@ -1,7 +1,7 @@
-import { AutoModEventType, AutoModTriggerType } from '../../../enums/autoModeration';
+import type { AutoModEventType, AutoModTriggerType } from '../../../enums/autoModeration';
 import type { Library } from '../../conversion';
-import { APIAutoModAction } from './autoModAction';
-import { APIAutoModTriggerMetadata } from './autoModTriggerMetadata';
+import type { APIAutoModAction } from './autoModAction';
+import type { APIAutoModTriggerMetadata } from './autoModTriggerMetadata';
 
 export type APIAutoModRule = {
   id: string;

@@ -2,105 +2,6 @@
  * APPLICATION
  */
 export type { APIApplication, Application } from './application/application';
-export type {
-  APIApplicationCommandPermission,
-  ApplicationCommandPermission,
-} from './application/applicationCommandPermission';
-export type {
-  APIApplicationCommandPermissions,
-  ApplicationCommandPermissions,
-} from './application/applicationCommandPermissions';
-export type {
-  APIApplicationIntegrationTypeConfiguration,
-  ApplicationIntegrationTypeConfiguration,
-} from './application/applicationIntegrationTypeConfiguration';
-export type { APIInstallParams, InstallParams } from './application/installParams';
-export type { APITeam, Team } from './application/team';
-export type { APITeamMember, TeamMember } from './application/teamMember';
-
-/**
- * AUDIT LOG
- */
-export type { APIAuditLog, AuditLog } from './auditLog/auditLog';
-export type { APIAuditLogChange, AuditLogChange } from './auditLog/auditLogChange';
-export type { APIAuditLogEntry, AuditLogEntry } from './auditLog/auditLogEntry';
-export type {
-  APIOptionalAuditLogEntryInfo,
-  OptionalAuditLogEntryInfo,
-} from './auditLog/optionalAuditLogEntryInfo';
-
-/**
- * AUTO MODERATION
- */
-export {
-  AutoModAction,
-  AutoModActionMetadata,
-  AutoModAlert,
-  AutoModAlertAction,
-  AutoModAlertActionsExecution,
-  AutoModIncidentsData,
-  AutoModRule,
-  AutoModTriggerMetadata
-} from "./autoModeration";
-
-/**
- * CHANNEL
- */
-export type { APIChannel, Channel } from './channel/channel';
-export type { APIDefaultReaction, DefaultReaction } from './channel/defaultReaction';
-export type { APIForumTag, ForumTag } from './channel/forumTag';
-export type { APIOverwrite, Overwrite } from './channel/overwrite';
-export type { APIThreadMember, ThreadMember } from './channel/threadMember';
-export type { APIThreadMetadata, ThreadMetadata } from './channel/threadMetadata';
-export type { APIVoiceRegion, VoiceRegion } from './channel/voiceRegion';
-
-/**
- * EMOJI
- */
-export type { APIEmoji, Emoji } from './emoji/emoji';
-
-/**
- * ENTITLEMENT
- */
-export type { APIEntitlement, Entitlement } from './entitlement/entitlement';
-
-/**
- * GUILD
- */
-export type { APIGuild, Guild } from './guild/guild';
-export type { APIGuildMember, GuildMember } from './guild/guildMember';
-export type { APIIncidentsData, IncidentsData } from './guild/incidentsData';
-export type { APIIntegration, Integration } from './guild/integration';
-export type { APIIntegrationAccount, IntegrationAccount } from './guild/integrationAccount';
-export type { APIWelcomeScreen, WelcomeScreen } from './guild/welcomeScreen';
-export type { APIWelcomeScreenChannel, WelcomeScreenChannel } from './guild/welcomeScreenChannel';
-
-/**
- * GUILD SCHEDULED EVENT
- */
-export type {
-  APIGuildScheduledEvent,
-  GuildScheduledEvent,
-} from './guildScheduledEvent/guildScheduledEvent';
-export type {
-  APIGuildScheduledEventEntityMetadata,
-  GuildScheduledEventEntityMetadata,
-} from './guildScheduledEvent/guildScheduledEventEntityMetadata';
-export type {
-  APIGuildScheduledEventRecurrenceRule,
-  GuildScheduledEventRecurrenceRule,
-} from './guildScheduledEvent/guildScheduledEventRecurrenceRule';
-export type {
-  APIGuildScheduledEventUser,
-  GuildScheduledEventUser,
-} from './guildScheduledEvent/guildScheduledEventUser';
-
-/**
- * INVITE
- */
-export type { APIInvite, Invite } from './invite/invite';
-export type { APIInviteMetadata, InviteMetadata } from './invite/inviteMetadata';
-
 /**
  * MESSAGE: APPLICATION COMMAND
  */
@@ -120,14 +21,100 @@ export type {
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionChoice,
 } from './application/applicationCommandOptionChoice';
+export type {
+  APIApplicationCommandPermission,
+  ApplicationCommandPermission,
+} from './application/applicationCommandPermission';
+export type {
+  APIApplicationCommandPermissions,
+  ApplicationCommandPermissions,
+} from './application/applicationCommandPermissions';
+export type {
+  APIApplicationIntegrationTypeConfiguration,
+  ApplicationIntegrationTypeConfiguration,
+} from './application/applicationIntegrationTypeConfiguration';
+export type { APIInstallParams, InstallParams } from './application/installParams';
+export type { APITeam, Team } from './application/team';
+export type { APITeamMember, TeamMember } from './application/teamMember';
+/**
+ * AUDIT LOG
+ */
+export type { APIAuditLog, AuditLog } from './auditLog/auditLog';
+export type { APIAuditLogChange, AuditLogChange } from './auditLog/auditLogChange';
+export type { APIAuditLogEntry, AuditLogEntry } from './auditLog/auditLogEntry';
+export type {
+  APIOptionalAuditLogEntryInfo,
+  OptionalAuditLogEntryInfo,
+} from './auditLog/optionalAuditLogEntryInfo';
+/**
+ * AUTO MODERATION
+ */
+export {
+  AutoModAction,
+  AutoModActionMetadata,
+  AutoModAlert,
+  AutoModAlertAction,
+  AutoModAlertActionsExecution,
+  AutoModIncidentsData,
+  AutoModRule,
+  AutoModTriggerMetadata,
+} from './autoModeration';
+/**
+ * CHANNEL
+ */
+export type { APIChannel, Channel } from './channel/channel';
+export type { APIDefaultReaction, DefaultReaction } from './channel/defaultReaction';
+export type { APIForumTag, ForumTag } from './channel/forumTag';
+export type { APIOverwrite, Overwrite } from './channel/overwrite';
+export type { APIThreadMember, ThreadMember } from './channel/threadMember';
+export type { APIThreadMetadata, ThreadMetadata } from './channel/threadMetadata';
+export type { APIVoiceRegion, VoiceRegion } from './channel/voiceRegion';
+/**
+ * EMOJI
+ */
+export type { APIEmoji, Emoji } from './emoji/emoji';
+/**
+ * ENTITLEMENT
+ */
+export type { APIEntitlement, Entitlement } from './entitlement/entitlement';
+/**
+ * GUILD
+ */
+export type { APIGuild, Guild } from './guild/guild';
+export type { APIGuildMember, GuildMember } from './guild/guildMember';
+export type { APIIncidentsData, IncidentsData } from './guild/incidentsData';
+export type { APIIntegration, Integration } from './guild/integration';
+export type { APIIntegrationAccount, IntegrationAccount } from './guild/integrationAccount';
+export type { APIWelcomeScreen, WelcomeScreen } from './guild/welcomeScreen';
+export type { APIWelcomeScreenChannel, WelcomeScreenChannel } from './guild/welcomeScreenChannel';
+/**
+ * GUILD SCHEDULED EVENT
+ */
+export type {
+  APIGuildScheduledEvent,
+  GuildScheduledEvent,
+} from './guildScheduledEvent/guildScheduledEvent';
+export type {
+  APIGuildScheduledEventEntityMetadata,
+  GuildScheduledEventEntityMetadata,
+} from './guildScheduledEvent/guildScheduledEventEntityMetadata';
+export type {
+  APIGuildScheduledEventRecurrenceRule,
+  GuildScheduledEventRecurrenceRule,
+} from './guildScheduledEvent/guildScheduledEventRecurrenceRule';
+export type {
+  APIGuildScheduledEventUser,
+  GuildScheduledEventUser,
+} from './guildScheduledEvent/guildScheduledEventUser';
+/**
+ * INVITE
+ */
+export type { APIInvite, Invite } from './invite/invite';
+export type { APIInviteMetadata, InviteMetadata } from './invite/inviteMetadata';
 /**
  * MESSAGE
  */
 export type { APIAttachment, Attachment } from './message/attachment';
-export type { APIMention, Mention } from "./message/mention";
-export type { APIGuildMessage, GuildMessage } from "./message/guildMessage";
-export type { APIMessageReaction, MessageReaction } from "./message/reaction/messageReaction";
-
 /**
  * MESSAGE: COMPONENT
  */
@@ -169,6 +156,7 @@ export type { APIEmbedImage, EmbedImage } from './message/embed/embedImage';
 export type { APIEmbedProvider, EmbedProvider } from './message/embed/embedProvider';
 export type { APIEmbedThumbnail, EmbedThumbnail } from './message/embed/embedThumbnail';
 export type { APIEmbedVideo, EmbedVideo } from './message/embed/embedVideo';
+export type { APIGuildMessage, GuildMessage } from './message/guildMessage';
 /**
  * MESSAGE: INTERACTION
  */
@@ -185,6 +173,7 @@ export type {
   APIInteractionCallbackResource,
   InteractionCallbackResource,
 } from './message/interaction/interactionCallbackResource';
+export type { APIMention, Mention } from './message/mention';
 export type { APIMessage, Message } from './message/message';
 export type { APIMessageActivity, MessageActivity } from './message/messageActivity';
 export type { APIMessageCall, MessageCall } from './message/messageCall';
@@ -203,6 +192,7 @@ export type {
   APIModalSubmitInteractionMetadata,
   ModalSubmitInteractionMetadata,
 } from './message/modalSubmitInteractionMetadata';
+export type { APIMessageReaction, MessageReaction } from './message/reaction/messageReaction';
 export type { APIResolvedData, ResolvedData } from './message/resolvedData';
 export type { APIRoleSubscriptionData, RoleSubscriptionData } from './message/roleSubscriptionData';
 export type { APITextInputResponse, TextInputResponse } from './message/textInputResponse';
@@ -215,7 +205,7 @@ export type { APIPollAnswer, PollAnswer } from './poll/pollAnswer';
 export type { APIPollAnswerCount, PollAnswerCount } from './poll/pollAnswerCount';
 export type { APIPollMedia, PollMedia } from './poll/pollMedia';
 export type { APIPollResults, PollResults } from './poll/pollResults';
-export type { APIPollVote, PollVote } from "./poll/pollVote";
+export type { APIPollVote, PollVote } from './poll/pollVote';
 
 /**
  * ROLE
@@ -265,7 +255,7 @@ export type { APIUserPrimaryGuild, UserPrimaryGuild } from './user/userPrimaryGu
 /**
  * VOICE
  */
-export type { APIVoiceChannelEffect, VoiceChannelEffect } from "./voice/voiceChannelEffect";
+export type { APIVoiceChannelEffect, VoiceChannelEffect } from './voice/voiceChannelEffect';
 export type { APIVoiceState, VoiceState } from './voice/voiceState';
 
 /**

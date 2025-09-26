@@ -1,9 +1,9 @@
 import type { Library } from '../../conversion';
+import type { APIApplicationCommandData } from '../application';
 import type { APIAutoModRule } from '../autoModeration/autoModRule';
 import type { APIChannel } from '../channel/channel';
 import type { APIIntegration } from '../guild/integration';
 import type { APIGuildScheduledEvent } from '../guildScheduledEvent/guildScheduledEvent';
-import type { APIApplicationCommandData } from '../application';
 import type { APIUser } from '../user/user';
 import type { APIWebhook } from '../webhook/webhook';
 import type { APIAuditLogEntry } from './auditLogEntry';

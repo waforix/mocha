@@ -6,18 +6,17 @@ import { CacheManager, createHeatmapKey } from '../cache/index';
 import type { CommonDatabase } from '../db/index';
 import { DatabaseManager } from '../db/manager';
 import type { DatabaseConfig } from '../db/types';
+import type { StatusType } from '../enums';
 import { EventDispatcher } from '../events/index';
 import { DataExporter, type ExportOptions } from '../export/index';
-import { GatewayClient, GatewayOptions } from '../gateway';
+import { GatewayClient, type GatewayOptions } from '../gateway';
 import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
+import type { Activity } from '../types/api';
 import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
 import { CommandHandlerManager } from './commands/handler';
 import { TIMEOUTS } from './constants';
-import { APIActivity } from '../types/api/presence';
-import { StatusType } from '../enums';
-import { Activity } from '../types/api';
 
 export interface ClientOptions extends GatewayOptions {
   dbPath?: string;

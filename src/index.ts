@@ -1,9 +1,11 @@
+import { Intents } from './enums/gateway';
+
 export type { Metrics } from './analytics/index';
 export * from './autocomplete/index';
 export * from './builders/index';
 export type { CacheConfig } from './cache/index';
+export { Intents } from './enums/gateway';
 export type { ExportData, ExportOptions } from './export/index';
-export { INTENTS } from './gateway/constants';
 export * from './lib/commands';
 export type { ClientOptions } from './lib/index';
 export { Client, Client as StatsClient } from './lib/index';

@@ -1,5 +1,5 @@
-import { Entitlement, GuildMember, Interaction, Subscription, User } from "../api";
-import { Presence } from "../api/presence";
+import type { Entitlement, GuildMember, Interaction, Subscription, User } from '../api';
+import type { Presence } from '../api/presence';
 
 export type Event<T> = T;
 
@@ -10,13 +10,13 @@ export type EntitlementUpdate = Event<Entitlement & { endsAt: Date }>;
 export type EntitlementDelete = Event<Entitlement>;
 
 export type GuildMembersChunk = Event<{
-    guildId: string;
-    members: GuildMember[];
-    chunkIndex: number;
-    chunkCount: number;
-    notFound?: number[];
-    presences: Presence[];
-    nonce?: string;
+  guildId: string;
+  members: GuildMember[];
+  chunkIndex: number;
+  chunkCount: number;
+  notFound?: number[];
+  presences: Presence[];
+  nonce?: string;
 }>;
 
 export type InteractionCreate = Event<Interaction>;

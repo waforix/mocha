@@ -1,3 +1,3 @@
 export enum WebSocketCloseCode {
-    TIMEOUT = 4000
+  TIMEOUT = 4000,
 }
