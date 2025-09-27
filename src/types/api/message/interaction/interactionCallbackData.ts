@@ -1,7 +1,7 @@
 import type { InteractionCallbackType } from '../../../../enums';
 import type { Library } from '../../../conversion';
+import type { APIApplicationCommandOptionChoice } from '../../application/applicationCommandOptionChoice';
 import type { APIPoll } from '../../poll/poll';
-import type { APIApplicationCommandOptionChoice } from '../applicationCommand/applicationCommandOptionChoice';
 import type { APIAttachment } from '../attachment';
 import type { APIEmbed } from '../embed/embed';
 import type { APIMessageComponent } from './../messageComponent';

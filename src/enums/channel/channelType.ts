@@ -5,6 +5,7 @@ export enum ChannelType {
   GROUP_DM = 3,
   GUILD_CATEGORY = 4,
   GUILD_ANNOUNCEMENT = 5,
+  GUILD_STORE = 6,
   ANNOUNCEMENT_THREAD = 10,
   PUBLIC_THREAD = 11,
   PRIVATE_THREAD = 12,
@@ -12,4 +13,6 @@ export enum ChannelType {
   GUILD_DIRECTORY = 14,
   GUILD_FORUM = 15,
   GUILD_MEDIA = 16,
+  LOBBY = 17,
+  EPHEMERAL_DM = 18,
 }

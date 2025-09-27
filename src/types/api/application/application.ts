@@ -1,6 +1,5 @@
 import type {
   ApplicationEventWebhookStatus,
-  ApplicationFlag,
   ApplicationIntegrationType,
   WebhookType,
 } from '../../../enums';
@@ -23,13 +22,13 @@ export type APIApplication = {
   privacy_policy_url?: string;
   owner?: Partial<APIUser>;
   verify_key: string;
-  team: APITeam;
+  team: APITeam | null;
   guild_id?: string;
   guild?: Partial<APIGuild>;
   primary_sku_id?: string;
   slug?: string;
   cover_image?: string;
-  flags?: ApplicationFlag;
+  flags?: number;
   approximate_guild_count?: number;
   approximate_user_install_count?: number;
   approximate_user_authorization_count?: number;
@@ -42,6 +41,7 @@ export type APIApplication = {
   tags?: string[];
   install_params?: APIInstallParams;
   integration_types_config?: Record<ApplicationIntegrationType, APIInstallParams>;
+  custom_install_url?: string;
 };
 
 export type Application = Library<APIApplication>;

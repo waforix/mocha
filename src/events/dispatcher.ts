@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import type { CommonDatabase } from '../db/index';
-import { EVENTS } from '../gateway/constants';
+import { Events } from '../enums/gateway';
 import {
   GuildProcessor,
   MemberProcessor,
@@ -41,21 +41,21 @@ export class EventDispatcher extends EventEmitter {
 
   private async processEvent(event: string, data: unknown): Promise<void> {
     switch (event) {
-      case EVENTS.MESSAGE_CREATE:
+      case Events.MESSAGE_CREATE:
         return this.processMessage(data);
-      case EVENTS.VOICE_STATE_UPDATE:
+      case Events.VOICE_STATE_UPDATE:
         return this.processVoiceState(data);
-      case EVENTS.GUILD_MEMBER_ADD:
+      case Events.GUILD_MEMBER_ADD:
         return this.processMemberJoin(data);
-      case EVENTS.GUILD_MEMBER_REMOVE:
+      case Events.GUILD_MEMBER_REMOVE:
         return this.processMemberLeave(data);
-      case EVENTS.PRESENCE_UPDATE:
+      case Events.PRESENCE_UPDATE:
         return this.processPresence(data);
-      case EVENTS.GUILD_CREATE:
+      case Events.GUILD_CREATE:
         return this.processGuild(data);
-      case EVENTS.MESSAGE_REACTION_ADD:
+      case Events.MESSAGE_REACTION_ADD:
         return this.processReactionAdd(data);
-      case EVENTS.MESSAGE_REACTION_REMOVE:
+      case Events.MESSAGE_REACTION_REMOVE:
         return this.processReactionRemove(data);
     }
   }

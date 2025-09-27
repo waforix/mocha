@@ -5,13 +5,13 @@ import type {
   Locale,
 } from '../../../../enums';
 import type { Library } from '../../../conversion';
+import type { APIApplicationCommandData } from '../../application/applicationCommandData';
+import type { AuthorizingIntegrationOwner } from '../../application/authorizingIntegrationOwner';
 import type { APIChannel } from '../../channel/channel';
 import type { APIEntitlement } from '../../entitlement/entitlement';
 import type { APIGuild } from '../../guild/guild';
 import type { APIGuildMember } from '../../guild/guildMember';
 import type { APIUser } from '../../user/user';
-import type { APIApplicationCommandData } from '../applicationCommand/applicationCommandData';
-import type { AuthorizingIntegrationOwner } from './../authorizingIntegrationOwner';
 import type { APIMessage } from './../message';
 
 export type APIInteraction = {

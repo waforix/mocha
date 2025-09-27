@@ -6,13 +6,14 @@ import { CacheManager, createHeatmapKey } from '../cache/index';
 import type { CommonDatabase } from '../db/index';
 import { DatabaseManager } from '../db/manager';
 import type { DatabaseConfig } from '../db/types';
+import type { StatusType } from '../enums';
 import { EventDispatcher } from '../events/index';
 import { DataExporter, type ExportOptions } from '../export/index';
-import type { GatewayOptions } from '../gateway/index';
-import { GatewayClient } from '../gateway/index';
+import { GatewayClient, type GatewayOptions } from '../gateway';
 import { NotificationEngine } from '../notifications/index';
 import { RateLimitManager } from '../ratelimit/index';
 import { StatsAggregator } from '../stats/index';
+import type { Activity } from '../types/api';
 import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
 import { CommandHandlerManager } from './commands/handler';
 import { TIMEOUTS } from './constants';
@@ -276,25 +277,21 @@ export class Client extends EventEmitter {
     return this.rateLimit ? !this.rateLimit.isAllowed(key, tokens) : false;
   }
 
-  setStatus(status: 'online' | 'idle' | 'dnd' | 'invisible'): void {
-    this.gateway.setStatus(status);
+  setStatus(status: StatusType): void {
+    this.updatePresence({ status: status });
   }
 
   setActivity(name: string, type: number = 0, url?: string): void {
-    this.gateway.setActivity(name, type, url);
+    this.updatePresence({ activities: [{ name: name, type: type, url: url }] });
   }
 
   clearActivity(): void {
-    this.gateway.clearActivity();
+    this.updatePresence({ activities: [] });
   }
 
   updatePresence(presence: {
-    status?: 'online' | 'idle' | 'dnd' | 'invisible';
-    activities?: Array<{
-      name: string;
-      type: number;
-      url?: string;
-    }>;
+    status?: StatusType;
+    activities?: Activity[];
     since?: number | null;
     afk?: boolean;
   }): void {

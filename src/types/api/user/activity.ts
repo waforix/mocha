@@ -6,7 +6,7 @@ export type APIActivity = {
   name: string;
   type: ActivityType;
   url?: string | null;
-  created_at: number;
+  created_at?: number;
   timestamps?: {
     start?: number;
     end?: number;

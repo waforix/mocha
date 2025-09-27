@@ -7,3 +7,4 @@ data
 data\stats.db-wal
 data\stats.db-shm
 examples\stats-bot\data
+src\test.ts
