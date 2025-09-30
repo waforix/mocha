@@ -58,6 +58,7 @@ export class MemberProcessor extends BaseProcessor {
         guildId: data.guild_id,
         userId: userData.id as string,
         action: 'leave',
+        roles: JSON.stringify([]),
         timestamp: new Date(),
       });
     } catch (error) {

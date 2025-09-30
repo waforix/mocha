@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  AutoUUID,
   DiscordIdSchema,
   MemberActionSchema,
   PresenceStatusSchema,
@@ -19,10 +20,7 @@ export const MessageEventSchema = TimestampSchema.extend({
 });
 
 export const VoiceEventSchema = TimestampSchema.extend({
-  id: z
-    .string()
-    .uuid()
-    .default(() => crypto.randomUUID()),
+  id: AutoUUID(),
   guildId: DiscordIdSchema,
   channelId: DiscordIdSchema.nullable(),
   userId: DiscordIdSchema,
@@ -31,10 +29,7 @@ export const VoiceEventSchema = TimestampSchema.extend({
 });
 
 export const MemberEventSchema = TimestampSchema.extend({
-  id: z
-    .string()
-    .uuid()
-    .default(() => crypto.randomUUID()),
+  id: AutoUUID(),
   guildId: DiscordIdSchema,
   userId: DiscordIdSchema,
   action: MemberActionSchema,
@@ -42,10 +37,7 @@ export const MemberEventSchema = TimestampSchema.extend({
 });
 
 export const PresenceEventSchema = TimestampSchema.extend({
-  id: z
-    .string()
-    .uuid()
-    .default(() => crypto.randomUUID()),
+  id: AutoUUID(),
   guildId: DiscordIdSchema,
   userId: DiscordIdSchema,
   status: PresenceStatusSchema,
@@ -54,10 +46,7 @@ export const PresenceEventSchema = TimestampSchema.extend({
 });
 
 export const ReactionEventSchema = TimestampSchema.extend({
-  id: z
-    .string()
-    .uuid()
-    .default(() => crypto.randomUUID()),
+  id: AutoUUID(),
   guildId: DiscordIdSchema,
   channelId: DiscordIdSchema,
   messageId: DiscordIdSchema,

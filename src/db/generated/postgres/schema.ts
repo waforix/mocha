@@ -2,7 +2,7 @@ import { boolean, integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
 export const guildTable = pgTable('guild', {
   id: text('id').primaryKey(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updatedAt', { withTimezone: true }).notNull(),
   name: text('name').notNull(),
   icon: text('icon'),
@@ -19,11 +19,11 @@ export const channelTable = pgTable('channel', {
   name: text('name'),
   type: integer('type').notNull(),
   parentId: text('parentId'),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
 });
 export const userTable = pgTable('user', {
   id: text('id').primaryKey(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updatedAt', { withTimezone: true }).notNull(),
   username: text('username').notNull(),
   discriminator: text('discriminator').notNull(),
@@ -43,12 +43,12 @@ export const memberTable = pgTable('member', {
   nick: text('nick'),
   joinedAt: timestamp('joinedAt', { withTimezone: true }).notNull(),
   leftAt: timestamp('leftAt', { withTimezone: true }),
-  roles: text('roles').notNull(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  roles: text('roles').notNull().default('[]'),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
 });
 export const messageeventTable = pgTable('messageevent', {
   timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
   id: text('id').primaryKey(),
   guildId: text('guildId')
     .notNull()
@@ -63,7 +63,7 @@ export const messageeventTable = pgTable('messageevent', {
 });
 export const voiceeventTable = pgTable('voiceevent', {
   timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -79,7 +79,7 @@ export const voiceeventTable = pgTable('voiceevent', {
 });
 export const membereventTable = pgTable('memberevent', {
   timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -90,11 +90,11 @@ export const membereventTable = pgTable('memberevent', {
     .notNull()
     .references(() => userTable.id, { onDelete: 'cascade' }),
   action: text('action').notNull(),
-  roles: text('roles').notNull(),
+  roles: text('roles').notNull().default('[]'),
 });
 export const presenceeventTable = pgTable('presenceevent', {
   timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -110,7 +110,7 @@ export const presenceeventTable = pgTable('presenceevent', {
 });
 export const reactioneventTable = pgTable('reactionevent', {
   timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
-  createdAt: timestamp('createdAt', { withTimezone: true }).notNull(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),

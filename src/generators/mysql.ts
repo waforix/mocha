@@ -54,16 +54,27 @@ export class MysqlGenerator extends SchemaGenerator {
     return 'varchar';
   }
 
+  protected formatAutoNow(): string {
+    return '.defaultNow()';
+  }
+
+  protected formatAutoUUID(): string {
+    return '.$defaultFn(() => crypto.randomUUID())';
+  }
+
   protected formatDefaultValue(value: unknown): string {
     if (typeof value === 'function') {
       const funcStr = value.toString();
       if (funcStr.includes('randomUUID')) {
         return '.$defaultFn(() => crypto.randomUUID())';
       }
-      if (funcStr.includes('new Date')) {
+      if (funcStr.includes('new Date') || funcStr.includes('Date.now')) {
         return '.defaultNow()';
       }
-      return `.$defaultFn(() => ${funcStr})`;
+      if (funcStr.includes('[]')) {
+        return ".default('[]')";
+      }
+      return `.$defaultFn(${funcStr})`;
     }
     if (typeof value === 'string') {
       if (value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
@@ -76,6 +87,9 @@ export class MysqlGenerator extends SchemaGenerator {
     }
     if (typeof value === 'boolean') {
       return `.default(${value})`;
+    }
+    if (Array.isArray(value)) {
+      return `.default('${JSON.stringify(value)}')`;
     }
     return '';
   }

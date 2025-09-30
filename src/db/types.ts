@@ -10,7 +10,7 @@ export interface SqliteConfig {
 
 export interface PostgresConfig {
   type: 'postgres';
-  connectionString: string;
+  connectionString?: string;
   host?: string;
   port?: number;
   database?: string;
