@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BaseEntitySchema, DiscordIdSchema } from './base';
+import { AutoTimestamp, AutoUUID, BaseEntitySchema, DiscordIdSchema } from './base';
 
 export const GuildSchema = BaseEntitySchema.extend({
   id: DiscordIdSchema,
@@ -15,7 +15,7 @@ export const ChannelSchema = z.object({
   name: z.string().nullable(),
   type: z.number().int(),
   parentId: DiscordIdSchema.nullable(),
-  createdAt: z.date().default(() => new Date()),
+  createdAt: AutoTimestamp(),
 });
 
 export const UserSchema = BaseEntitySchema.extend({
@@ -27,17 +27,14 @@ export const UserSchema = BaseEntitySchema.extend({
 });
 
 export const MemberSchema = z.object({
-  id: z
-    .string()
-    .uuid()
-    .default(() => crypto.randomUUID()),
+  id: AutoUUID(),
   guildId: DiscordIdSchema,
   userId: DiscordIdSchema,
   nick: z.string().nullable(),
   joinedAt: z.date(),
   leftAt: z.date().nullable(),
   roles: z.array(z.string()).default([]),
-  createdAt: z.date().default(() => new Date()),
+  createdAt: AutoTimestamp(),
 });
 
 export type Guild = z.infer<typeof GuildSchema>;

@@ -2,7 +2,9 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const guildTable = sqliteTable('guild', {
   id: text('id').primaryKey(),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
   updatedAt: integer('updatedAt').notNull(),
   name: text('name').notNull(),
   icon: text('icon'),
@@ -19,11 +21,15 @@ export const channelTable = sqliteTable('channel', {
   name: text('name'),
   type: integer('type').notNull(),
   parentId: text('parentId'),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
 });
 export const userTable = sqliteTable('user', {
   id: text('id').primaryKey(),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
   updatedAt: integer('updatedAt').notNull(),
   username: text('username').notNull(),
   discriminator: text('discriminator').notNull(),
@@ -43,12 +49,16 @@ export const memberTable = sqliteTable('member', {
   nick: text('nick'),
   joinedAt: integer('joinedAt').notNull(),
   leftAt: integer('leftAt'),
-  roles: text('roles').notNull(),
-  createdAt: integer('createdAt').notNull(),
+  roles: text('roles').notNull().default('[]'),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
 });
 export const messageeventTable = sqliteTable('messageevent', {
   timestamp: integer('timestamp').notNull(),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
   id: text('id').primaryKey(),
   guildId: text('guildId')
     .notNull()
@@ -63,7 +73,9 @@ export const messageeventTable = sqliteTable('messageevent', {
 });
 export const voiceeventTable = sqliteTable('voiceevent', {
   timestamp: integer('timestamp').notNull(),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -79,7 +91,9 @@ export const voiceeventTable = sqliteTable('voiceevent', {
 });
 export const membereventTable = sqliteTable('memberevent', {
   timestamp: integer('timestamp').notNull(),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -90,11 +104,13 @@ export const membereventTable = sqliteTable('memberevent', {
     .notNull()
     .references(() => userTable.id, { onDelete: 'cascade' }),
   action: text('action').notNull(),
-  roles: text('roles').notNull(),
+  roles: text('roles').notNull().default('[]'),
 });
 export const presenceeventTable = sqliteTable('presenceevent', {
   timestamp: integer('timestamp').notNull(),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -110,7 +126,9 @@ export const presenceeventTable = sqliteTable('presenceevent', {
 });
 export const reactioneventTable = sqliteTable('reactionevent', {
   timestamp: integer('timestamp').notNull(),
-  createdAt: integer('createdAt').notNull(),
+  createdAt: integer('createdAt')
+    .notNull()
+    .$defaultFn(() => Date.now()),
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),

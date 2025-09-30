@@ -11,7 +11,7 @@ import type { Payload } from './types/payload';
 
 const GATEWAY_ADDRESS = 'wss://gateway.discord.gg/?v=10&encoding=json';
 const BACKOFF_BASE_DELAY = 1_000;
-const BACKOFF_MAX_DELAY = 3_000;
+const BACKOFF_MAX_DELAY = 60_000;
 const BACKOFF_MULTIPLIER = 2;
 const RATE_LIMIT_DELAY = 60_000;
 
@@ -96,6 +96,7 @@ export class GatewayClient extends EventEmitter {
     }
     if (this.rateLimiter.isRateLimited(OpCode.IDENTIFY)) {
       this.emit('error', new Error('Cannot identify: Rate limited.'));
+      this.webSocket.close(1000, 'Rate limited on identify.');
       return;
     }
     const payload =

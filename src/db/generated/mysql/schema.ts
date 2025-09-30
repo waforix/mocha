@@ -2,7 +2,7 @@ import { boolean, int, mysqlTable, text, timestamp, varchar } from 'drizzle-orm/
 
 export const guildTable = mysqlTable('guild', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull(),
   name: varchar('name', { length: 255 }).notNull(),
   icon: varchar('icon', { length: 255 }),
@@ -19,11 +19,11 @@ export const channelTable = mysqlTable('channel', {
   name: varchar('name', { length: 255 }),
   type: int('type').notNull(),
   parentId: varchar('parentId', { length: 255 }),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
 });
 export const userTable = mysqlTable('user', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull(),
   username: varchar('username', { length: 255 }).notNull(),
   discriminator: varchar('discriminator', { length: 255 }).notNull(),
@@ -43,12 +43,12 @@ export const memberTable = mysqlTable('member', {
   nick: varchar('nick', { length: 255 }),
   joinedAt: timestamp('joinedAt').notNull(),
   leftAt: timestamp('leftAt'),
-  roles: text('roles').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  roles: text('roles').notNull().default('[]'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
 });
 export const messageeventTable = mysqlTable('messageevent', {
   timestamp: timestamp('timestamp').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   id: varchar('id', { length: 255 }).primaryKey(),
   guildId: varchar('guildId', { length: 255 })
     .notNull()
@@ -63,7 +63,7 @@ export const messageeventTable = mysqlTable('messageevent', {
 });
 export const voiceeventTable = mysqlTable('voiceevent', {
   timestamp: timestamp('timestamp').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   id: varchar('id', { length: 255 })
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -79,7 +79,7 @@ export const voiceeventTable = mysqlTable('voiceevent', {
 });
 export const membereventTable = mysqlTable('memberevent', {
   timestamp: timestamp('timestamp').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   id: varchar('id', { length: 255 })
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -90,11 +90,11 @@ export const membereventTable = mysqlTable('memberevent', {
     .notNull()
     .references(() => userTable.id, { onDelete: 'cascade' }),
   action: varchar('action', { length: 255 }).notNull(),
-  roles: text('roles').notNull(),
+  roles: text('roles').notNull().default('[]'),
 });
 export const presenceeventTable = mysqlTable('presenceevent', {
   timestamp: timestamp('timestamp').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   id: varchar('id', { length: 255 })
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -110,7 +110,7 @@ export const presenceeventTable = mysqlTable('presenceevent', {
 });
 export const reactioneventTable = mysqlTable('reactionevent', {
   timestamp: timestamp('timestamp').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   id: varchar('id', { length: 255 })
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),

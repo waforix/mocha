@@ -44,6 +44,7 @@ export class RateLimiter {
       [OpCode.REQUEST_SOUNDBOARD_SOUNDS]: SEND_LIMIT,
     };
     this.processInterval = 100;
+    this.limit();
   }
 
   public isRateLimited(opCode: OpCode): boolean {
@@ -59,7 +60,9 @@ export class RateLimiter {
     while (true) {
       await new Promise((resolve) => setTimeout(resolve, this.processInterval));
       Object.values(this.requestLimits).forEach((requestLimit) => {
-        requestLimit.data.filter((i) => Date.now() - i > requestLimit.interval).shift();
+        requestLimit.data = requestLimit.data.filter(
+          (i) => Date.now() - i <= requestLimit.interval
+        );
       });
     }
   }
