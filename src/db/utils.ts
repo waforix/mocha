@@ -1,5 +1,5 @@
-export function toTimestamp(date: Date): number {
-  return Math.floor(date.getTime() / 1000);
+export function toTimestamp(date: Date): Date | number {
+  return date;
 }
 
 export function fromTimestamp(timestamp: number): Date {
