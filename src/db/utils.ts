@@ -1,5 +1,6 @@
-export function toTimestamp(date: Date): Date | number {
+export function toTimestamp(date: Date): Date {
   return date;
+}
 }
 
 export function fromTimestamp(timestamp: number): Date {
