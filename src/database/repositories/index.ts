@@ -4,11 +4,27 @@
  */
 
 export {
-  MemberEventRepository,
-  MessageEventRepository,
-  PresenceEventRepository,
-  ReactionEventRepository,
-  VoiceEventRepository,
+  countMessageEventsByGuild,
+  createMemberEvent,
+  createMessageEvent,
+  createPresenceEvent,
+  createReactionEvent,
+  createVoiceEvent,
+  findMessageEventsByGuildAndDateRange,
+  findVoiceEventsByGuildAndDateRange,
 } from './events';
-export { GuildRepository } from './guild';
-export { UserRepository } from './user';
+export {
+  countGuilds,
+  deleteGuild,
+  findAllGuilds,
+  findGuildById,
+  upsertGuild,
+} from './guild';
+export {
+  countUsers,
+  deleteUser,
+  findAllUsers,
+  findUserById,
+  findUsersByUsername,
+  upsertUser,
+} from './user';

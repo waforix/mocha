@@ -1,80 +1,79 @@
 import { PrismaClient } from '@prisma/client';
 import { DatabaseConnectionError } from '../errors/network';
 
+let instance: PrismaClient | null = null;
+let isConnecting = false;
+
 /**
- * Database client wrapper for Prisma
+ * Get or create the Prisma client instance
+ * @returns Prisma client instance
+ * @throws DatabaseConnectionError if connection fails
  * @category Database
  */
-export class DatabaseClient {
-  private static instance: PrismaClient | null = null;
-  private static isConnecting = false;
+export async function getInstance(): Promise<PrismaClient> {
+  if (instance) {
+    return instance;
+  }
 
-  /**
-   * Get or create the Prisma client instance
-   * @returns Prisma client instance
-   * @throws DatabaseConnectionError if connection fails
-   */
-  static async getInstance(): Promise<PrismaClient> {
-    if (DatabaseClient.instance) {
-      return DatabaseClient.instance;
-    }
-
-    if (DatabaseClient.isConnecting) {
-      // Wait for connection to complete
-      return new Promise((resolve, reject) => {
-        const checkInterval = setInterval(() => {
-          if (DatabaseClient.instance) {
-            clearInterval(checkInterval);
-            resolve(DatabaseClient.instance);
-          }
-        }, 100);
-
-        setTimeout(() => {
+  if (isConnecting) {
+    // Wait for connection to complete
+    return new Promise((resolve, reject) => {
+      const checkInterval = setInterval(() => {
+        if (instance) {
           clearInterval(checkInterval);
-          reject(new DatabaseConnectionError('Database connection timeout'));
-        }, 30000);
-      });
-    }
+          resolve(instance);
+        }
+      }, 100);
 
-    DatabaseClient.isConnecting = true;
-
-    try {
-      DatabaseClient.instance = new PrismaClient();
-      await DatabaseClient.instance.$connect();
-      DatabaseClient.isConnecting = false;
-      return DatabaseClient.instance;
-    } catch (error) {
-      DatabaseClient.isConnecting = false;
-      throw new DatabaseConnectionError(
-        'Failed to connect to database',
-        { error: String(error) },
-        error instanceof Error ? error : undefined
-      );
-    }
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        reject(new DatabaseConnectionError('Database connection timeout'));
+      }, 30000);
+    });
   }
 
-  /**
-   * Disconnect from the database
-   */
-  static async disconnect(): Promise<void> {
-    if (DatabaseClient.instance) {
-      await DatabaseClient.instance.$disconnect();
-      DatabaseClient.instance = null;
-    }
-  }
+  isConnecting = true;
 
-  /**
-   * Check if database is connected
-   */
-  static isConnected(): boolean {
-    return DatabaseClient.instance !== null;
+  try {
+    instance = new PrismaClient();
+    await instance.$connect();
+    isConnecting = false;
+    return instance;
+  } catch (error) {
+    isConnecting = false;
+    throw new DatabaseConnectionError(
+      'Failed to connect to database',
+      { error: String(error) },
+      error instanceof Error ? error : undefined
+    );
   }
+}
 
-  /**
-   * Reset the instance (for testing)
-   */
-  static reset(): void {
-    DatabaseClient.instance = null;
-    DatabaseClient.isConnecting = false;
+/**
+ * Disconnect from the database
+ * @category Database
+ */
+export async function disconnect(): Promise<void> {
+  if (instance) {
+    await instance.$disconnect();
+    instance = null;
   }
+}
+
+/**
+ * Check if database is connected
+ * @returns True if connected, false otherwise
+ * @category Database
+ */
+export function isConnected(): boolean {
+  return instance !== null;
+}
+
+/**
+ * Reset the instance (for testing)
+ * @category Database
+ */
+export function reset(): void {
+  instance = null;
+  isConnecting = false;
 }

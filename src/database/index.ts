@@ -4,7 +4,7 @@
  */
 
 export type { PrismaClient } from '@prisma/client';
-export { DatabaseClient } from './client';
+export { disconnect, getInstance, isConnected, reset } from './client';
 export {
   GuildRepository,
   MemberEventRepository,
