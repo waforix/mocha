@@ -4,7 +4,6 @@
 export type { Metrics } from './analytics/index';
 export * from './autocomplete/index';
 export * from './builders/index';
-export { Client } from './client';
 export type { IComponent } from './components';
 // Components
 export { BaseComponent, CacheComponent, GatewayComponent, StatsComponent } from './components';
