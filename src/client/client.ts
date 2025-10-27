@@ -1,8 +1,7 @@
 import { EventEmitter } from 'node:events';
 import { CacheComponent, GatewayComponent, StatsComponent } from '../components';
 import { DatabaseClient } from '../database';
-import { LibraryError } from '../errors/base';
-import { type ClientConfig, ClientConfigSchema, Validator } from '../validation';
+import { type ClientConfig, ClientConfigSchema, validate } from '../validation';
 
 /**
  * Main client for the library
@@ -23,7 +22,7 @@ export class Client extends EventEmitter {
    */
   constructor(config: ClientConfig) {
     super();
-    this.config = Validator.validate(ClientConfigSchema, config, 'ClientConfig');
+    this.config = validate(ClientConfigSchema, config, 'ClientConfig');
 
     // Initialize cache component
     this.cache = new CacheComponent(
