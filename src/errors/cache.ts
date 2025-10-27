@@ -11,11 +11,7 @@ export class CacheError extends LibraryError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, 'CACHE_ERROR', context, cause);
     Object.setPrototypeOf(this, CacheError.prototype);
   }
@@ -32,11 +28,7 @@ export class CacheEvictionError extends CacheError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, { ...context, type: 'eviction' }, cause);
     this.code = 'CACHE_EVICTION_ERROR';
     Object.setPrototypeOf(this, CacheEvictionError.prototype);
@@ -54,14 +46,9 @@ export class CacheSerializationError extends CacheError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, { ...context, type: 'serialization' }, cause);
     this.code = 'CACHE_SERIALIZATION_ERROR';
     Object.setPrototypeOf(this, CacheSerializationError.prototype);
   }
 }
-
