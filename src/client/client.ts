@@ -1,8 +1,8 @@
 import { EventEmitter } from 'node:events';
+import { CacheComponent, GatewayComponent, StatsComponent } from '../components';
 import { DatabaseClient } from '../database';
-import { CacheComponent, StatsComponent, GatewayComponent } from '../components';
-import { Validator, ClientConfigSchema, type ClientConfig } from '../validation';
 import { LibraryError } from '../errors/base';
+import { type ClientConfig, ClientConfigSchema, Validator } from '../validation';
 
 /**
  * Main client for the library
@@ -26,14 +26,16 @@ export class Client extends EventEmitter {
     this.config = Validator.validate(ClientConfigSchema, config, 'ClientConfig');
 
     // Initialize cache component
-    this.cache = new CacheComponent(this.config.cache || {
-      userStatsSize: 1000,
-      guildStatsSize: 100,
-      leaderboardSize: 500,
-      querySize: 2000,
-      ttlMs: 300000,
-      strategy: 'lru',
-    });
+    this.cache = new CacheComponent(
+      this.config.cache || {
+        userStatsSize: 1000,
+        guildStatsSize: 100,
+        leaderboardSize: 500,
+        querySize: 2000,
+        ttlMs: 300000,
+        strategy: 'lru',
+      }
+    );
 
     // Initialize stats component
     this.stats = new StatsComponent(this.cache);
@@ -187,4 +189,3 @@ export class Client extends EventEmitter {
     return { ...this.config };
   }
 }
-

@@ -14,11 +14,7 @@ export class Validator {
    * @returns Validated data
    * @throws InvalidInputError if validation fails
    */
-  static validate<T>(
-    schema: z.ZodSchema<T>,
-    data: unknown,
-    context?: string
-  ): T {
+  static validate<T>(schema: z.ZodSchema<T>, data: unknown, context?: string): T {
     try {
       return schema.parse(data);
     } catch (error) {
@@ -73,4 +69,3 @@ export class Validator {
     }
   }
 }
-

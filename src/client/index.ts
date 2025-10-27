@@ -4,4 +4,3 @@
  */
 
 export { Client } from './client';
-
