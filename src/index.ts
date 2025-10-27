@@ -9,14 +9,29 @@ export type { IComponent } from './components';
 export { BaseComponent, CacheComponent, GatewayComponent, StatsComponent } from './components';
 // Database
 export {
-  DatabaseClient,
-  GuildRepository,
-  MemberEventRepository,
-  MessageEventRepository,
-  PresenceEventRepository,
-  ReactionEventRepository,
-  UserRepository,
-  VoiceEventRepository,
+  countGuilds,
+  countMessageEventsByGuild,
+  countUsers,
+  createMemberEvent,
+  createMessageEvent,
+  createPresenceEvent,
+  createReactionEvent,
+  createVoiceEvent,
+  deleteGuild,
+  deleteUser,
+  disconnect,
+  findAllGuilds,
+  findAllUsers,
+  findGuildById,
+  findMessageEventsByGuildAndDateRange,
+  findUserById,
+  findUsersByUsername,
+  findVoiceEventsByGuildAndDateRange,
+  getInstance,
+  isConnected,
+  reset,
+  upsertGuild,
+  upsertUser,
 } from './database';
 // Errors
 export {
@@ -52,4 +67,4 @@ export type {
   GatewayConfig,
 } from './validation';
 // Validation
-export { Validator } from './validation';
+export { safeParse, validate } from './validation';

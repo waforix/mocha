@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { CacheComponent, GatewayComponent, StatsComponent } from '../components';
-import { DatabaseClient } from '../database';
+import { disconnect, getInstance } from '../database';
 import { type ClientConfig, ClientConfigSchema, validate } from '../validation';
 
 /**
@@ -52,7 +52,7 @@ export class Client extends EventEmitter {
   async initialize(): Promise<void> {
     try {
       // Initialize database
-      await DatabaseClient.getInstance();
+      await getInstance();
 
       // Initialize cache
       await this.cache.initialize();
@@ -79,7 +79,7 @@ export class Client extends EventEmitter {
         await this.gateway.destroy();
       }
       await this.cache.destroy();
-      await DatabaseClient.disconnect();
+      await disconnect();
       this.initialized = false;
       this.emit('destroyed');
     } catch (error) {

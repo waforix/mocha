@@ -1,11 +1,28 @@
 import {
-  GuildRepository,
-  MessageEventRepository,
-  UserRepository,
-  VoiceEventRepository,
+  countMessageEventsByGuild,
+  findGuildById,
+  findMessageEventsByGuildAndDateRange,
+  findVoiceEventsByGuildAndDateRange,
 } from '../database';
 import { BaseComponent } from './base';
 import type { CacheComponent } from './cache';
+
+interface UserMessageStats {
+  totalMessages: number;
+  averagePerDay: number;
+  lastMessageDate: Date | null;
+}
+
+interface GuildStats {
+  totalMessages: number;
+  totalUsers: number;
+  totalVoiceEvents: number;
+}
+
+interface TopUser {
+  userId: string;
+  messageCount: number;
+}
 
 /**
  * Statistics component for aggregating and retrieving stats
@@ -30,28 +47,16 @@ export class StatsComponent extends BaseComponent {
    * @param days - Number of days to look back
    * @returns User message stats
    */
-  async getUserMessageStats(
-    guildId: string,
-    userId: string,
-    days = 30
-  ): Promise<{
-    totalMessages: number;
-    averagePerDay: number;
-    lastMessageDate: Date | null;
-  }> {
+  async getUserMessageStats(guildId: string, userId: string, days = 30): Promise<UserMessageStats> {
     const cacheKey = `user_msg_stats:${guildId}:${userId}:${days}`;
-    const cached = this.cache.get(cacheKey);
-    if (cached) return cached as any;
+    const cached = this.cache.get<UserMessageStats>(cacheKey);
+    if (cached) return cached;
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     const endDate = new Date();
 
-    const events = await MessageEventRepository.findByGuildAndDateRange(
-      guildId,
-      startDate,
-      endDate
-    );
+    const events = await findMessageEventsByGuildAndDateRange(guildId, startDate, endDate);
 
     const userEvents = events.filter((e) => e.userId === userId);
     const totalMessages = userEvents.length;
@@ -73,30 +78,22 @@ export class StatsComponent extends BaseComponent {
    * @param guildId - Guild ID
    * @returns Guild stats
    */
-  async getGuildStats(guildId: string): Promise<{
-    totalMessages: number;
-    totalUsers: number;
-    totalVoiceEvents: number;
-  }> {
+  async getGuildStats(guildId: string): Promise<GuildStats> {
     const cacheKey = `guild_stats:${guildId}`;
-    const cached = this.cache.get(cacheKey);
-    if (cached) return cached as any;
+    const cached = this.cache.get<GuildStats>(cacheKey);
+    if (cached) return cached;
 
-    const totalMessages = await MessageEventRepository.countByGuild(guildId);
-    const guild = await GuildRepository.findById(guildId);
+    const totalMessages = await countMessageEventsByGuild(guildId);
+    const guild = await findGuildById(guildId);
     const totalUsers = guild?.memberCount || 0;
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
     const endDate = new Date();
 
-    const voiceEvents = await VoiceEventRepository.findByGuildAndDateRange(
-      guildId,
-      startDate,
-      endDate
-    );
+    const voiceEvents = await findVoiceEventsByGuildAndDateRange(guildId, startDate, endDate);
 
-    const stats = {
+    const stats: GuildStats = {
       totalMessages,
       totalUsers,
       totalVoiceEvents: voiceEvents.length,
@@ -112,30 +109,23 @@ export class StatsComponent extends BaseComponent {
    * @param limit - Number of top users to return
    * @returns Array of top users with message counts
    */
-  async getTopUsers(
-    guildId: string,
-    limit = 10
-  ): Promise<Array<{ userId: string; messageCount: number }>> {
+  async getTopUsers(guildId: string, limit = 10): Promise<TopUser[]> {
     const cacheKey = `top_users:${guildId}:${limit}`;
-    const cached = this.cache.get(cacheKey);
-    if (cached) return cached as any;
+    const cached = this.cache.get<TopUser[]>(cacheKey);
+    if (cached) return cached;
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
     const endDate = new Date();
 
-    const events = await MessageEventRepository.findByGuildAndDateRange(
-      guildId,
-      startDate,
-      endDate
-    );
+    const events = await findMessageEventsByGuildAndDateRange(guildId, startDate, endDate);
 
     const userCounts = new Map<string, number>();
     for (const event of events) {
       userCounts.set(event.userId, (userCounts.get(event.userId) || 0) + 1);
     }
 
-    const topUsers = Array.from(userCounts.entries())
+    const topUsers: TopUser[] = Array.from(userCounts.entries())
       .map(([userId, messageCount]) => ({ userId, messageCount }))
       .sort((a, b) => b.messageCount - a.messageCount)
       .slice(0, limit);
