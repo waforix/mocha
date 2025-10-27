@@ -1,6 +1,6 @@
-import type { User, Prisma } from '@prisma/client';
-import { DatabaseClient } from '../client';
+import type { Prisma, User } from '@prisma/client';
 import { DatabaseQueryError } from '../../errors/database';
+import { DatabaseClient } from '../client';
 
 /**
  * Repository for User operations
@@ -125,4 +125,3 @@ export class UserRepository {
     }
   }
 }
-

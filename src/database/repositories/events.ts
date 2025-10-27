@@ -1,13 +1,13 @@
 import type {
-  MessageEvent,
-  VoiceEvent,
   MemberEvent,
+  MessageEvent,
   PresenceEvent,
-  ReactionEvent,
   Prisma,
+  ReactionEvent,
+  VoiceEvent,
 } from '@prisma/client';
-import { DatabaseClient } from '../client';
 import { DatabaseQueryError } from '../../errors/database';
+import { DatabaseClient } from '../client';
 
 /**
  * Repository for Message Event operations
@@ -214,4 +214,3 @@ export class ReactionEventRepository {
     }
   }
 }
-

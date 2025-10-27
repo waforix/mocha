@@ -3,15 +3,14 @@
  * @category Database
  */
 
+export type { PrismaClient } from '@prisma/client';
 export { DatabaseClient } from './client';
 export {
   GuildRepository,
-  UserRepository,
-  MessageEventRepository,
-  VoiceEventRepository,
   MemberEventRepository,
+  MessageEventRepository,
   PresenceEventRepository,
   ReactionEventRepository,
+  UserRepository,
+  VoiceEventRepository,
 } from './repositories';
-export type { PrismaClient } from '@prisma/client';
-

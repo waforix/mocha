@@ -15,17 +15,17 @@ export class DatabaseClient {
    * @throws DatabaseConnectionError if connection fails
    */
   static async getInstance(): Promise<PrismaClient> {
-    if (this.instance) {
-      return this.instance;
+    if (DatabaseClient.instance) {
+      return DatabaseClient.instance;
     }
 
-    if (this.isConnecting) {
+    if (DatabaseClient.isConnecting) {
       // Wait for connection to complete
       return new Promise((resolve, reject) => {
         const checkInterval = setInterval(() => {
-          if (this.instance) {
+          if (DatabaseClient.instance) {
             clearInterval(checkInterval);
-            resolve(this.instance);
+            resolve(DatabaseClient.instance);
           }
         }, 100);
 
@@ -36,15 +36,15 @@ export class DatabaseClient {
       });
     }
 
-    this.isConnecting = true;
+    DatabaseClient.isConnecting = true;
 
     try {
-      this.instance = new PrismaClient();
-      await this.instance.$connect();
-      this.isConnecting = false;
-      return this.instance;
+      DatabaseClient.instance = new PrismaClient();
+      await DatabaseClient.instance.$connect();
+      DatabaseClient.isConnecting = false;
+      return DatabaseClient.instance;
     } catch (error) {
-      this.isConnecting = false;
+      DatabaseClient.isConnecting = false;
       throw new DatabaseConnectionError(
         'Failed to connect to database',
         { error: String(error) },
@@ -57,9 +57,9 @@ export class DatabaseClient {
    * Disconnect from the database
    */
   static async disconnect(): Promise<void> {
-    if (this.instance) {
-      await this.instance.$disconnect();
-      this.instance = null;
+    if (DatabaseClient.instance) {
+      await DatabaseClient.instance.$disconnect();
+      DatabaseClient.instance = null;
     }
   }
 
@@ -67,15 +67,14 @@ export class DatabaseClient {
    * Check if database is connected
    */
   static isConnected(): boolean {
-    return this.instance !== null;
+    return DatabaseClient.instance !== null;
   }
 
   /**
    * Reset the instance (for testing)
    */
   static reset(): void {
-    this.instance = null;
-    this.isConnecting = false;
+    DatabaseClient.instance = null;
+    DatabaseClient.isConnecting = false;
   }
 }
-

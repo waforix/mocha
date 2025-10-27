@@ -5,25 +5,24 @@
 
 export { LibraryError } from './base';
 export {
-  DatabaseError,
-  DatabaseConnectionError,
-  DatabaseQueryError,
-  DatabaseMigrationError,
-} from './database';
-export {
   CacheError,
   CacheEvictionError,
   CacheSerializationError,
 } from './cache';
 export {
-  ValidationError,
-  ConfigurationError,
-  InvalidInputError,
-} from './validation';
+  DatabaseConnectionError,
+  DatabaseError,
+  DatabaseMigrationError,
+  DatabaseQueryError,
+} from './database';
 export {
-  NetworkError,
   GatewayConnectionError,
+  NetworkError,
   RateLimitError,
   TimeoutError,
 } from './network';
-
+export {
+  ConfigurationError,
+  InvalidInputError,
+  ValidationError,
+} from './validation';

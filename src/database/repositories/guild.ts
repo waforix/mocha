@@ -1,6 +1,6 @@
 import type { Guild, Prisma } from '@prisma/client';
-import { DatabaseClient } from '../client';
 import { DatabaseQueryError } from '../../errors/database';
+import { DatabaseClient } from '../client';
 
 /**
  * Repository for Guild operations
@@ -106,4 +106,3 @@ export class GuildRepository {
     }
   }
 }
-

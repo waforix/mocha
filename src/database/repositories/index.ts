@@ -3,13 +3,12 @@
  * @category Database
  */
 
-export { GuildRepository } from './guild';
-export { UserRepository } from './user';
 export {
-  MessageEventRepository,
-  VoiceEventRepository,
   MemberEventRepository,
+  MessageEventRepository,
   PresenceEventRepository,
   ReactionEventRepository,
+  VoiceEventRepository,
 } from './events';
-
+export { GuildRepository } from './guild';
+export { UserRepository } from './user';
