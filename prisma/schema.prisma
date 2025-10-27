@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
+}
+
+// Guild entity - represents a Discord server
+model Guild {
+  id        String   @id @db.VarChar(19)
+  name      String
+  icon      String?
+  ownerId   String   @db.VarChar(19)
+  memberCount Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  channels Channel[]
+  members  Member[]
+  messageEvents MessageEvent[]
+  voiceEvents VoiceEvent[]
+  memberEvents MemberEvent[]
+  presenceEvents PresenceEvent[]
+  reactionEvents ReactionEvent[]
+
+  @@index([ownerId])
+  @@map("guilds")
+}
+
+// Channel entity - represents a Discord channel
+model Channel {
+  id        String   @id @db.VarChar(19)
+  guildId   String   @db.VarChar(19)
+  name      String?
+  type      Int
+  parentId  String?  @db.VarChar(19)
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([parentId])
+  @@map("channels")
+}
+
+// User entity - represents a Discord user
+model User {
+  id            String   @id @db.VarChar(19)
+  username      String
+  discriminator String
+  avatar        String?
+  bot           Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  members Member[]
+  messageEvents MessageEvent[]
+  voiceEvents VoiceEvent[]
+  reactionEvents ReactionEvent[]
+
+  @@map("users")
+}
+
+// Member entity - represents a user in a guild
+model Member {
+  id        String   @id @default(cuid())
+  guildId   String   @db.VarChar(19)
+  userId    String   @db.VarChar(19)
+  nick      String?
+  joinedAt  DateTime
+  leftAt    DateTime?
+  roles     String[] @default([])
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@index([guildId])
+  @@index([userId])
+  @@map("members")
+}
+
+// Message event - tracks message creation
+model MessageEvent {
+  id            String   @id @default(cuid())
+  guildId       String   @db.VarChar(19)
+  channelId     String   @db.VarChar(19)
+  userId        String   @db.VarChar(19)
+  messageId     String   @db.VarChar(19)
+  content       String?
+  attachments   Int      @default(0)
+  embeds        Int      @default(0)
+  timestamp     DateTime
+  createdAt     DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([userId])
+  @@index([channelId])
+  @@index([timestamp])
+  @@map("message_events")
+}
+
+// Voice event - tracks voice state changes
+model VoiceEvent {
+  id        String   @id @default(cuid())
+  guildId   String   @db.VarChar(19)
+  channelId String?  @db.VarChar(19)
+  userId    String   @db.VarChar(19)
+  action    String   // 'join', 'leave', 'move'
+  duration  Int?     // milliseconds
+  timestamp DateTime
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([userId])
+  @@index([timestamp])
+  @@map("voice_events")
+}
+
+// Member event - tracks member join/leave
+model MemberEvent {
+  id        String   @id @default(cuid())
+  guildId   String   @db.VarChar(19)
+  userId    String   @db.VarChar(19)
+  action    String   // 'join', 'leave'
+  timestamp DateTime
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([timestamp])
+  @@map("member_events")
+}
+
+// Presence event - tracks user presence changes
+model PresenceEvent {
+  id        String   @id @default(cuid())
+  guildId   String   @db.VarChar(19)
+  userId    String   @db.VarChar(19)
+  status    String   // 'online', 'idle', 'dnd', 'offline'
+  timestamp DateTime
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([timestamp])
+  @@map("presence_events")
+}
+
+// Reaction event - tracks message reactions
+model ReactionEvent {
+  id        String   @id @default(cuid())
+  guildId   String   @db.VarChar(19)
+  channelId String   @db.VarChar(19)
+  messageId String   @db.VarChar(19)
+  userId    String   @db.VarChar(19)
+  emoji     String
+  action    String   // 'add', 'remove'
+  timestamp DateTime
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([userId])
+  @@index([messageId])
+  @@index([timestamp])
+  @@map("reaction_events")
+}
+
