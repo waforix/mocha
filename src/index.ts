@@ -1,6 +1,41 @@
+// Core client
+
+// Legacy exports for backward compatibility
 export type { Metrics } from './analytics/index';
 export * from './builders/index';
-export type { CacheConfig } from './cache/index';
+export { Client } from './client';
+export type { IComponent } from './components';
+// Components
+export { BaseComponent, CacheComponent, GatewayComponent, StatsComponent } from './components';
+// Database
+export {
+  DatabaseClient,
+  GuildRepository,
+  MemberEventRepository,
+  MessageEventRepository,
+  PresenceEventRepository,
+  ReactionEventRepository,
+  UserRepository,
+  VoiceEventRepository,
+} from './database';
+// Errors
+export {
+  CacheError,
+  CacheEvictionError,
+  CacheSerializationError,
+  ConfigurationError,
+  DatabaseConnectionError,
+  DatabaseError,
+  DatabaseMigrationError,
+  DatabaseQueryError,
+  GatewayConnectionError,
+  InvalidInputError,
+  LibraryError,
+  NetworkError,
+  RateLimitError,
+  TimeoutError,
+  ValidationError,
+} from './errors';
 export type { ExportData, ExportOptions } from './export/index';
 export { INTENTS } from './gateway/constants';
 export * from './lib/commands';
@@ -9,3 +44,12 @@ export { StatsClient } from './lib/index';
 export type { NotificationEvent, NotificationRule } from './notifications/index';
 export type { RateLimitConfig } from './ratelimit/index';
 export type { GuildStats, UserStats } from './stats/index';
+export type {
+  CacheConfig,
+  ClientConfig,
+  ClientConfig,
+  DatabaseConfig,
+  GatewayConfig,
+} from './validation';
+// Validation
+export { Validator } from './validation';
