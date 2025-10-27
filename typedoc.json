@@ -1,0 +1,36 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs/generated",
+  "theme": "default",
+  "readme": "docs/README.md",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "stripInternal": true,
+  "stripPrivate": true,
+  "declaration": true,
+  "declarationMap": true,
+  "sourceMap": true,
+  "pretty": true,
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Core",
+    "Components",
+    "Configuration",
+    "Types",
+    "Utilities",
+    "Errors",
+    "*"
+  ],
+  "sort": ["source-order"],
+  "searchInComments": true,
+  "jsDocCompatibility": true,
+  "treatWarningsAsErrors": false,
+  "validation": {
+    "notDocumented": "warn",
+    "invalidLink": "warn",
+    "missingThrows": "warn"
+  }
+}
+

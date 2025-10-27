@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node",
+    "docs": "typedoc --out docs/generated src/index.ts",
+    "docs:watch": "typedoc --watch --out docs/generated src/index.ts",
     "schemas:generate": "bun run scripts/generate-schemas.ts",
     "db:generate": "bun run schemas:generate && drizzle-kit generate --config=drizzle.config.ts",
     "db:generate:sqlite": "bun run schemas:generate && drizzle-kit generate --config=drizzle.config.ts",
@@ -23,7 +25,10 @@
     "format": "biome format src/",
     "format:fix": "biome format --write src/",
     "check": "biome check src/",
-    "check:fix": "biome check --write src/"
+    "check:fix": "biome check --write src/",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "better-sqlite3": "^12.2.0",
@@ -37,8 +42,12 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/pg": "^8.15.5",
     "@types/ws": "^8.5.10",
+    "@vitest/coverage-v8": "^1.0.4",
+    "@vitest/ui": "^1.0.4",
     "bun-types": "^1.0.18",
     "drizzle-kit": "^0.31.4",
-    "typescript": "^5.3.3"
+    "typedoc": "^0.25.4",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
   }
 }
