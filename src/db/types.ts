@@ -10,7 +10,7 @@ export interface SqliteConfig {
 
 export interface PostgresConfig {
   type: 'postgres';
-  connectionString: string;
+  connectionString?: string;
   host?: string;
   port?: number;
   database?: string;
@@ -30,8 +30,7 @@ export interface DatabaseOptions {
   enableOptimizations?: boolean;
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Required for Drizzle database type compatibility
-export type SqliteInstance = BetterSQLite3Database<any>;
+export type SqliteInstance = BetterSQLite3Database<Record<string, unknown>>;
 export type PostgresInstance = PostgresJsDatabase<Record<string, unknown>>;
 
 export interface DatabaseConnection {

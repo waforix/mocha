@@ -1,0 +1,74 @@
+import type {
+  ChannelType,
+  ForumLayoutType,
+  RecipientFlag,
+  SearchTagSetting,
+  SortOrderType,
+  VideoQualityMode,
+} from '../../../enums/channel';
+import type { Library } from '../../conversion';
+import type { APIUser } from '../user/user';
+import type { APIChannelNick } from './channelNick';
+import type { APIDefaultReaction } from './defaultReaction';
+import type { APIForumTag } from './forumTag';
+import type { APIIconEmoji } from './iconEmoji';
+import type { APILinkedLobby } from './linkedLobby';
+import type { APIOverwrite } from './overwrite';
+import type { APISafetyWarning } from './safetyWarning';
+import type { APIThreadMember } from './threadMember';
+import type { APIThreadMetadata } from './threadMetadata';
+import type { APIVoiceRegion } from './voiceRegion';
+
+export type APIChannel = {
+  id: string;
+  type: ChannelType;
+  guild_id?: string;
+  position?: number;
+  permission_overwrites?: APIOverwrite[];
+  name?: string | null;
+  topic?: string | null;
+  nsfw?: boolean;
+  last_message_id?: string | null;
+  bitrate?: number;
+  user_limit?: number;
+  rate_limit_per_user?: number;
+  recipients?: Partial<APIUser>[];
+  recipient_flags: RecipientFlag;
+  icon?: string | null;
+  nicks?: APIChannelNick[];
+  managed?: boolean;
+  blocked_user_warning_dismissed?: boolean;
+  safety_warnings?: APISafetyWarning[];
+  application_id?: string;
+  parent_id?: string | null;
+  last_pin_timestamp?: Date | null;
+  rtc_region?: APIVoiceRegion | null;
+  video_quality_mode?: VideoQualityMode;
+  total_message_sent?: number;
+  message_count?: number;
+  member_count?: number;
+  member_ids_preview?: string[];
+  thread_metadata?: APIThreadMetadata;
+  member?: APIThreadMember;
+  default_auto_archive_duration?: number;
+  default_thread_rate_limit_per_user?: number;
+  permissions?: string;
+  flags?: number;
+  available_tags?: APIForumTag[];
+  applied_tags?: string[];
+  default_reaction_emoji?: APIDefaultReaction | null;
+  default_forum_layout?: ForumLayoutType;
+  default_sort_order?: SortOrderType | null;
+  default_tag_setting?: SearchTagSetting;
+  icon_emoji?: APIIconEmoji | null;
+  is_message_request?: boolean;
+  is_message_request_timestamp?: Date | null;
+  is_spam?: boolean;
+  theme_color?: number | null;
+  status?: string | null;
+  hd_streaming_until?: Date | null;
+  hd_streaming_buyer_id?: string | null;
+  linked_lobby?: APILinkedLobby | null;
+};
+
+export type Channel = Library<APIChannel>;

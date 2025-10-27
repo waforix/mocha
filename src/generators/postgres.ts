@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import { type FieldMapping, SchemaGenerator, type TableMapping } from './base';
+import { type FieldMapping, SchemaGenerator, type TableMapping, type ZodInternalDef } from './base';
 
 export class PostgresGenerator extends SchemaGenerator {
   constructor() {
@@ -30,14 +30,12 @@ export class PostgresGenerator extends SchemaGenerator {
   }
 
   protected getFieldType(zodType: z.ZodTypeAny): string {
-    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-    const def = (zodType as any)._def;
+    const def = (zodType as { _def: ZodInternalDef })._def;
     const type = def.type;
 
     if (type === 'string') {
       const checks = def.checks;
-      // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal check structure
-      if (checks?.some((check: any) => check.kind === 'uuid')) {
+      if (checks?.some((check: { kind: string }) => check.kind === 'uuid')) {
         return 'uuid';
       }
       return 'text';
@@ -55,22 +53,32 @@ export class PostgresGenerator extends SchemaGenerator {
       return 'text';
     }
     if (type === 'optional' || type === 'nullable' || type === 'default') {
-      return this.getFieldType(def.innerType);
+      return def.innerType ? this.getFieldType(def.innerType) : 'text';
     }
     return 'text';
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: Required for flexible default value handling
-  protected formatDefaultValue(value: any): string {
+  protected formatAutoNow(): string {
+    return '.defaultNow()';
+  }
+
+  protected formatAutoUUID(): string {
+    return '.$defaultFn(() => crypto.randomUUID())';
+  }
+
+  protected formatDefaultValue(value: unknown): string {
     if (typeof value === 'function') {
       const funcStr = value.toString();
       if (funcStr.includes('randomUUID')) {
-        return '.defaultRandom()';
+        return '.$defaultFn(() => crypto.randomUUID())';
       }
-      if (funcStr.includes('new Date')) {
+      if (funcStr.includes('new Date') || funcStr.includes('Date.now')) {
         return '.defaultNow()';
       }
-      return `.$defaultFn(() => ${funcStr})`;
+      if (funcStr.includes('[]')) {
+        return ".default('[]')";
+      }
+      return `.$defaultFn(${funcStr})`;
     }
     if (typeof value === 'string') {
       if (value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
@@ -84,6 +92,9 @@ export class PostgresGenerator extends SchemaGenerator {
     if (typeof value === 'boolean') {
       return `.default(${value})`;
     }
+    if (Array.isArray(value)) {
+      return `.default('${JSON.stringify(value)}')`;
+    }
     return '';
   }
 
@@ -96,11 +107,13 @@ export class PostgresGenerator extends SchemaGenerator {
 
   private mapSchemaToTable(schemaName: string, zodSchema: z.ZodSchema): TableMapping {
     const tableName = this.getTableName(schemaName);
-    // biome-ignore lint/suspicious/noExplicitAny: Required for accessing Zod internal _def property
-    const shape = (zodSchema as any)._def.shape;
+    const shape = (zodSchema as { _def: ZodInternalDef })._def.shape;
     const fields: FieldMapping[] = [];
-    // biome-ignore lint/suspicious/noExplicitAny: Required for flexible index definition handling
-    const indexes: any[] = [];
+    const indexes: Array<{ name: string; columns: string[]; unique?: boolean }> = [];
+
+    if (!shape) {
+      return { name: tableName, fields, indexes };
+    }
 
     for (const [fieldName, zodType] of Object.entries(shape)) {
       const field = this.mapZodToField(zodType as z.ZodTypeAny, fieldName);

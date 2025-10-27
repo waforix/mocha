@@ -1,0 +1,24 @@
+export const TIMEOUTS = {
+  DATABASE_INIT: 10000,
+  CONNECTION: 30000,
+  RATE_LIMIT_DELAY: 60000,
+} as const;
+
+export const CACHE_DEFAULTS = {
+  USER_STATS_SIZE: 1000,
+  GUILD_STATS_SIZE: 100,
+  LEADERBOARD_SIZE: 500,
+  QUERY_SIZE: 2000,
+  TTL_MS: 300000,
+} as const;
+
+export const HEARTBEAT = {
+  MAX_MISSED_ACKS: 3,
+  TIMEOUT_CODE: 4000,
+} as const;
+
+export const BACKOFF = {
+  MAX_DELAY: 30000,
+  BASE_DELAY: 1000,
+  MULTIPLIER: 2,
+} as const;

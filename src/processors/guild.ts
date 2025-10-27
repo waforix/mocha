@@ -8,8 +8,13 @@ export class GuildProcessor extends BaseProcessor<unknown> {
     }
 
     try {
-      await this.upsertGuild(guild);
       const guildData = guild as Record<string, unknown>;
+
+      if (guildData.owner_id) {
+        await this.upsertUser({ id: guildData.owner_id });
+      }
+
+      await this.upsertGuild(guild);
 
       await this.processGuildChannels(guildData);
       await this.processGuildMembers(guildData);

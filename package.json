@@ -1,6 +1,6 @@
 {
-  "name": "waforix",
-  "version": "1.2.1",
+  "name": "@waforix/mocha",
+  "version": "2.2.2",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@prisma/client": "^5.7.1",
     "ws": "^8.14.2",
-    "zod": "^4.1.9"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
