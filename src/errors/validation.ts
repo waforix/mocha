@@ -38,11 +38,7 @@ export class ConfigurationError extends LibraryError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, 'CONFIGURATION_ERROR', context, cause);
     Object.setPrototypeOf(this, ConfigurationError.prototype);
   }
@@ -69,4 +65,3 @@ export class InvalidInputError extends ValidationError {
     Object.setPrototypeOf(this, InvalidInputError.prototype);
   }
 }
-

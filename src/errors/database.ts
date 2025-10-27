@@ -11,11 +11,7 @@ export class DatabaseError extends LibraryError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, 'DATABASE_ERROR', context, cause);
     Object.setPrototypeOf(this, DatabaseError.prototype);
   }
@@ -32,11 +28,7 @@ export class DatabaseConnectionError extends DatabaseError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, { ...context, type: 'connection' }, cause);
     this.code = 'DATABASE_CONNECTION_ERROR';
     Object.setPrototypeOf(this, DatabaseConnectionError.prototype);
@@ -54,11 +46,7 @@ export class DatabaseQueryError extends DatabaseError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, { ...context, type: 'query' }, cause);
     this.code = 'DATABASE_QUERY_ERROR';
     Object.setPrototypeOf(this, DatabaseQueryError.prototype);
@@ -76,14 +64,9 @@ export class DatabaseMigrationError extends DatabaseError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, { ...context, type: 'migration' }, cause);
     this.code = 'DATABASE_MIGRATION_ERROR';
     Object.setPrototypeOf(this, DatabaseMigrationError.prototype);
   }
 }
-

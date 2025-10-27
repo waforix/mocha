@@ -30,12 +30,7 @@ export class LibraryError extends Error {
    * @param context - Additional context information
    * @param cause - Original error that caused this
    */
-  constructor(
-    message: string,
-    code: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, code: string, context?: Record<string, unknown>, cause?: Error) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
@@ -58,12 +53,13 @@ export class LibraryError extends Error {
       context: this.context,
       timestamp: this.timestamp.toISOString(),
       stack: this.stack,
-      cause: this.cause ? {
-        name: this.cause.name,
-        message: this.cause.message,
-        stack: this.cause.stack,
-      } : undefined,
+      cause: this.cause
+        ? {
+            name: this.cause.name,
+            message: this.cause.message,
+            stack: this.cause.stack,
+          }
+        : undefined,
     };
   }
 }
-
