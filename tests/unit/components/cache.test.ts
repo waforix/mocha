@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { CacheComponent } from '../../../src/components/cache';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import type { CacheComponent } from '../../../src/components/cache';
 import { createTestCache, wait } from '../../utils/test-helpers';
 
 describe('CacheComponent', () => {
@@ -129,8 +129,9 @@ describe('CacheComponent', () => {
   });
 
   describe('eviction', () => {
-    it('should evict oldest entry when cache is full', () => {
+    it('should evict oldest entry when cache is full', async () => {
       const smallCache = createTestCache({ userStatsSize: 2, ttlMs: 10000 });
+      await smallCache.initialize();
       smallCache.set('key1', 'value1');
       smallCache.set('key2', 'value2');
       expect(smallCache.size()).toBe(2);
@@ -141,10 +142,12 @@ describe('CacheComponent', () => {
       expect(smallCache.has('key1')).toBe(false);
       expect(smallCache.has('key2')).toBe(true);
       expect(smallCache.has('key3')).toBe(true);
+      await smallCache.destroy();
     });
 
     it('should emit evict event', async () => {
       const smallCache = createTestCache({ userStatsSize: 1, ttlMs: 10000 });
+      await smallCache.initialize();
       smallCache.set('key1', 'value1');
       let emitted = false;
       smallCache.on('evict', () => {
@@ -152,6 +155,7 @@ describe('CacheComponent', () => {
       });
       smallCache.set('key2', 'value2');
       expect(emitted).toBe(true);
+      await smallCache.destroy();
     });
   });
 

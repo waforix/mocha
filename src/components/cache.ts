@@ -72,8 +72,8 @@ export class CacheComponent extends BaseComponent {
       // Verify value is serializable
       JSON.stringify(value);
 
-      // Evict if cache is full
-      if (this.cache.size >= this.config.userStatsSize) {
+      // Evict if cache is full and key doesn't already exist
+      if (!this.cache.has(key) && this.cache.size >= this.config.userStatsSize) {
         this.evict();
       }
 
@@ -138,7 +138,7 @@ export class CacheComponent extends BaseComponent {
   private evict(): void {
     try {
       let oldestKey: string | null = null;
-      let oldestTime = Date.now();
+      let oldestTime = Number.MAX_SAFE_INTEGER;
 
       for (const [key, entry] of this.cache.entries()) {
         if (entry.timestamp < oldestTime) {

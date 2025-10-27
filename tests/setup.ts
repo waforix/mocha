@@ -1,5 +1,5 @@
-import { beforeAll, afterAll, afterEach } from 'vitest';
-import { DatabaseClient } from '../src/database';
+import { afterAll, afterEach, beforeAll } from 'vitest';
+import { disconnect, isConnected, reset } from '../src/database';
 
 /**
  * Global test setup and teardown
@@ -7,18 +7,18 @@ import { DatabaseClient } from '../src/database';
 
 beforeAll(async () => {
   // Reset database client before tests
-  DatabaseClient.reset();
+  reset();
 });
 
 afterEach(async () => {
   // Clean up after each test
-  if (DatabaseClient.isConnected()) {
-    await DatabaseClient.disconnect();
+  if (isConnected()) {
+    await disconnect();
   }
 });
 
 afterAll(async () => {
   // Final cleanup
-  DatabaseClient.reset();
+  reset();
 });
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
-import { Validator } from '../../../src/validation/validator';
+import { safeParse, validate } from '../../../src/validation/validator';
 import { InvalidInputError } from '../../../src/errors/validation';
 
 describe('Validator', () => {
@@ -13,21 +13,21 @@ describe('Validator', () => {
   describe('validate', () => {
     it('should validate correct data', () => {
       const data = { name: 'John', age: 30, email: 'john@example.com' };
-      const result = Validator.validate(testSchema, data);
+      const result = validate(testSchema, data);
       expect(result).toEqual(data);
     });
 
     it('should throw InvalidInputError on validation failure', () => {
       const data = { name: '', age: -5, email: 'invalid' };
       expect(() => {
-        Validator.validate(testSchema, data);
+        validate(testSchema, data);
       }).toThrow(InvalidInputError);
     });
 
     it('should include context in error', () => {
       const data = { name: '', age: -5, email: 'invalid' };
       try {
-        Validator.validate(testSchema, data, 'TestData');
+        validate(testSchema, data, 'TestData');
       } catch (error) {
         expect(error).toBeInstanceOf(InvalidInputError);
         if (error instanceof InvalidInputError) {
@@ -39,7 +39,7 @@ describe('Validator', () => {
     it('should collect all validation errors', () => {
       const data = { name: '', age: -5, email: 'invalid' };
       try {
-        Validator.validate(testSchema, data);
+        validate(testSchema, data);
       } catch (error) {
         if (error instanceof InvalidInputError) {
           expect(Object.keys(error.errors).length).toBeGreaterThan(0);
@@ -51,7 +51,7 @@ describe('Validator', () => {
   describe('safeParse', () => {
     it('should return success result for valid data', () => {
       const data = { name: 'John', age: 30, email: 'john@example.com' };
-      const result = Validator.safeParse(testSchema, data);
+      const result = safeParse(testSchema, data);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toEqual(data);
@@ -60,7 +60,7 @@ describe('Validator', () => {
 
     it('should return error result for invalid data', () => {
       const data = { name: '', age: -5, email: 'invalid' };
-      const result = Validator.safeParse(testSchema, data);
+      const result = safeParse(testSchema, data);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(InvalidInputError);
@@ -70,7 +70,7 @@ describe('Validator', () => {
     it('should not throw on invalid data', () => {
       const data = { name: '', age: -5, email: 'invalid' };
       expect(() => {
-        Validator.safeParse(testSchema, data);
+        safeParse(testSchema, data);
       }).not.toThrow();
     });
   });
@@ -93,7 +93,7 @@ describe('Validator', () => {
           profile: { bio: 'Developer', age: 30 },
         },
       };
-      const result = Validator.validate(nestedSchema, data);
+      const result = validate(nestedSchema, data);
       expect(result).toEqual(data);
     });
 
@@ -105,7 +105,7 @@ describe('Validator', () => {
         },
       };
       try {
-        Validator.validate(nestedSchema, data);
+        validate(nestedSchema, data);
       } catch (error) {
         if (error instanceof InvalidInputError) {
           expect(Object.keys(error.errors).length).toBeGreaterThan(0);
@@ -121,14 +121,14 @@ describe('Validator', () => {
 
     it('should validate arrays', () => {
       const data = { items: ['a', 'b', 'c'] };
-      const result = Validator.validate(arraySchema, data);
+      const result = validate(arraySchema, data);
       expect(result).toEqual(data);
     });
 
     it('should reject invalid array items', () => {
       const data = { items: ['a', 123, 'c'] };
       expect(() => {
-        Validator.validate(arraySchema, data);
+        validate(arraySchema, data);
       }).toThrow(InvalidInputError);
     });
   });
