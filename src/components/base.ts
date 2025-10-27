@@ -72,4 +72,3 @@ export abstract class BaseComponent extends EventEmitter implements IComponent {
     });
   }
 }
-

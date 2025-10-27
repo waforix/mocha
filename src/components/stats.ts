@@ -1,11 +1,11 @@
-import { BaseComponent } from './base';
-import { CacheComponent } from './cache';
 import {
   GuildRepository,
-  UserRepository,
   MessageEventRepository,
+  UserRepository,
   VoiceEventRepository,
 } from '../database';
+import { BaseComponent } from './base';
+import type { CacheComponent } from './cache';
 
 /**
  * Statistics component for aggregating and retrieving stats
@@ -156,4 +156,3 @@ export class StatsComponent extends BaseComponent {
     }
   }
 }
-

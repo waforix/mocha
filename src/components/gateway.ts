@@ -1,6 +1,6 @@
-import { BaseComponent } from './base';
 import { GatewayConnectionError } from '../errors/network';
 import type { GatewayConfig } from '../validation';
+import { BaseComponent } from './base';
 
 /**
  * Gateway component for Discord connection management
@@ -89,14 +89,14 @@ export class GatewayComponent extends BaseComponent {
    */
   async reconnect(): Promise<void> {
     if (this.reconnectAttempts >= this.config.maxReconnects) {
-      throw new GatewayConnectionError(
-        'Max reconnection attempts exceeded',
-        { attempts: this.reconnectAttempts, max: this.config.maxReconnects }
-      );
+      throw new GatewayConnectionError('Max reconnection attempts exceeded', {
+        attempts: this.reconnectAttempts,
+        max: this.config.maxReconnects,
+      });
     }
 
     this.reconnectAttempts++;
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts - 1), 60000);
+    const delay = Math.min(1000 * 2 ** (this.reconnectAttempts - 1), 60000);
 
     this.emit('reconnecting', { attempt: this.reconnectAttempts, delay });
 
@@ -133,4 +133,3 @@ export class GatewayComponent extends BaseComponent {
     return { ...this.config };
   }
 }
-

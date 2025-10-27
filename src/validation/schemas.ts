@@ -11,11 +11,13 @@ import { z } from 'zod';
 export const SQLiteDatabaseConfigSchema = z.object({
   type: z.literal('sqlite'),
   path: z.string().min(1, 'Database path is required'),
-  options: z.object({
-    timeout: z.number().positive().optional(),
-    verbose: z.function().optional(),
-    pragma: z.record(z.union([z.string(), z.number()])).optional(),
-  }).optional(),
+  options: z
+    .object({
+      timeout: z.number().positive().optional(),
+      verbose: z.function().optional(),
+      pragma: z.record(z.union([z.string(), z.number()])).optional(),
+    })
+    .optional(),
 });
 
 /**
@@ -75,10 +77,12 @@ export const GatewayConfigSchema = z.object({
   intents: z.number().int().nonnegative(),
   maxReconnects: z.number().int().nonnegative().default(5),
   connectionTimeout: z.number().int().positive().default(30000),
-  rateLimitConfig: z.object({
-    maxRequests: z.number().int().positive().default(120),
-    windowMs: z.number().int().positive().default(60000),
-  }).optional(),
+  rateLimitConfig: z
+    .object({
+      maxRequests: z.number().int().positive().default(120),
+      windowMs: z.number().int().positive().default(60000),
+    })
+    .optional(),
 });
 
 /**
@@ -104,4 +108,3 @@ export type DatabaseConfig = z.infer<typeof DatabaseConfigSchema>;
 export type CacheConfig = z.infer<typeof CacheConfigSchema>;
 export type GatewayConfig = z.infer<typeof GatewayConfigSchema>;
 export type ClientConfig = z.infer<typeof ClientConfigSchema>;
-

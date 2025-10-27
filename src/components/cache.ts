@@ -1,6 +1,6 @@
-import { BaseComponent } from './base';
 import { CacheEvictionError, CacheSerializationError } from '../errors/cache';
 import type { CacheConfig } from '../validation';
+import { BaseComponent } from './base';
 
 /**
  * LRU Cache implementation
@@ -179,4 +179,3 @@ export class CacheComponent extends BaseComponent {
     }
   }
 }
-

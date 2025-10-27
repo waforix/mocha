@@ -3,23 +3,22 @@
  * @category Validation
  */
 
-export { Validator } from './validator';
-export {
-  DatabaseConfigSchema,
-  CacheConfigSchema,
-  GatewayConfigSchema,
-  ClientConfigSchema,
-  SQLiteDatabaseConfigSchema,
-  PostgresDatabaseConfigSchema,
-  MySQLDatabaseConfigSchema,
-} from './schemas';
 export type {
-  DatabaseConfig,
   CacheConfig,
-  GatewayConfig,
   ClientConfig,
-  SQLiteDatabaseConfig,
-  PostgresDatabaseConfig,
+  DatabaseConfig,
+  GatewayConfig,
   MySQLDatabaseConfig,
+  PostgresDatabaseConfig,
+  SQLiteDatabaseConfig,
 } from './schemas';
-
+export {
+  CacheConfigSchema,
+  ClientConfigSchema,
+  DatabaseConfigSchema,
+  GatewayConfigSchema,
+  MySQLDatabaseConfigSchema,
+  PostgresDatabaseConfigSchema,
+  SQLiteDatabaseConfigSchema,
+} from './schemas';
+export { safeParse, validate } from './validator';

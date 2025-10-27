@@ -94,14 +94,9 @@ export class TimeoutError extends NetworkError {
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
     super(message, undefined, { ...context, type: 'timeout' }, cause);
     this.code = 'TIMEOUT_ERROR';
     Object.setPrototypeOf(this, TimeoutError.prototype);
   }
 }
-
