@@ -1,11 +1,7 @@
 // Core client
 
-// Legacy exports for backward compatibility
-export type { Metrics } from './analytics/index';
-export * from './autocomplete/index';
-export * from './builders/index';
-export type { IComponent } from './components';
 // Components
+export type { IComponent } from './components';
 export { BaseComponent, CacheComponent, GatewayComponent, StatsComponent } from './components';
 // Database
 export {
@@ -51,13 +47,9 @@ export {
   TimeoutError,
   ValidationError,
 } from './errors';
-export type { ExportData, ExportOptions } from './export/index';
 export * from './lib/commands';
 export type { ClientOptions } from './lib/index';
 export { Client, Client as StatsClient } from './lib/index';
-export type { NotificationEvent, NotificationRule } from './notifications/index';
-export type { RateLimitConfig } from './ratelimit/index';
-export type { GuildStats, UserStats } from './stats/index';
 export type {
   CacheConfig,
   ClientConfig,

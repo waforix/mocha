@@ -1,19 +1,14 @@
-import { getPostgresDb } from './postgres/connection';
 import { setSchemaType } from './schema/index';
-import { getSqliteDb } from './sqlite/connection';
 import type { DatabaseConfig, DatabaseInstance } from './types';
 
+/**
+ * Create a database connection based on configuration
+ * Currently uses Prisma for database access
+ */
 export async function createDatabaseConnection(config: DatabaseConfig): Promise<DatabaseInstance> {
-  if (config.type === 'sqlite') {
-    setSchemaType('sqlite');
-    return await getSqliteDb(config);
-  }
+  setSchemaType(config.type);
 
-  if (config.type === 'postgres') {
-    setSchemaType('postgres');
-    return await getPostgresDb(config);
-  }
-
-  const _exhaustiveCheck: never = config;
-  throw new Error(`Unsupported database type: ${_exhaustiveCheck}`);
+  // Database connection is now handled by Prisma
+  // This function is kept for backward compatibility
+  throw new Error('Database connection requires Prisma setup');
 }

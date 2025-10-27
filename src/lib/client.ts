@@ -1,43 +1,22 @@
 import { EventEmitter } from 'node:events';
-import { MetricsCollector } from '../analytics/index';
 import { AutocompleteManager } from '../autocomplete/index';
 import type { CacheConfig } from '../cache/index';
-import { CacheManager, createHeatmapKey } from '../cache/index';
-import type { CommonDatabase } from '../db/index';
-import { DatabaseManager } from '../db/manager';
-import type { DatabaseConfig } from '../db/types';
-import type { StatusType } from '../enums';
-import { EventDispatcher } from '../events/index';
-import { DataExporter, type ExportOptions } from '../export/index';
+import { CacheManager } from '../cache/index';
 import { GatewayClient, type GatewayOptions } from '../gateway';
-import { NotificationEngine } from '../notifications/index';
-import { RateLimitManager } from '../ratelimit/index';
-import { StatsAggregator } from '../stats/index';
-import type { Activity } from '../types/api';
-import { validateGuildId, validateLimit, validateUserId } from '../utils/validation';
 import { CommandHandlerManager } from './commands/handler';
 import { TIMEOUTS } from './constants';
 
 export interface ClientOptions extends GatewayOptions {
-  dbPath?: string;
-  database?: DatabaseConfig;
   cache?: CacheConfig;
-  enableMetrics?: boolean;
-  enableNotifications?: boolean;
-  enableRateLimit?: boolean;
 }
 
+/**
+ * Main Discord client for the library
+ * Orchestrates gateway connection, caching, and command handling
+ */
 export class Client extends EventEmitter {
   private gateway: GatewayClient;
-  private dispatcher!: EventDispatcher;
-  private aggregator!: StatsAggregator;
   private cache: CacheManager;
-  private dbManager = new DatabaseManager();
-  private dbAdapter!: CommonDatabase;
-  private metrics?: MetricsCollector;
-  private notifications?: NotificationEngine;
-  private rateLimit?: RateLimitManager;
-  private exporter!: DataExporter;
   private autocomplete: AutocompleteManager;
   private commandHandlers: CommandHandlerManager;
   private initialized = false;
@@ -71,10 +50,8 @@ export class Client extends EventEmitter {
     }
   }
 
-  private async initializeAsync(options: ClientOptions): Promise<void> {
+  private async initializeAsync(_options: ClientOptions): Promise<void> {
     try {
-      await this.initializeDatabase(options);
-      this.setupComponents(options);
       this.setupEventHandlers();
       this.initialized = true;
       this.emit('ready');
@@ -83,70 +60,36 @@ export class Client extends EventEmitter {
     }
   }
 
-  private async initializeDatabase(options: ClientOptions): Promise<void> {
-    const config = options.database || {
-      type: 'sqlite' as const,
-      path: options.dbPath || './data/stats.db',
-    };
-    const db = await this.dbManager.initialize(config);
-    this.dbAdapter = db.db as CommonDatabase;
-  }
-
-  private setupComponents(options: ClientOptions) {
-    this.dispatcher = new EventDispatcher(this.dbAdapter);
-    this.aggregator = new StatsAggregator(this.dbAdapter);
-    this.exporter = new DataExporter(this.dbAdapter);
-
-    if (options.enableMetrics !== false) {
-      this.metrics = new MetricsCollector();
-    }
-
-    if (options.enableNotifications) {
-      this.notifications = new NotificationEngine();
-    }
-
-    if (options.enableRateLimit) {
-      this.rateLimit = new RateLimitManager();
-    }
-  }
-
   private setupEventHandlers() {
     this.gateway.on('dispatch', (event, data) => {
-      this.dispatcher.dispatch(event, data);
-    });
-
-    this.dispatcher.on('processed', (event, data) => {
-      this.metrics?.incrementEventsProcessed();
-      this.emit('eventProcessed', event, data);
-
-      if (data.guild_id) {
-        this.cache.invalidateGuild(data.guild_id);
-      }
-    });
-
-    this.dispatcher.on('error', (error, event, data) => {
-      this.metrics?.incrementErrors();
-      this.emit('processingError', error, event, data);
+      this.emit('dispatch', event, data);
     });
 
     this.gateway.on('error', (error) => {
-      this.metrics?.incrementErrors();
       this.emit('gatewayError', error);
     });
   }
 
+  /**
+   * Connect the client to Discord gateway
+   */
   async connect() {
     await this.waitForInitialization();
     this.gateway.connect();
   }
 
+  /**
+   * Disconnect the client from Discord gateway
+   */
   disconnect() {
     this.gateway.disconnect();
   }
 
+  /**
+   * Close the client and clean up resources
+   */
   async close(): Promise<void> {
     this.disconnect();
-    await this.dbManager.close();
     this.initialized = false;
   }
 
@@ -155,7 +98,7 @@ export class Client extends EventEmitter {
 
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        reject(new Error('Database initialization timeout'));
+        reject(new Error('Client initialization timeout'));
       }, TIMEOUTS.DATABASE_INIT);
 
       this.once('ready', () => {
@@ -170,138 +113,30 @@ export class Client extends EventEmitter {
     });
   }
 
-  async getUserStats(guildId: string, userId: string, days = 30) {
-    validateGuildId(guildId);
-    validateUserId(userId);
-    if (!Number.isInteger(days) || days < 1 || days > 365) {
-      throw new RangeError('Days must be an integer between 1 and 365');
-    }
-
-    await this.waitForInitialization();
-    const cached = this.cache.getUserStats(guildId, userId, days);
-    if (cached) return cached;
-
-    const stats = await this.aggregator.getUserStats(guildId, userId, days);
-    this.cache.setUserStats(guildId, userId, days, stats);
-
-    return stats;
-  }
-
-  async getGuildStats(guildId: string, days = 30) {
-    validateGuildId(guildId);
-    if (!Number.isInteger(days) || days < 1 || days > 365) {
-      throw new RangeError('Days must be an integer between 1 and 365');
-    }
-
-    await this.waitForInitialization();
-    const cached = this.cache.getGuildStats(guildId, days);
-    if (cached) return cached;
-
-    const stats = await this.aggregator.getGuildStats(guildId, days);
-    this.cache.setGuildStats(guildId, days, stats);
-
-    return stats;
-  }
-
-  async getLeaderboard(guildId: string, type: 'messages' | 'voice', limit = 10, days = 30) {
-    validateGuildId(guildId);
-    validateLimit(limit, 100);
-    if (!['messages', 'voice'].includes(type)) {
-      throw new TypeError('Type must be either "messages" or "voice"');
-    }
-    if (!Number.isInteger(days) || days < 1 || days > 365) {
-      throw new RangeError('Days must be an integer between 1 and 365');
-    }
-
-    await this.waitForInitialization();
-    const cached = this.cache.getLeaderboard(guildId, type, limit, days);
-    if (cached) return cached;
-
-    const leaderboard = await this.aggregator.getLeaderboard(guildId, type, limit, days);
-    this.cache.setLeaderboard(guildId, type, limit, days, leaderboard);
-
-    return leaderboard;
-  }
-
-  async getActivityHeatmap(guildId: string, userId?: string, days = 7) {
-    validateGuildId(guildId);
-    if (userId) {
-      validateUserId(userId);
-    }
-    if (!Number.isInteger(days) || days < 1 || days > 90) {
-      throw new RangeError('Days must be an integer between 1 and 90');
-    }
-
-    await this.waitForInitialization();
-    const key = createHeatmapKey(guildId, userId, days);
-    const cached = this.cache.getQuery(key);
-    if (cached) return cached;
-
-    const heatmap = await this.aggregator.getActivityHeatmap(guildId, userId, days);
-    this.cache.setQuery(key, heatmap);
-
-    return heatmap;
-  }
-
+  /**
+   * Get cache statistics
+   */
   getCacheStats() {
     return this.cache.getStats();
   }
 
+  /**
+   * Clear all cached data
+   */
   clearCache() {
     this.cache.clear();
   }
 
-  async getDatabase() {
-    await this.waitForInitialization();
-    return this.dbManager.getInstance();
-  }
-
-  getMetrics() {
-    return this.metrics?.getMetrics();
-  }
-
-  async exportData(options: ExportOptions) {
-    await this.waitForInitialization();
-    return await this.exporter.export(options);
-  }
-
-  getNotificationEngine() {
-    return this.notifications;
-  }
-
-  getRateLimitManager() {
-    return this.rateLimit;
-  }
-
-  isRateLimited(key: string, tokens = 1): boolean {
-    return this.rateLimit ? !this.rateLimit.isAllowed(key, tokens) : false;
-  }
-
-  setStatus(status: StatusType): void {
-    this.updatePresence({ status: status });
-  }
-
-  setActivity(name: string, type: number = 0, url?: string): void {
-    this.updatePresence({ activities: [{ name: name, type: type, url: url }] });
-  }
-
-  clearActivity(): void {
-    this.updatePresence({ activities: [] });
-  }
-
-  updatePresence(presence: {
-    status?: StatusType;
-    activities?: Activity[];
-    since?: number | null;
-    afk?: boolean;
-  }): void {
-    this.gateway.updatePresence(presence);
-  }
-
+  /**
+   * Get the autocomplete manager
+   */
   getAutocompleteManager(): AutocompleteManager {
     return this.autocomplete;
   }
 
+  /**
+   * Get the command handler manager
+   */
   getCommandHandlerManager(): CommandHandlerManager {
     return this.commandHandlers;
   }
