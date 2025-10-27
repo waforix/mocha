@@ -9,8 +9,6 @@
 // - database: Prisma integration
 // - validation: Input validation
 
-export * from './gateway';
-export * from './cache';
-export * from './database';
-export * from './validation';
+// Note: Individual modules should be imported directly to avoid naming conflicts
+// Example: import { CacheManager } from './modules/cache'
 

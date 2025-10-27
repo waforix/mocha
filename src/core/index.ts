@@ -3,5 +3,4 @@
  * @category Core
  */
 
-export { BaseComponent, ComponentState } from './component';
-
+export { BaseComponent, ComponentState, type IComponent } from './component';
