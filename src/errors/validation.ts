@@ -48,7 +48,12 @@ export class ConfigurationError extends LibraryError {
  * Error thrown when input is invalid
  * @category Errors
  */
-export class InvalidInputError extends ValidationError {
+export class InvalidInputError extends LibraryError {
+  /**
+   * Validation errors from Zod or other validators
+   */
+  public readonly errors: Record<string, string[]>;
+
   /**
    * Create a new InvalidInputError
    * @param message - Error message
@@ -60,8 +65,8 @@ export class InvalidInputError extends ValidationError {
     errors: Record<string, string[]>,
     context?: Record<string, unknown>
   ) {
-    super(message, errors, { ...context, type: 'input' });
-    this.code = 'INVALID_INPUT_ERROR';
+    super(message, 'INVALID_INPUT_ERROR', { ...context, type: 'input', errors }, undefined);
+    this.errors = errors;
     Object.setPrototypeOf(this, InvalidInputError.prototype);
   }
 }

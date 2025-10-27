@@ -33,22 +33,15 @@ export class NetworkError extends LibraryError {
  * Error thrown when gateway connection fails
  * @category Errors
  */
-export class GatewayConnectionError extends NetworkError {
+export class GatewayConnectionError extends LibraryError {
   /**
    * Create a new GatewayConnectionError
    * @param message - Error message
-   * @param statusCode - HTTP status code
    * @param context - Additional context
    * @param cause - Original error
    */
-  constructor(
-    message: string,
-    statusCode?: number,
-    context?: Record<string, unknown>,
-    cause?: Error
-  ) {
-    super(message, statusCode, { ...context, type: 'gateway' }, cause);
-    this.code = 'GATEWAY_CONNECTION_ERROR';
+  constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
+    super(message, 'GATEWAY_CONNECTION_ERROR', { ...context, type: 'gateway' }, cause);
     Object.setPrototypeOf(this, GatewayConnectionError.prototype);
   }
 }
@@ -57,7 +50,7 @@ export class GatewayConnectionError extends NetworkError {
  * Error thrown when rate limit is exceeded
  * @category Errors
  */
-export class RateLimitError extends NetworkError {
+export class RateLimitError extends LibraryError {
   /**
    * Time in milliseconds until rate limit resets
    */
@@ -76,8 +69,7 @@ export class RateLimitError extends NetworkError {
     context?: Record<string, unknown>,
     cause?: Error
   ) {
-    super(message, 429, { ...context, type: 'rate_limit', retryAfter }, cause);
-    this.code = 'RATE_LIMIT_ERROR';
+    super(message, 'RATE_LIMIT_ERROR', { ...context, type: 'rate_limit', retryAfter }, cause);
     this.retryAfter = retryAfter;
     Object.setPrototypeOf(this, RateLimitError.prototype);
   }
@@ -87,7 +79,7 @@ export class RateLimitError extends NetworkError {
  * Error thrown when request timeout occurs
  * @category Errors
  */
-export class TimeoutError extends NetworkError {
+export class TimeoutError extends LibraryError {
   /**
    * Create a new TimeoutError
    * @param message - Error message
@@ -95,8 +87,7 @@ export class TimeoutError extends NetworkError {
    * @param cause - Original error
    */
   constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
-    super(message, undefined, { ...context, type: 'timeout' }, cause);
-    this.code = 'TIMEOUT_ERROR';
+    super(message, 'TIMEOUT_ERROR', { ...context, type: 'timeout' }, cause);
     Object.setPrototypeOf(this, TimeoutError.prototype);
   }
 }

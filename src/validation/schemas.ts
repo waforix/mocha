@@ -15,7 +15,7 @@ export const SQLiteDatabaseConfigSchema = z.object({
     .object({
       timeout: z.number().positive().optional(),
       verbose: z.function().optional(),
-      pragma: z.record(z.union([z.string(), z.number()])).optional(),
+      pragma: z.record(z.string(), z.union([z.string(), z.number()])).optional(),
     })
     .optional(),
 });
@@ -31,7 +31,7 @@ export const PostgresDatabaseConfigSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
   ssl: z.boolean().default(false),
-  options: z.record(z.unknown()).optional(),
+  options: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
@@ -45,7 +45,7 @@ export const MySQLDatabaseConfigSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
   ssl: z.boolean().default(false),
-  options: z.record(z.unknown()).optional(),
+  options: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**

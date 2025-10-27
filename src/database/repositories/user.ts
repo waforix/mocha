@@ -9,18 +9,19 @@ import { getInstance } from '../client';
  * @throws DatabaseQueryError if operation fails
  * @category Database
  */
-export async function upsertUser(data: Prisma.UserUpsertArgs['data']): Promise<User> {
+export async function upsertUser(data: Prisma.UserCreateInput): Promise<User> {
   try {
     const client = await getInstance();
+    const userId = data.id as string;
     return await client.user.upsert({
-      where: { id: data.id as string },
+      where: { id: userId },
       update: data,
-      create: data as Prisma.UserCreateInput,
+      create: data,
     });
   } catch (error) {
     throw new DatabaseQueryError(
       'Failed to upsert user',
-      { userId: data.id },
+      { type: 'user' },
       error instanceof Error ? error : undefined
     );
   }

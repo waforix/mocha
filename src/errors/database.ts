@@ -21,7 +21,7 @@ export class DatabaseError extends LibraryError {
  * Error thrown when database connection fails
  * @category Errors
  */
-export class DatabaseConnectionError extends DatabaseError {
+export class DatabaseConnectionError extends LibraryError {
   /**
    * Create a new DatabaseConnectionError
    * @param message - Error message
@@ -29,8 +29,7 @@ export class DatabaseConnectionError extends DatabaseError {
    * @param cause - Original error
    */
   constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
-    super(message, { ...context, type: 'connection' }, cause);
-    this.code = 'DATABASE_CONNECTION_ERROR';
+    super(message, 'DATABASE_CONNECTION_ERROR', { ...context, type: 'connection' }, cause);
     Object.setPrototypeOf(this, DatabaseConnectionError.prototype);
   }
 }
@@ -39,7 +38,7 @@ export class DatabaseConnectionError extends DatabaseError {
  * Error thrown when database query fails
  * @category Errors
  */
-export class DatabaseQueryError extends DatabaseError {
+export class DatabaseQueryError extends LibraryError {
   /**
    * Create a new DatabaseQueryError
    * @param message - Error message
@@ -47,8 +46,7 @@ export class DatabaseQueryError extends DatabaseError {
    * @param cause - Original error
    */
   constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
-    super(message, { ...context, type: 'query' }, cause);
-    this.code = 'DATABASE_QUERY_ERROR';
+    super(message, 'DATABASE_QUERY_ERROR', { ...context, type: 'query' }, cause);
     Object.setPrototypeOf(this, DatabaseQueryError.prototype);
   }
 }
@@ -57,7 +55,7 @@ export class DatabaseQueryError extends DatabaseError {
  * Error thrown when database migration fails
  * @category Errors
  */
-export class DatabaseMigrationError extends DatabaseError {
+export class DatabaseMigrationError extends LibraryError {
   /**
    * Create a new DatabaseMigrationError
    * @param message - Error message
@@ -65,8 +63,7 @@ export class DatabaseMigrationError extends DatabaseError {
    * @param cause - Original error
    */
   constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
-    super(message, { ...context, type: 'migration' }, cause);
-    this.code = 'DATABASE_MIGRATION_ERROR';
+    super(message, 'DATABASE_MIGRATION_ERROR', { ...context, type: 'migration' }, cause);
     Object.setPrototypeOf(this, DatabaseMigrationError.prototype);
   }
 }

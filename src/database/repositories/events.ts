@@ -25,7 +25,7 @@ export async function createMessageEvent(
   } catch (error) {
     throw new DatabaseQueryError(
       'Failed to create message event',
-      { guildId: data.guildId },
+      { type: 'message_event' },
       error instanceof Error ? error : undefined
     );
   }
@@ -97,7 +97,7 @@ export async function createVoiceEvent(data: Prisma.VoiceEventCreateInput): Prom
   } catch (error) {
     throw new DatabaseQueryError(
       'Failed to create voice event',
-      { guildId: data.guildId },
+      { type: 'voice_event' },
       error instanceof Error ? error : undefined
     );
   }
@@ -149,7 +149,7 @@ export async function createMemberEvent(data: Prisma.MemberEventCreateInput): Pr
   } catch (error) {
     throw new DatabaseQueryError(
       'Failed to create member event',
-      { guildId: data.guildId },
+      { type: 'member_event' },
       error instanceof Error ? error : undefined
     );
   }
@@ -171,7 +171,7 @@ export async function createPresenceEvent(
   } catch (error) {
     throw new DatabaseQueryError(
       'Failed to create presence event',
-      { guildId: data.guildId },
+      { type: 'presence_event' },
       error instanceof Error ? error : undefined
     );
   }
@@ -193,7 +193,7 @@ export async function createReactionEvent(
   } catch (error) {
     throw new DatabaseQueryError(
       'Failed to create reaction event',
-      { guildId: data.guildId },
+      { type: 'reaction_event' },
       error instanceof Error ? error : undefined
     );
   }

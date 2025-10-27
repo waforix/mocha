@@ -6,16 +6,16 @@ generator client {
 }
 
 datasource db {
-  provider = env("DATABASE_URL")
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 // Guild entity - represents a Discord server
 model Guild {
-  id        String   @id @db.VarChar(19)
+  id        String   @id
   name      String
   icon      String?
-  ownerId   String   @db.VarChar(19)
+  ownerId   String
   memberCount Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -34,11 +34,11 @@ model Guild {
 
 // Channel entity - represents a Discord channel
 model Channel {
-  id        String   @id @db.VarChar(19)
-  guildId   String   @db.VarChar(19)
+  id        String   @id
+  guildId   String
   name      String?
   type      Int
-  parentId  String?  @db.VarChar(19)
+  parentId  String?
   createdAt DateTime @default(now())
 
   guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
@@ -50,7 +50,7 @@ model Channel {
 
 // User entity - represents a Discord user
 model User {
-  id            String   @id @db.VarChar(19)
+  id            String   @id
   username      String
   discriminator String
   avatar        String?
@@ -69,12 +69,12 @@ model User {
 // Member entity - represents a user in a guild
 model Member {
   id        String   @id @default(cuid())
-  guildId   String   @db.VarChar(19)
-  userId    String   @db.VarChar(19)
+  guildId   String
+  userId    String
   nick      String?
   joinedAt  DateTime
   leftAt    DateTime?
-  roles     String[] @default([])
+  roles     String?  // JSON-encoded array of role IDs
   createdAt DateTime @default(now())
 
   guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
@@ -89,10 +89,10 @@ model Member {
 // Message event - tracks message creation
 model MessageEvent {
   id            String   @id @default(cuid())
-  guildId       String   @db.VarChar(19)
-  channelId     String   @db.VarChar(19)
-  userId        String   @db.VarChar(19)
-  messageId     String   @db.VarChar(19)
+  guildId       String
+  channelId     String
+  userId        String
+  messageId     String
   content       String?
   attachments   Int      @default(0)
   embeds        Int      @default(0)
@@ -112,9 +112,9 @@ model MessageEvent {
 // Voice event - tracks voice state changes
 model VoiceEvent {
   id        String   @id @default(cuid())
-  guildId   String   @db.VarChar(19)
-  channelId String?  @db.VarChar(19)
-  userId    String   @db.VarChar(19)
+  guildId   String
+  channelId String?
+  userId    String
   action    String   // 'join', 'leave', 'move'
   duration  Int?     // milliseconds
   timestamp DateTime
@@ -132,8 +132,8 @@ model VoiceEvent {
 // Member event - tracks member join/leave
 model MemberEvent {
   id        String   @id @default(cuid())
-  guildId   String   @db.VarChar(19)
-  userId    String   @db.VarChar(19)
+  guildId   String
+  userId    String
   action    String   // 'join', 'leave'
   timestamp DateTime
   createdAt DateTime @default(now())
@@ -148,8 +148,8 @@ model MemberEvent {
 // Presence event - tracks user presence changes
 model PresenceEvent {
   id        String   @id @default(cuid())
-  guildId   String   @db.VarChar(19)
-  userId    String   @db.VarChar(19)
+  guildId   String
+  userId    String
   status    String   // 'online', 'idle', 'dnd', 'offline'
   timestamp DateTime
   createdAt DateTime @default(now())
@@ -164,10 +164,10 @@ model PresenceEvent {
 // Reaction event - tracks message reactions
 model ReactionEvent {
   id        String   @id @default(cuid())
-  guildId   String   @db.VarChar(19)
-  channelId String   @db.VarChar(19)
-  messageId String   @db.VarChar(19)
-  userId    String   @db.VarChar(19)
+  guildId   String
+  channelId String
+  messageId String
+  userId    String
   emoji     String
   action    String   // 'add', 'remove'
   timestamp DateTime

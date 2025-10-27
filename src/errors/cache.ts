@@ -21,7 +21,7 @@ export class CacheError extends LibraryError {
  * Error thrown when cache eviction fails
  * @category Errors
  */
-export class CacheEvictionError extends CacheError {
+export class CacheEvictionError extends LibraryError {
   /**
    * Create a new CacheEvictionError
    * @param message - Error message
@@ -29,8 +29,7 @@ export class CacheEvictionError extends CacheError {
    * @param cause - Original error
    */
   constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
-    super(message, { ...context, type: 'eviction' }, cause);
-    this.code = 'CACHE_EVICTION_ERROR';
+    super(message, 'CACHE_EVICTION_ERROR', { ...context, type: 'eviction' }, cause);
     Object.setPrototypeOf(this, CacheEvictionError.prototype);
   }
 }
@@ -39,7 +38,7 @@ export class CacheEvictionError extends CacheError {
  * Error thrown when cache serialization fails
  * @category Errors
  */
-export class CacheSerializationError extends CacheError {
+export class CacheSerializationError extends LibraryError {
   /**
    * Create a new CacheSerializationError
    * @param message - Error message
@@ -47,8 +46,7 @@ export class CacheSerializationError extends CacheError {
    * @param cause - Original error
    */
   constructor(message: string, context?: Record<string, unknown>, cause?: Error) {
-    super(message, { ...context, type: 'serialization' }, cause);
-    this.code = 'CACHE_SERIALIZATION_ERROR';
+    super(message, 'CACHE_SERIALIZATION_ERROR', { ...context, type: 'serialization' }, cause);
     Object.setPrototypeOf(this, CacheSerializationError.prototype);
   }
 }

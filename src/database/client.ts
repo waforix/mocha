@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { DatabaseConnectionError } from '../errors/network';
+import { DatabaseConnectionError } from '../errors/database';
 
 let instance: PrismaClient | null = null;
 let isConnecting = false;

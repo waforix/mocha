@@ -3,6 +3,23 @@ import { CacheComponent, GatewayComponent, StatsComponent } from '../components'
 import { disconnect, getInstance } from '../database';
 import { type ClientConfig, ClientConfigSchema, validate } from '../validation';
 
+interface UserMessageStats {
+  totalMessages: number;
+  averagePerDay: number;
+  lastMessageDate: Date | null;
+}
+
+interface GuildStats {
+  totalMessages: number;
+  totalUsers: number;
+  totalVoiceEvents: number;
+}
+
+interface TopUser {
+  userId: string;
+  messageCount: number;
+}
+
 /**
  * Main client for the library
  * Orchestrates all components and provides unified API
@@ -127,7 +144,7 @@ export class Client extends EventEmitter {
    * @param days - Number of days to look back
    * @returns User message stats
    */
-  async getUserStats(guildId: string, userId: string, days = 30) {
+  async getUserStats(guildId: string, userId: string, days = 30): Promise<UserMessageStats> {
     await this.waitForInitialization();
     return this.stats.getUserMessageStats(guildId, userId, days);
   }
@@ -137,7 +154,7 @@ export class Client extends EventEmitter {
    * @param guildId - Guild ID
    * @returns Guild stats
    */
-  async getGuildStats(guildId: string) {
+  async getGuildStats(guildId: string): Promise<GuildStats> {
     await this.waitForInitialization();
     return this.stats.getGuildStats(guildId);
   }
@@ -148,7 +165,7 @@ export class Client extends EventEmitter {
    * @param limit - Number of top users to return
    * @returns Array of top users with message counts
    */
-  async getTopUsers(guildId: string, limit = 10) {
+  async getTopUsers(guildId: string, limit = 10): Promise<TopUser[]> {
     await this.waitForInitialization();
     return this.stats.getTopUsers(guildId, limit);
   }

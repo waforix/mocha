@@ -62,7 +62,6 @@ export type { GuildStats, UserStats } from './stats/index';
 export type {
   CacheConfig,
   ClientConfig,
-  ClientConfig,
   DatabaseConfig,
   GatewayConfig,
 } from './validation';

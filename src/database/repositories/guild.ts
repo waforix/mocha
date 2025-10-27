@@ -9,18 +9,19 @@ import { getInstance } from '../client';
  * @throws DatabaseQueryError if operation fails
  * @category Database
  */
-export async function upsertGuild(data: Prisma.GuildUpsertArgs['data']): Promise<Guild> {
+export async function upsertGuild(data: Prisma.GuildCreateInput): Promise<Guild> {
   try {
     const client = await getInstance();
+    const guildId = data.id as string;
     return await client.guild.upsert({
-      where: { id: data.id as string },
+      where: { id: guildId },
       update: data,
-      create: data as Prisma.GuildCreateInput,
+      create: data,
     });
   } catch (error) {
     throw new DatabaseQueryError(
       'Failed to upsert guild',
-      { guildId: data.id },
+      { type: 'guild' },
       error instanceof Error ? error : undefined
     );
   }
