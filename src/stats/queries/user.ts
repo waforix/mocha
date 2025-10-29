@@ -27,7 +27,7 @@ export class UserQueries {
         LIMIT ${limit}
       `;
 
-      return results.map((r) => ({
+      return results.map((r: { userId: string; username: string; count: bigint }) => ({
         userId: r.userId,
         username: r.username,
         count: Number(r.count),
@@ -51,7 +51,7 @@ export class UserQueries {
       LIMIT ${limit}
     `;
 
-    return results.map((r) => ({
+    return results.map((r: { userId: string; username: string; totalTime: bigint }) => ({
       userId: r.userId,
       username: r.username,
       totalTime: Number(r.totalTime),

@@ -31,7 +31,7 @@ export class ChannelQueries {
       ORDER BY messageCount DESC
     `;
 
-    return results.map((r) => ({
+    return results.map((r: { channelId: string; channelName: string | null; messageCount: bigint; uniqueUsers: bigint }) => ({
       channelId: r.channelId,
       channelName: r.channelName,
       messageCount: Number(r.messageCount),

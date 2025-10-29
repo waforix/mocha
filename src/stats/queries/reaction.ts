@@ -21,7 +21,7 @@ export class ReactionQueries {
       GROUP BY action
     `;
 
-    return results.map((r) => ({
+    return results.map((r: { action: string; count: bigint }) => ({
       action: r.action,
       count: Number(r.count),
     }));
@@ -55,7 +55,7 @@ export class ReactionQueries {
       LIMIT ${limit}
     `;
 
-    return results.map((r) => ({
+    return results.map((r: { emojiId: string | null; emojiName: string | null; emojiAnimated: number; count: bigint }) => ({
       emojiId: r.emojiId,
       emojiName: r.emojiName,
       emojiAnimated: Boolean(r.emojiAnimated),
@@ -90,7 +90,7 @@ export class ReactionQueries {
       LIMIT ${limit}
     `;
 
-    return results.map((r) => ({
+    return results.map((r: { userId: string; username: string; reactions: bigint }) => ({
       userId: r.userId,
       username: r.username,
       reactions: Number(r.reactions),
@@ -122,7 +122,7 @@ export class ReactionQueries {
       ORDER BY date, hour
     `;
 
-    return results.map((r) => ({
+    return results.map((r: { date: string; hour: number; reactions: bigint }) => ({
       date: r.date,
       hour: r.hour,
       reactions: Number(r.reactions),

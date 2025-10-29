@@ -52,7 +52,7 @@ export class MessageQueries {
       ORDER BY strftime('%H', timestamp)
     `;
 
-    return results.map((r) => ({
+    return results.map((r: { hour: number; count: bigint }) => ({
       hour: r.hour,
       count: Number(r.count),
     }));

@@ -101,7 +101,7 @@ export class DataExporter {
       GROUP BY u.id, u.username
     `;
 
-    data.users = userStats.map((row) => ({
+    data.users = userStats.map((row: { id: string; username: string; messageCount: bigint; voiceTime: bigint }) => ({
       id: row.id,
       username: row.username,
       messageCount: Number(row.messageCount),
@@ -135,7 +135,7 @@ export class DataExporter {
       GROUP BY c.id, c.name
     `;
 
-    data.channels = channelStats.map((c) => ({
+    data.channels = channelStats.map((c: { id: string; name: string; messageCount: bigint; uniqueUsers: bigint }) => ({
       id: c.id,
       name: c.name,
       messageCount: Number(c.messageCount),
@@ -192,7 +192,7 @@ export class DataExporter {
       },
     });
 
-    data.voice = voice.map((v) => ({
+    data.voice = voice.map((v: { id: string; userId: string; channelId: string | null; action: string; duration: number | null; timestamp: Date }) => ({
       id: v.id,
       userId: v.userId,
       channelId: v.channelId || '',
