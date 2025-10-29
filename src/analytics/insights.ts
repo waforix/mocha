@@ -63,7 +63,10 @@ export class InsightsEngine {
     };
   }
 
-  private async getHourlyActivity(guildId: string, days: number) {
+  private async getHourlyActivity(
+    guildId: string,
+    days: number
+  ): Promise<Array<{ hour: number; activity: number }>> {
     const since = createDateSince(days);
 
     const result = await this.db.$queryRaw<Array<{ hour: number; activity: bigint }>>`
