@@ -19,6 +19,7 @@ export class MemberProcessor extends BaseProcessor {
           id: `${data.guild_id}-${userData.id}`,
         },
         create: {
+          id: `${data.guild_id}-${userData.id}`,
           guildId: data.guild_id,
           userId: userData.id as string,
           roles: JSON.stringify(data.roles || []),
@@ -88,11 +89,18 @@ export class MemberProcessor extends BaseProcessor {
 
     const d = data as Record<string, unknown>;
 
+    if (!d.user || typeof d.user !== 'object') {
+      return false;
+    }
+
+    const u = d.user as Record<string, unknown>;
+
     return !!(
       d.guild_id &&
       typeof d.guild_id === 'string' &&
-      d.user &&
-      typeof d.user === 'object' &&
+      u &&
+      u.id &&
+      typeof u.id === 'string' &&
       d.joined_at &&
       typeof d.joined_at === 'string' &&
       Array.isArray(d.roles)
