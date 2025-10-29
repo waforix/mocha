@@ -1,8 +1,9 @@
-import { and, eq, isNull } from 'drizzle-orm';
-import { schema } from '../db/index';
 import { BaseProcessor } from './base';
 
 export class MemberProcessor extends BaseProcessor {
+  /**
+   * Process member join event
+   */
   async processJoin(data: { guild_id: string; user: unknown; roles: string[]; joined_at: string }) {
     if (!this.validateJoinData(data)) {
       return;
@@ -13,28 +14,36 @@ export class MemberProcessor extends BaseProcessor {
 
       const userData = data.user as Record<string, unknown>;
 
-      await this.db
-        .insert(schema.members)
-        .values({
+      await this.db.member.upsert({
+        where: {
+          id: `${data.guild_id}-${userData.id}`,
+        },
+        create: {
           guildId: data.guild_id,
           userId: userData.id as string,
           roles: JSON.stringify(data.roles || []),
           joinedAt: new Date(data.joined_at),
-        })
-        .onConflictDoNothing();
+        },
+        update: {},
+      });
 
-      await this.db.insert(schema.memberEvents).values({
-        guildId: data.guild_id,
-        userId: userData.id as string,
-        action: 'join',
-        roles: JSON.stringify(data.roles || []),
-        timestamp: new Date(),
+      await this.db.memberEvent.create({
+        data: {
+          guildId: data.guild_id,
+          userId: userData.id as string,
+          action: 'join',
+          roles: JSON.stringify(data.roles || []),
+          timestamp: new Date(),
+        },
       });
     } catch (error) {
       throw new Error(`Failed to process member join: ${error}`);
     }
   }
 
+  /**
+   * Process member leave event
+   */
   async processLeave(data: { guild_id: string; user: unknown }) {
     if (!this.validateLeaveData(data)) {
       return;
@@ -43,23 +52,25 @@ export class MemberProcessor extends BaseProcessor {
     try {
       const userData = data.user as Record<string, unknown>;
 
-      await this.db
-        .update(schema.members)
-        .set({ leftAt: new Date() })
-        .where(
-          and(
-            eq(schema.members.guildId, data.guild_id),
-            eq(schema.members.userId, userData.id as string),
-            isNull(schema.members.leftAt)
-          )
-        );
+      await this.db.member.updateMany({
+        where: {
+          guildId: data.guild_id,
+          userId: userData.id as string,
+          leftAt: null,
+        },
+        data: {
+          leftAt: new Date(),
+        },
+      });
 
-      await this.db.insert(schema.memberEvents).values({
-        guildId: data.guild_id,
-        userId: userData.id as string,
-        action: 'leave',
-        roles: JSON.stringify([]),
-        timestamp: new Date(),
+      await this.db.memberEvent.create({
+        data: {
+          guildId: data.guild_id,
+          userId: userData.id as string,
+          action: 'leave',
+          roles: JSON.stringify([]),
+          timestamp: new Date(),
+        },
       });
     } catch (error) {
       throw new Error(`Failed to process member leave: ${error}`);
