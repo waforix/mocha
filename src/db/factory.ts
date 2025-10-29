@@ -1,19 +1,75 @@
-import { getPostgresDb } from './postgres/connection';
-import { setSchemaType } from './schema/index';
-import { getSqliteDb } from './sqlite/connection';
-import type { DatabaseConfig, DatabaseInstance } from './types';
+import { PrismaClient } from '@prisma/client';
+import type { DatabaseConfig, DatabaseInstance, MysqlConfig, PostgresConfig } from './types';
 
-export async function createDatabaseConnection(config: DatabaseConfig): Promise<DatabaseInstance> {
+/**
+ * Build PostgreSQL connection URL
+ */
+function buildPostgresUrl(config: PostgresConfig): string {
+  if (config.connectionString) {
+    return config.connectionString;
+  }
+  const host = config.host || 'localhost';
+  const port = config.port || 5432;
+  const database = config.database || 'waforix';
+  const user = encodeURIComponent(config.username || 'postgres');
+  const pass = encodeURIComponent(config.password || '');
+  const ssl = config.ssl ? '?sslmode=require' : '';
+  return `postgresql://${user}:${pass}@${host}:${port}/${database}${ssl}`;
+}
+
+/**
+ * Build MySQL connection URL
+ */
+function buildMysqlUrl(config: MysqlConfig): string {
+  if (config.connectionString) {
+    return config.connectionString;
+  }
+  const host = config.host || 'localhost';
+  const port = config.port || 3306;
+  const database = config.database || 'waforix';
+  const user = encodeURIComponent(config.username || 'root');
+  const pass = encodeURIComponent(config.password || 'password');
+  return `mysql://${user}:${pass}@${host}:${port}/${database}`;
+}
+
+/**
+ * Build datasource URL from config
+ */
+function buildDatasourceUrl(config: DatabaseConfig): string {
   if (config.type === 'sqlite') {
-    setSchemaType('sqlite');
-    return await getSqliteDb(config);
+    return `file:${config.path}`;
   }
-
   if (config.type === 'postgres') {
-    setSchemaType('postgres');
-    return await getPostgresDb(config);
+    return buildPostgresUrl(config);
   }
-
+  if (config.type === 'mysql') {
+    return buildMysqlUrl(config);
+  }
   const _exhaustiveCheck: never = config;
   throw new Error(`Unsupported database type: ${_exhaustiveCheck}`);
+}
+
+/**
+ * Creates a database connection using Prisma Client
+ */
+export async function createDatabaseConnection(config: DatabaseConfig): Promise<DatabaseInstance> {
+  const datasourceUrl = buildDatasourceUrl(config);
+
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: datasourceUrl,
+      },
+    },
+  });
+
+  await prisma.$connect();
+
+  return {
+    db: prisma,
+    close: async () => {
+      await prisma.$disconnect();
+    },
+    type: config.type,
+  };
 }

@@ -1,7 +1,9 @@
-import { schema } from '../db/index';
 import { BaseProcessor } from './base';
 
 export class GuildProcessor extends BaseProcessor<unknown> {
+  /**
+   * Process a guild event
+   */
   async process(guild: unknown) {
     if (!this.validateGuild(guild)) {
       return;
@@ -55,16 +57,20 @@ export class GuildProcessor extends BaseProcessor<unknown> {
 
     await this.upsertUser(memberData.user);
 
-    await this.db
-      .insert(schema.members)
-      .values({
+    await this.db.member.upsert({
+      where: {
+        id: `${guildId}-${(memberData.user as Record<string, unknown>).id}`,
+      },
+      create: {
+        id: `${guildId}-${(memberData.user as Record<string, unknown>).id}`,
         guildId,
         userId: (memberData.user as Record<string, unknown>).id as string,
         nick: memberData.nick as string | undefined,
         roles: JSON.stringify(memberData.roles || []),
         joinedAt: new Date(memberData.joined_at as string),
-      })
-      .onConflictDoNothing();
+      },
+      update: {},
+    });
   }
 
   private validateGuild(guild: unknown): guild is Record<string, unknown> {

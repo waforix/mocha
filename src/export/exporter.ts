@@ -1,7 +1,4 @@
-import { and, eq, gte, lte } from 'drizzle-orm';
 import type { CommonDatabase } from '../db/index';
-import { channels, memberEvents, messageEvents, users, voiceEvents } from '../db/schema/index';
-import { toTimestamp } from '../db/utils';
 import type { ExportData, ExportOptions } from './formats';
 import { CSVFormatter, JSONFormatter } from './formats';
 
@@ -75,196 +72,171 @@ export class DataExporter {
     return data;
   }
 
+  /**
+   * Gather user data with message and voice statistics
+   */
   private async gatherUserData(data: ExportData, options: ExportOptions): Promise<void> {
-    const userStats = await this.db
-      .select({
-        id: users.id,
-        username: users.username,
-        messageCount: messageEvents.id,
-        voiceTime: voiceEvents.duration,
-      })
-      .from(users)
-      .leftJoin(
-        messageEvents,
-        and(
-          eq(messageEvents.userId, users.id),
-          eq(messageEvents.guildId, options.guildId),
-          gte(messageEvents.timestamp, toTimestamp(options.dateRange.start)),
-          lte(messageEvents.timestamp, toTimestamp(options.dateRange.end))
-        )
-      )
-      .leftJoin(
-        voiceEvents,
-        and(
-          eq(voiceEvents.userId, users.id),
-          eq(voiceEvents.guildId, options.guildId),
-          gte(voiceEvents.timestamp, toTimestamp(options.dateRange.start)),
-          lte(voiceEvents.timestamp, toTimestamp(options.dateRange.end))
-        )
-      );
+    const userStats = await this.db.$queryRaw<
+      Array<{
+        id: string;
+        username: string;
+        messageCount: bigint;
+        voiceTime: bigint;
+      }>
+    >`
+      SELECT
+        u.id,
+        u.username,
+        COUNT(DISTINCT me.id) as messageCount,
+        COALESCE(SUM(ve.duration), 0) as voiceTime
+      FROM User u
+      LEFT JOIN MessageEvent me ON me.userId = u.id
+        AND me.guildId = ${options.guildId}
+        AND me.timestamp >= ${options.dateRange.start}
+        AND me.timestamp <= ${options.dateRange.end}
+      LEFT JOIN VoiceEvent ve ON ve.userId = u.id
+        AND ve.guildId = ${options.guildId}
+        AND ve.timestamp >= ${options.dateRange.start}
+        AND ve.timestamp <= ${options.dateRange.end}
+      WHERE me.id IS NOT NULL OR ve.id IS NOT NULL
+      GROUP BY u.id, u.username
+    `;
 
-    const userMap = new Map<
-      string,
-      { id: string; username: string; messageCount: number; voiceTime: number }
-    >();
-
-    for (const row of userStats) {
-      const existing = userMap.get(row.id);
-      if (existing) {
-        existing.messageCount += row.messageCount ? 1 : 0;
-        existing.voiceTime += row.voiceTime || 0;
-      } else {
-        userMap.set(row.id, {
-          id: row.id,
-          username: row.username,
-          messageCount: row.messageCount ? 1 : 0,
-          voiceTime: row.voiceTime || 0,
-        });
-      }
-    }
-
-    data.users = Array.from(userMap.values());
-  }
-
-  private async gatherChannelData(data: ExportData, options: ExportOptions): Promise<void> {
-    const channelStats = await this.getChannelStatsQuery(options);
-    const channelMap = this.buildChannelMap(channelStats);
-
-    data.channels = Array.from(channelMap.values()).map((c) => ({
-      id: c.id,
-      name: c.name,
-      messageCount: c.messageCount,
-      uniqueUsers: c.uniqueUsers.size,
-    }));
-  }
-
-  private async getChannelStatsQuery(options: ExportOptions) {
-    return await this.db
-      .select({
-        id: channels.id,
-        name: channels.name,
-        messageCount: messageEvents.id,
-        userId: messageEvents.userId,
-      })
-      .from(channels)
-      .leftJoin(
-        messageEvents,
-        and(
-          eq(messageEvents.channelId, channels.id),
-          eq(messageEvents.guildId, options.guildId),
-          gte(messageEvents.timestamp, toTimestamp(options.dateRange.start)),
-          lte(messageEvents.timestamp, toTimestamp(options.dateRange.end))
-        )
-      );
-  }
-
-  private buildChannelMap(
-    channelStats: Array<{
-      id: string;
-      name: string | null;
-      messageCount: string | null;
-      userId: string | null;
-    }>
-  ) {
-    const channelMap = new Map<
-      string,
-      { id: string; name: string; messageCount: number; uniqueUsers: Set<string> }
-    >();
-
-    for (const row of channelStats) {
-      this.processChannelRow(channelMap, row);
-    }
-
-    return channelMap;
-  }
-
-  private processChannelRow(
-    channelMap: Map<
-      string,
-      { id: string; name: string; messageCount: number; uniqueUsers: Set<string> }
-    >,
-    row: { id: string; name: string | null; messageCount: string | null; userId: string | null }
-  ) {
-    const existing = channelMap.get(row.id);
-    if (existing) {
-      if (row.messageCount) {
-        existing.messageCount++;
-        if (row.userId) existing.uniqueUsers.add(row.userId);
-      }
-    } else {
-      channelMap.set(row.id, {
+    data.users = userStats.map(
+      (row: { id: string; username: string; messageCount: bigint; voiceTime: bigint }) => ({
         id: row.id,
-        name: row.name || 'Unknown',
-        messageCount: row.messageCount ? 1 : 0,
-        uniqueUsers: new Set(row.userId ? [row.userId] : []),
-      });
-    }
+        username: row.username,
+        messageCount: Number(row.messageCount),
+        voiceTime: Number(row.voiceTime),
+      })
+    );
   }
 
+  /**
+   * Gather channel data with message statistics
+   */
+  private async gatherChannelData(data: ExportData, options: ExportOptions): Promise<void> {
+    const channelStats = await this.db.$queryRaw<
+      Array<{
+        id: string;
+        name: string;
+        messageCount: bigint;
+        uniqueUsers: bigint;
+      }>
+    >`
+      SELECT
+        c.id,
+        c.name,
+        COUNT(me.id) as messageCount,
+        COUNT(DISTINCT me.userId) as uniqueUsers
+      FROM Channel c
+      LEFT JOIN MessageEvent me ON me.channelId = c.id
+        AND me.guildId = ${options.guildId}
+        AND me.timestamp >= ${options.dateRange.start}
+        AND me.timestamp <= ${options.dateRange.end}
+      WHERE c.guildId = ${options.guildId}
+      GROUP BY c.id, c.name
+    `;
+
+    data.channels = channelStats.map(
+      (c: { id: string; name: string; messageCount: bigint; uniqueUsers: bigint }) => ({
+        id: c.id,
+        name: c.name,
+        messageCount: Number(c.messageCount),
+        uniqueUsers: Number(c.uniqueUsers),
+      })
+    );
+  }
+
+  /**
+   * Gather message event data
+   */
   private async gatherMessageData(data: ExportData, options: ExportOptions): Promise<void> {
-    const messages = await this.db
-      .select()
-      .from(messageEvents)
-      .where(
-        and(
-          eq(messageEvents.guildId, options.guildId),
-          gte(messageEvents.timestamp, toTimestamp(options.dateRange.start)),
-          lte(messageEvents.timestamp, toTimestamp(options.dateRange.end))
-        )
-      )
-      .limit(10000);
+    const messages = await this.db.messageEvent.findMany({
+      where: {
+        guildId: options.guildId,
+        timestamp: {
+          gte: options.dateRange.start,
+          lte: options.dateRange.end,
+        },
+      },
+      take: 10000,
+      select: {
+        id: true,
+        userId: true,
+        channelId: true,
+        timestamp: true,
+        attachmentCount: true,
+        embedCount: true,
+      },
+    });
 
-    data.messages = messages.map((m: Record<string, unknown>) => ({
-      id: m.id,
-      userId: m.userId,
-      channelId: m.channelId,
-      timestamp: m.timestamp,
-      attachmentCount: m.attachmentCount,
-      embedCount: m.embedCount,
-    }));
+    data.messages = messages;
   }
 
+  /**
+   * Gather voice event data
+   */
   private async gatherVoiceData(data: ExportData, options: ExportOptions): Promise<void> {
-    const voice = await this.db
-      .select()
-      .from(voiceEvents)
-      .where(
-        and(
-          eq(voiceEvents.guildId, options.guildId),
-          gte(voiceEvents.timestamp, toTimestamp(options.dateRange.start)),
-          lte(voiceEvents.timestamp, toTimestamp(options.dateRange.end))
-        )
-      )
-      .limit(10000);
+    const voice = await this.db.voiceEvent.findMany({
+      where: {
+        guildId: options.guildId,
+        timestamp: {
+          gte: options.dateRange.start,
+          lte: options.dateRange.end,
+        },
+      },
+      take: 10000,
+      select: {
+        id: true,
+        userId: true,
+        channelId: true,
+        action: true,
+        duration: true,
+        timestamp: true,
+      },
+    });
 
-    data.voice = voice.map((v: Record<string, unknown>) => ({
-      id: v.id,
-      userId: v.userId,
-      channelId: v.channelId || '',
-      action: v.action,
-      duration: v.duration || undefined,
-      timestamp: v.timestamp,
-    }));
+    data.voice = voice.map(
+      (v: {
+        id: string;
+        userId: string;
+        channelId: string | null;
+        action: string;
+        duration: number | null;
+        timestamp: Date;
+      }) => ({
+        id: v.id,
+        userId: v.userId,
+        channelId: v.channelId || '',
+        action: v.action,
+        duration: v.duration || undefined,
+        timestamp: v.timestamp,
+      })
+    );
   }
 
+  /**
+   * Gather member event data
+   */
   private async gatherMemberData(data: ExportData, options: ExportOptions): Promise<void> {
-    const members = await this.db
-      .select()
-      .from(memberEvents)
-      .where(
-        and(
-          eq(memberEvents.guildId, options.guildId),
-          gte(memberEvents.timestamp, toTimestamp(options.dateRange.start)),
-          lte(memberEvents.timestamp, toTimestamp(options.dateRange.end))
-        )
-      )
-      .limit(10000);
+    const members = await this.db.memberEvent.findMany({
+      where: {
+        guildId: options.guildId,
+        timestamp: {
+          gte: options.dateRange.start,
+          lte: options.dateRange.end,
+        },
+      },
+      take: 10000,
+      select: {
+        id: true,
+        userId: true,
+        action: true,
+        timestamp: true,
+      },
+    });
 
-    data.members = members.map((m: Record<string, unknown>) => ({
-      id: m.id,
-      userId: m.userId,
-      action: m.action,
-      timestamp: m.timestamp,
-    }));
+    data.members = members;
   }
 }

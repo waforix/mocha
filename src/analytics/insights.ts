@@ -1,7 +1,4 @@
-import { and, count, eq, gte, lt, sql } from 'drizzle-orm';
 import type { CommonDatabase } from '../db/index';
-import { guilds, memberEvents, messageEvents, voiceEvents } from '../db/schema/index';
-import { toTimestamp } from '../db/utils';
 import { createDateSince } from '../utils/date';
 
 export interface ActivityInsight {
@@ -66,28 +63,30 @@ export class InsightsEngine {
     };
   }
 
-  private async getHourlyActivity(guildId: string, days: number) {
+  private async getHourlyActivity(
+    guildId: string,
+    days: number
+  ): Promise<Array<{ hour: number; activity: number }>> {
     const since = createDateSince(days);
 
-    const result = await this.db
-      .select({
-        hour: sql<number>`cast(strftime('%H', datetime(${messageEvents.timestamp}, 'unixepoch')) as integer)`,
-        activity: count(),
-      })
-      .from(messageEvents)
-      .where(
-        and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since)))
-      )
-      .groupBy(sql`strftime('%H', datetime(${messageEvents.timestamp}, 'unixepoch'))`)
-      .orderBy(sql`hour`);
+    const result = await this.db.$queryRaw<Array<{ hour: number; activity: bigint }>>`
+      SELECT
+        CAST(strftime('%H', createdAt) AS INTEGER) as hour,
+        COUNT(*) as activity
+      FROM messageevent
+      WHERE guildId = ${guildId}
+        AND createdAt >= ${since}
+      GROUP BY strftime('%H', createdAt)
+      ORDER BY hour
+    `;
 
-    const activityMap = new Map(
-      result.map((r: { hour: number; activity: unknown }) => [r.hour, r.activity])
+    const activityMap = new Map<number, number>(
+      result.map((r: { hour: number; activity: bigint }) => [r.hour, Number(r.activity)])
     );
 
     return Array.from({ length: 24 }, (_, hour) => ({
       hour,
-      activity: Number(activityMap.get(hour)) || 0,
+      activity: activityMap.get(hour) ?? 0,
     }));
   }
 
@@ -95,32 +94,29 @@ export class InsightsEngine {
     const since = createDateSince(days);
     const previousPeriod = createDateSince(days * 2);
 
-    const [current, previous] = await Promise.all([
-      this.db
-        .select({ joins: count() })
-        .from(memberEvents)
-        .where(
-          and(
-            eq(memberEvents.guildId, guildId),
-            eq(memberEvents.action, 'join'),
-            gte(memberEvents.createdAt, toTimestamp(since))
-          )
-        ),
-      this.db
-        .select({ joins: count() })
-        .from(memberEvents)
-        .where(
-          and(
-            eq(memberEvents.guildId, guildId),
-            eq(memberEvents.action, 'join'),
-            gte(memberEvents.createdAt, toTimestamp(previousPeriod)),
-            lt(memberEvents.createdAt, toTimestamp(since))
-          )
-        ),
-    ]);
+    const currentResult = await this.db.memberEvent.count({
+      where: {
+        guildId,
+        action: 'join',
+        createdAt: {
+          gte: since,
+        },
+      },
+    });
 
-    const currentJoins = current[0]?.joins || 0;
-    const previousJoins = previous[0]?.joins || 0;
+    const previousResult = await this.db.memberEvent.count({
+      where: {
+        guildId,
+        action: 'join',
+        createdAt: {
+          gte: previousPeriod,
+          lt: since,
+        },
+      },
+    });
+
+    const currentJoins = currentResult;
+    const previousJoins = previousResult;
 
     const growthRate =
       previousJoins > 0
@@ -139,39 +135,34 @@ export class InsightsEngine {
   private async getEngagementMetrics(guildId: string, days: number) {
     const since = createDateSince(days);
 
-    const [messageStats, voiceStats, memberCount] = await Promise.all([
-      this.db
-        .select({
-          totalMessages: count(),
-          activeUsers: sql<number>`count(distinct ${messageEvents.userId})`,
-        })
-        .from(messageEvents)
-        .where(
-          and(eq(messageEvents.guildId, guildId), gte(messageEvents.timestamp, toTimestamp(since)))
-        ),
-      this.db
-        .select({
-          voiceUsers: sql<number>`count(distinct ${voiceEvents.userId})`,
-          avgDuration: sql<number>`avg(${voiceEvents.duration})`,
-        })
-        .from(voiceEvents)
-        .where(
-          and(
-            eq(voiceEvents.guildId, guildId),
-            gte(voiceEvents.createdAt, toTimestamp(since)),
-            eq(voiceEvents.action, 'leave')
-          )
-        ),
-      this.db
-        .select({ memberCount: guilds.memberCount })
-        .from(guilds)
-        .where(eq(guilds.id, guildId)),
+    const [messageStats, voiceStats, guild] = await Promise.all([
+      this.db.$queryRaw<Array<{ totalMessages: bigint; activeUsers: bigint }>>`
+        SELECT
+          COUNT(*) as totalMessages,
+          COUNT(DISTINCT userId) as activeUsers
+        FROM messageevent
+        WHERE guildId = ${guildId}
+          AND createdAt >= ${since}
+      `,
+      this.db.$queryRaw<Array<{ voiceUsers: bigint; avgDuration: number | null }>>`
+        SELECT
+          COUNT(DISTINCT userId) as voiceUsers,
+          AVG(duration) as avgDuration
+        FROM voiceevent
+        WHERE guildId = ${guildId}
+          AND createdAt >= ${since}
+          AND action = 'leave'
+      `,
+      this.db.guild.findUnique({
+        where: { id: guildId },
+        select: { memberCount: true },
+      }),
     ]);
 
-    const totalMessages = messageStats[0]?.totalMessages || 0;
-    const activeUsers = messageStats[0]?.activeUsers || 0;
-    const voiceUsers = voiceStats[0]?.voiceUsers || 0;
-    const totalMembers = memberCount[0]?.memberCount || 1;
+    const totalMessages = Number(messageStats[0]?.totalMessages || 0);
+    const activeUsers = Number(messageStats[0]?.activeUsers || 0);
+    const voiceUsers = Number(voiceStats[0]?.voiceUsers || 0);
+    const totalMembers = guild?.memberCount || 1;
 
     const messagesPerUser = activeUsers > 0 ? totalMessages / activeUsers : 0;
     const voiceParticipation = voiceUsers / totalMembers;

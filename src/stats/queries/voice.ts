@@ -1,30 +1,33 @@
-import { and, count, eq, gte, sum } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
-import { schema } from '../../db/index';
-import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class VoiceQueries {
   constructor(private db: CommonDatabase) {}
 
+  /**
+   * Get voice statistics for a guild
+   */
   async getStats(guildId: string, userId?: string, days = 30) {
     const since = createDateSince(days);
 
-    const result = await this.db
-      .select({
-        totalTime: sum(schema.voiceEvents.duration),
-        sessions: count(),
-      })
-      .from(schema.voiceEvents)
-      .where(
-        and(
-          eq(schema.voiceEvents.guildId, guildId),
-          eq(schema.voiceEvents.action, 'leave'),
-          gte(schema.voiceEvents.timestamp, toTimestamp(since)),
-          userId ? eq(schema.voiceEvents.userId, userId) : undefined
-        )
-      );
+    const result = await this.db.voiceEvent.aggregate({
+      where: {
+        guildId,
+        userId,
+        action: 'leave',
+        timestamp: {
+          gte: since,
+        },
+      },
+      _sum: {
+        duration: true,
+      },
+      _count: true,
+    });
 
-    return result[0];
+    return {
+      totalTime: result._sum.duration || 0,
+      sessions: result._count,
+    };
   }
 }

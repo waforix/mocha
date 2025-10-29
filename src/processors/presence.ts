@@ -1,4 +1,3 @@
-import { schema } from '../db/index';
 import type { APIPresenceUpdate } from '../types/index';
 import { BaseProcessor } from './base';
 
@@ -8,13 +7,23 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
     { status: string; activity?: string; activityType?: number }
   >();
 
+  /**
+   * Process a presence update event
+   */
   async process(presence: APIPresenceUpdate) {
     if (!this.validatePresence(presence)) {
       return;
     }
 
     try {
-      const key = `${presence.guild_id}:${presence.user.id}`;
+      const userId = presence.user.id;
+
+      // Validate userId is a non-empty string
+      if (typeof userId !== 'string' || userId.trim().length === 0) {
+        return;
+      }
+
+      const key = `${presence.guild_id}:${userId}`;
       const last = this.lastPresence.get(key);
 
       const activity = presence.activities?.[0];
@@ -30,13 +39,15 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
         last.activity !== current.activity ||
         last.activityType !== current.activityType
       ) {
-        await this.db.insert(schema.presenceEvents).values({
-          guildId: presence.guild_id,
-          userId: presence.user.id || '',
-          status: presence.status,
-          activity: current.activity,
-          activityType: current.activityType,
-          timestamp: new Date(),
+        await this.db.presenceEvent.create({
+          data: {
+            guildId: presence.guild_id,
+            userId,
+            status: presence.status,
+            activity: current.activity,
+            activityType: current.activityType,
+            timestamp: new Date(),
+          },
         });
 
         this.lastPresence.set(key, current);
@@ -53,11 +64,17 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
 
     const p = presence as Record<string, unknown>;
 
+    if (!p.user || typeof p.user !== 'object') {
+      return false;
+    }
+
+    const u = p.user as Record<string, unknown>;
+
     return !!(
       p.guild_id &&
       typeof p.guild_id === 'string' &&
-      p.user &&
-      typeof p.user === 'object' &&
+      u.id &&
+      typeof u.id === 'string' &&
       p.status &&
       typeof p.status === 'string'
     );
