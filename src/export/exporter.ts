@@ -101,12 +101,14 @@ export class DataExporter {
       GROUP BY u.id, u.username
     `;
 
-    data.users = userStats.map((row: { id: string; username: string; messageCount: bigint; voiceTime: bigint }) => ({
-      id: row.id,
-      username: row.username,
-      messageCount: Number(row.messageCount),
-      voiceTime: Number(row.voiceTime),
-    }));
+    data.users = userStats.map(
+      (row: { id: string; username: string; messageCount: bigint; voiceTime: bigint }) => ({
+        id: row.id,
+        username: row.username,
+        messageCount: Number(row.messageCount),
+        voiceTime: Number(row.voiceTime),
+      })
+    );
   }
 
   /**
@@ -135,12 +137,14 @@ export class DataExporter {
       GROUP BY c.id, c.name
     `;
 
-    data.channels = channelStats.map((c: { id: string; name: string; messageCount: bigint; uniqueUsers: bigint }) => ({
-      id: c.id,
-      name: c.name,
-      messageCount: Number(c.messageCount),
-      uniqueUsers: Number(c.uniqueUsers),
-    }));
+    data.channels = channelStats.map(
+      (c: { id: string; name: string; messageCount: bigint; uniqueUsers: bigint }) => ({
+        id: c.id,
+        name: c.name,
+        messageCount: Number(c.messageCount),
+        uniqueUsers: Number(c.uniqueUsers),
+      })
+    );
   }
 
   /**
@@ -192,14 +196,23 @@ export class DataExporter {
       },
     });
 
-    data.voice = voice.map((v: { id: string; userId: string; channelId: string | null; action: string; duration: number | null; timestamp: Date }) => ({
-      id: v.id,
-      userId: v.userId,
-      channelId: v.channelId || '',
-      action: v.action,
-      duration: v.duration || undefined,
-      timestamp: v.timestamp,
-    }));
+    data.voice = voice.map(
+      (v: {
+        id: string;
+        userId: string;
+        channelId: string | null;
+        action: string;
+        duration: number | null;
+        timestamp: Date;
+      }) => ({
+        id: v.id,
+        userId: v.userId,
+        channelId: v.channelId || '',
+        action: v.action,
+        duration: v.duration || undefined,
+        timestamp: v.timestamp,
+      })
+    );
   }
 
   /**

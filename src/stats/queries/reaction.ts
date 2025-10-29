@@ -55,12 +55,19 @@ export class ReactionQueries {
       LIMIT ${limit}
     `;
 
-    return results.map((r: { emojiId: string | null; emojiName: string | null; emojiAnimated: number; count: bigint }) => ({
-      emojiId: r.emojiId,
-      emojiName: r.emojiName,
-      emojiAnimated: Boolean(r.emojiAnimated),
-      count: Number(r.count),
-    }));
+    return results.map(
+      (r: {
+        emojiId: string | null;
+        emojiName: string | null;
+        emojiAnimated: number;
+        count: bigint;
+      }) => ({
+        emojiId: r.emojiId,
+        emojiName: r.emojiName,
+        emojiAnimated: Boolean(r.emojiAnimated),
+        count: Number(r.count),
+      })
+    );
   }
 
   /**

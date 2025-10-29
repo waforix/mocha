@@ -33,8 +33,14 @@ export class MemberQueries {
     `;
 
     return {
-      joins: joinsResults.map((r: { date: string; joins: bigint }) => ({ date: r.date, joins: Number(r.joins) })),
-      leaves: leavesResults.map((r: { date: string; leaves: bigint }) => ({ date: r.date, leaves: Number(r.leaves) })),
+      joins: joinsResults.map((r: { date: string; joins: bigint }) => ({
+        date: r.date,
+        joins: Number(r.joins),
+      })),
+      leaves: leavesResults.map((r: { date: string; leaves: bigint }) => ({
+        date: r.date,
+        leaves: Number(r.leaves),
+      })),
     };
   }
 }
