@@ -31,7 +31,6 @@ export abstract class BaseProcessor<T = unknown> {
           username: (userData.username as string) || 'Unknown',
           discriminator: (userData.discriminator as string) || '0000',
           avatar: userData.avatar as string | null,
-          updatedAt: new Date(),
         },
       });
     } catch (error) {
@@ -76,7 +75,6 @@ export abstract class BaseProcessor<T = unknown> {
           icon: guildData.icon as string | null,
           ownerId: (guildData.owner_id as string) || '',
           memberCount: (guildData.member_count as number) || 0,
-          updatedAt: new Date(),
         },
       });
     } catch (error) {
