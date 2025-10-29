@@ -11,10 +11,10 @@ function buildPostgresUrl(config: PostgresConfig): string {
   const host = config.host || 'localhost';
   const port = config.port || 5432;
   const database = config.database || 'waforix';
-  const username = config.username || 'postgres';
-  const password = config.password || '';
+  const user = encodeURIComponent(config.username || 'postgres');
+  const pass = encodeURIComponent(config.password || '');
   const ssl = config.ssl ? '?sslmode=require' : '';
-  return `postgresql://${username}:${password}@${host}:${port}/${database}${ssl}`;
+  return `postgresql://${user}:${pass}@${host}:${port}/${database}${ssl}`;
 }
 
 /**
@@ -27,9 +27,9 @@ function buildMysqlUrl(config: MysqlConfig): string {
   const host = config.host || 'localhost';
   const port = config.port || 3306;
   const database = config.database || 'waforix';
-  const username = config.username || 'root';
-  const password = config.password || 'password';
-  return `mysql://${username}:${password}@${host}:${port}/${database}`;
+  const user = encodeURIComponent(config.username || 'root');
+  const pass = encodeURIComponent(config.password || 'password');
+  return `mysql://${user}:${pass}@${host}:${port}/${database}`;
 }
 
 /**
