@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "better-sqlite3": "^12.2.0",
-    "drizzle-orm": "^0.44.5",
     "postgres": "^3.4.7",
     "ws": "^8.14.2",
     "zod": "^4.1.11"
@@ -36,7 +35,6 @@
     "@types/pg": "^8.15.5",
     "@types/ws": "^8.5.10",
     "bun-types": "^1.0.18",
-    "drizzle-kit": "^0.31.4",
     "typescript": "^5.3.3"
   }
 }
