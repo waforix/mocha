@@ -21,7 +21,7 @@ export class ReactionQueries {
       GROUP BY action
     `;
 
-    return results.map(r => ({
+    return results.map((r) => ({
       action: r.action,
       count: Number(r.count),
     }));
@@ -33,12 +33,14 @@ export class ReactionQueries {
   async getTopEmojis(guildId: string, limit = 10, days = 30) {
     const since = createDateSince(days);
 
-    const results = await this.db.$queryRaw<Array<{
-      emojiId: string | null;
-      emojiName: string;
-      emojiAnimated: number;
-      count: bigint;
-    }>>`
+    const results = await this.db.$queryRaw<
+      Array<{
+        emojiId: string | null;
+        emojiName: string;
+        emojiAnimated: number;
+        count: bigint;
+      }>
+    >`
       SELECT
         emojiId,
         emojiName,
@@ -53,7 +55,7 @@ export class ReactionQueries {
       LIMIT ${limit}
     `;
 
-    return results.map(r => ({
+    return results.map((r) => ({
       emojiId: r.emojiId,
       emojiName: r.emojiName,
       emojiAnimated: Boolean(r.emojiAnimated),
@@ -67,11 +69,13 @@ export class ReactionQueries {
   async getTopReactors(guildId: string, limit = 10, days = 30) {
     const since = createDateSince(days);
 
-    const results = await this.db.$queryRaw<Array<{
-      userId: string;
-      username: string;
-      reactions: bigint;
-    }>>`
+    const results = await this.db.$queryRaw<
+      Array<{
+        userId: string;
+        username: string;
+        reactions: bigint;
+      }>
+    >`
       SELECT
         r.userId,
         u.username,
@@ -86,7 +90,7 @@ export class ReactionQueries {
       LIMIT ${limit}
     `;
 
-    return results.map(r => ({
+    return results.map((r) => ({
       userId: r.userId,
       username: r.username,
       reactions: Number(r.reactions),
@@ -99,11 +103,13 @@ export class ReactionQueries {
   async getReactionTimeline(guildId: string, days = 7) {
     const since = createDateSince(days);
 
-    const results = await this.db.$queryRaw<Array<{
-      date: string;
-      hour: number;
-      reactions: bigint;
-    }>>`
+    const results = await this.db.$queryRaw<
+      Array<{
+        date: string;
+        hour: number;
+        reactions: bigint;
+      }>
+    >`
       SELECT
         date(timestamp) as date,
         CAST(strftime('%H', timestamp) AS INTEGER) as hour,
@@ -116,7 +122,7 @@ export class ReactionQueries {
       ORDER BY date, hour
     `;
 
-    return results.map(r => ({
+    return results.map((r) => ({
       date: r.date,
       hour: r.hour,
       reactions: Number(r.reactions),

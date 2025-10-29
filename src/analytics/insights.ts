@@ -77,9 +77,7 @@ export class InsightsEngine {
       ORDER BY hour
     `;
 
-    const activityMap = new Map(
-      result.map(r => [r.hour, Number(r.activity)])
-    );
+    const activityMap = new Map(result.map((r) => [r.hour, Number(r.activity)]));
 
     return Array.from({ length: 24 }, (_, hour) => ({
       hour,

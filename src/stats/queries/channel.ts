@@ -10,12 +10,14 @@ export class ChannelQueries {
   async getStats(guildId: string, days = 30) {
     const since = createDateSince(days);
 
-    const results = await this.db.$queryRaw<Array<{
-      channelId: string;
-      channelName: string | null;
-      messageCount: bigint;
-      uniqueUsers: bigint;
-    }>>`
+    const results = await this.db.$queryRaw<
+      Array<{
+        channelId: string;
+        channelName: string | null;
+        messageCount: bigint;
+        uniqueUsers: bigint;
+      }>
+    >`
       SELECT
         m.channelId,
         c.name as channelName,
@@ -29,7 +31,7 @@ export class ChannelQueries {
       ORDER BY messageCount DESC
     `;
 
-    return results.map(r => ({
+    return results.map((r) => ({
       channelId: r.channelId,
       channelName: r.channelName,
       messageCount: Number(r.messageCount),

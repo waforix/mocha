@@ -11,7 +11,9 @@ export class UserQueries {
     const since = createDateSince(days);
 
     if (type === 'messages') {
-      const results = await this.db.$queryRaw<Array<{ userId: string; username: string; count: bigint }>>`
+      const results = await this.db.$queryRaw<
+        Array<{ userId: string; username: string; count: bigint }>
+      >`
         SELECT
           m.userId,
           u.username,
@@ -25,14 +27,16 @@ export class UserQueries {
         LIMIT ${limit}
       `;
 
-      return results.map(r => ({
+      return results.map((r) => ({
         userId: r.userId,
         username: r.username,
         count: Number(r.count),
       }));
     }
 
-    const results = await this.db.$queryRaw<Array<{ userId: string; username: string; totalTime: bigint }>>`
+    const results = await this.db.$queryRaw<
+      Array<{ userId: string; username: string; totalTime: bigint }>
+    >`
       SELECT
         v.userId,
         u.username,
@@ -47,7 +51,7 @@ export class UserQueries {
       LIMIT ${limit}
     `;
 
-    return results.map(r => ({
+    return results.map((r) => ({
       userId: r.userId,
       username: r.username,
       totalTime: Number(r.totalTime),

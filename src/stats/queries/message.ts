@@ -25,11 +25,13 @@ export class MessageQueries {
       },
     });
 
-    return [{
-      count: result._count,
-      attachments: result._sum.attachmentCount || 0,
-      embeds: result._sum.embedCount || 0,
-    }];
+    return [
+      {
+        count: result._count,
+        attachments: result._sum.attachmentCount || 0,
+        embeds: result._sum.embedCount || 0,
+      },
+    ];
   }
 
   /**
@@ -50,7 +52,7 @@ export class MessageQueries {
       ORDER BY strftime('%H', timestamp)
     `;
 
-    return results.map(r => ({
+    return results.map((r) => ({
       hour: r.hour,
       count: Number(r.count),
     }));
