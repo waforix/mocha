@@ -25,6 +25,9 @@ jobs:
           
       - name: Install dependencies
         run: bun install
+
+      - name: Rebuild Biome binary
+        run: bun pm rebuild @biomejs/biome
         
       - name: Check formatting
         run: bun run format
