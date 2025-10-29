@@ -71,12 +71,12 @@ export class InsightsEngine {
 
     const result = await this.db.$queryRaw<Array<{ hour: number; activity: bigint }>>`
       SELECT
-        CAST(strftime('%H', timestamp) AS INTEGER) as hour,
+        CAST(strftime('%H', createdAt) AS INTEGER) as hour,
         COUNT(*) as activity
       FROM messageevent
       WHERE guildId = ${guildId}
-        AND timestamp >= ${since}
-      GROUP BY strftime('%H', timestamp)
+        AND createdAt >= ${since}
+      GROUP BY strftime('%H', createdAt)
       ORDER BY hour
     `;
 
@@ -142,7 +142,7 @@ export class InsightsEngine {
           COUNT(DISTINCT userId) as activeUsers
         FROM messageevent
         WHERE guildId = ${guildId}
-          AND timestamp >= ${since}
+          AND createdAt >= ${since}
       `,
       this.db.$queryRaw<Array<{ voiceUsers: bigint; avgDuration: number | null }>>`
         SELECT
