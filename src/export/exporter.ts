@@ -98,6 +98,7 @@ export class DataExporter {
         AND ve.guildId = ${options.guildId}
         AND ve.timestamp >= ${options.dateRange.start}
         AND ve.timestamp <= ${options.dateRange.end}
+      WHERE me.id IS NOT NULL OR ve.id IS NOT NULL
       GROUP BY u.id, u.username
     `;
 
