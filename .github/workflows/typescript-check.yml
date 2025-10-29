@@ -26,6 +26,7 @@ jobs:
         run: bun install
 
       - name: Generate Prisma Client
+        if: ${{ hashFiles('**/schema.prisma') != '' }}
         run: bunx prisma generate
 
       - name: Run TypeScript check
