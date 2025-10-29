@@ -27,7 +27,7 @@ jobs:
         run: bun install
 
       - name: Rebuild Biome binary
-        run: bun pm rebuild @biomejs/biome
+        run: bun x @biomejs/biome --version || node node_modules/@biomejs/biome/scripts/postinstall.mjs
         
       - name: Check formatting
         run: bun run format
