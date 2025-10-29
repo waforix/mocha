@@ -19,6 +19,7 @@ export class MemberQueries {
         AND action = 'join'
         AND timestamp >= ${since}
       GROUP BY date(timestamp)
+      ORDER BY date ASC
     `;
 
     const leavesResults = await this.db.$queryRaw<Array<{ date: string; leaves: bigint }>>`
@@ -30,6 +31,7 @@ export class MemberQueries {
         AND action = 'leave'
         AND timestamp >= ${since}
       GROUP BY date(timestamp)
+      ORDER BY date ASC
     `;
 
     return {
