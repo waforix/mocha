@@ -23,9 +23,6 @@
     "check": "biome check src/",
     "check:fix": "biome check --write src/"
   },
-  "prisma": {
-    "schema": "prisma/schema.prisma"
-  },
   "dependencies": {
     "better-sqlite3": "^12.2.0",
     "drizzle-orm": "^0.44.5",
