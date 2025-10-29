@@ -16,7 +16,14 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
     }
 
     try {
-      const key = `${presence.guild_id}:${presence.user.id}`;
+      const userId = presence.user.id;
+
+      // Validate userId is a non-empty string
+      if (typeof userId !== 'string' || userId.trim().length === 0) {
+        return;
+      }
+
+      const key = `${presence.guild_id}:${userId}`;
       const last = this.lastPresence.get(key);
 
       const activity = presence.activities?.[0];
@@ -35,7 +42,7 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
         await this.db.presenceEvent.create({
           data: {
             guildId: presence.guild_id,
-            userId: presence.user.id || '',
+            userId,
             status: presence.status,
             activity: current.activity,
             activityType: current.activityType,
@@ -57,11 +64,17 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
 
     const p = presence as Record<string, unknown>;
 
+    if (!p.user || typeof p.user !== 'object') {
+      return false;
+    }
+
+    const u = p.user as Record<string, unknown>;
+
     return !!(
       p.guild_id &&
       typeof p.guild_id === 'string' &&
-      p.user &&
-      typeof p.user === 'object' &&
+      u.id &&
+      typeof u.id === 'string' &&
       p.status &&
       typeof p.status === 'string'
     );
