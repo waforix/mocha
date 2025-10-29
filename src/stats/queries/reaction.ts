@@ -113,29 +113,50 @@ export class ReactionQueries {
   async getReactionTimeline(guildId: string, days = 7) {
     const since = createDateSince(days);
 
-    const results = await this.db.$queryRaw<
+    const rawResults = await this.db.$queryRaw<
       Array<{
-        date: string;
-        hour: number;
-        reactions: bigint;
+        timestamp: Date;
       }>
     >`
       SELECT
-        date("timestamp") as date,
-        CAST(strftime('%H', "timestamp") AS INTEGER) as hour,
-        COUNT(*) as reactions
+        "timestamp"
       FROM "ReactionEvent"
       WHERE "guildId" = ${guildId}
         AND "action" = 'add'
         AND "timestamp" >= ${since}
-      GROUP BY date("timestamp"), strftime('%H', "timestamp")
-      ORDER BY date, hour
     `;
 
-    return results.map((r: { date: string; hour: number; reactions: bigint }) => ({
-      date: r.date,
-      hour: r.hour,
-      reactions: Number(r.reactions),
-    }));
+    // Aggregate by date and hour in JavaScript
+    const buckets = new Map<string, number>();
+
+    for (const row of rawResults) {
+      const ts = row.timestamp instanceof Date ? row.timestamp : new Date(row.timestamp);
+      const date = ts.toISOString().split('T')[0]; // YYYY-MM-DD
+      const hour = ts.getUTCHours();
+      const key = `${date}:${hour}`;
+
+      buckets.set(key, (buckets.get(key) ?? 0) + 1);
+    }
+
+    // Convert to sorted array
+    const results: Array<{ date: string; hour: number; reactions: number }> = [];
+    for (const [key, count] of buckets) {
+      const [date, hourStr] = key.split(':');
+      results.push({
+        date,
+        hour: parseInt(hourStr, 10),
+        reactions: count,
+      });
+    }
+
+    // Sort by date, then hour
+    results.sort((a, b) => {
+      if (a.date !== b.date) {
+        return a.date.localeCompare(b.date);
+      }
+      return a.hour - b.hour;
+    });
+
+    return results;
   }
 }
