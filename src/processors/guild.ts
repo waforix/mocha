@@ -62,6 +62,7 @@ export class GuildProcessor extends BaseProcessor<unknown> {
         id: `${guildId}-${(memberData.user as Record<string, unknown>).id}`,
       },
       create: {
+        id: `${guildId}-${(memberData.user as Record<string, unknown>).id}`,
         guildId,
         userId: (memberData.user as Record<string, unknown>).id as string,
         nick: memberData.nick as string | undefined,
