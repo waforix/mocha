@@ -24,9 +24,9 @@ jobs:
           
       - name: Install dependencies
         run: bun install
-        
-      - name: Rebuild Biome binary
-        run: bun pm rebuild @biomejs/biome
-        
+
+      - name: Install Biome
+        run: npm install -g @biomejs/biome
+
       - name: Run linting
         run: bun run lint
