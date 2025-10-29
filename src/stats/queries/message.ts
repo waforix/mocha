@@ -1,56 +1,60 @@
-import { and, count, eq, gte, type SQL, sql, sum } from 'drizzle-orm';
 import type { CommonDatabase } from '../../db/index';
-import { schema } from '../../db/index';
-import { toTimestamp } from '../../db/utils';
 import { createDateSince } from '../../utils/date';
 
 export class MessageQueries {
   constructor(private db: CommonDatabase) {}
 
+  /**
+   * Get message statistics for a guild
+   */
   async getStats(guildId: string, userId?: string, days = 30) {
     const since = createDateSince(days);
 
-    const conditions: SQL[] = [
-      eq(schema.messageEvents.guildId, guildId),
-      gte(schema.messageEvents.timestamp, toTimestamp(since)),
+    const result = await this.db.messageEvent.aggregate({
+      where: {
+        guildId,
+        userId,
+        timestamp: {
+          gte: since,
+        },
+      },
+      _count: true,
+      _sum: {
+        attachmentCount: true,
+        embedCount: true,
+      },
+    });
+
+    return [
+      {
+        count: result._count,
+        attachments: result._sum.attachmentCount || 0,
+        embeds: result._sum.embedCount || 0,
+      },
     ];
-
-    if (userId) {
-      conditions.push(eq(schema.messageEvents.userId, userId));
-    }
-
-    return await this.db
-      .select({
-        count: count(),
-        attachments: sum(schema.messageEvents.attachmentCount),
-        embeds: sum(schema.messageEvents.embedCount),
-      })
-      .from(schema.messageEvents)
-      .where(and(...conditions))
-      .execute();
   }
 
+  /**
+   * Get message timeline by hour
+   */
   async getTimeline(guildId: string, userId?: string, days = 7) {
     const since = createDateSince(days);
 
-    const conditions = [
-      eq(schema.messageEvents.guildId, guildId),
-      gte(schema.messageEvents.timestamp, toTimestamp(since)),
-    ];
+    const results = await this.db.$queryRaw<Array<{ hour: number; count: bigint }>>`
+      SELECT
+        CAST(strftime('%H', timestamp) AS INTEGER) as hour,
+        COUNT(*) as count
+      FROM messageevent
+      WHERE guildId = ${guildId}
+        AND timestamp >= ${since}
+        ${userId ? `AND userId = ${userId}` : ''}
+      GROUP BY strftime('%H', timestamp)
+      ORDER BY strftime('%H', timestamp)
+    `;
 
-    if (userId) {
-      conditions.push(eq(schema.messageEvents.userId, userId));
-    }
-
-    return await this.db
-      .select({
-        hour: sql<number>`strftime('%H', ${schema.messageEvents.timestamp})`,
-        count: count(),
-      })
-      .from(schema.messageEvents)
-      .where(and(...conditions))
-      .groupBy(sql`strftime('%H', ${schema.messageEvents.timestamp})`)
-      .orderBy(sql`strftime('%H', ${schema.messageEvents.timestamp})`)
-      .execute();
+    return results.map((r: { hour: number; count: bigint }) => ({
+      hour: r.hour,
+      count: Number(r.count),
+    }));
   }
 }

@@ -1,7 +1,6 @@
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type { PrismaClient } from '@prisma/client';
 
-export type DatabaseType = 'sqlite' | 'postgres';
+export type DatabaseType = 'sqlite' | 'postgres' | 'mysql';
 
 export interface SqliteConfig {
   type: 'sqlite';
@@ -22,7 +21,18 @@ export interface PostgresConfig {
   connectionTimeoutMs?: number;
 }
 
-export type DatabaseConfig = SqliteConfig | PostgresConfig;
+export interface MysqlConfig {
+  type: 'mysql';
+  connectionString?: string;
+  host?: string;
+  port?: number;
+  database?: string;
+  username?: string;
+  password?: string;
+  ssl?: boolean;
+}
+
+export type DatabaseConfig = SqliteConfig | PostgresConfig | MysqlConfig;
 
 export interface DatabaseOptions {
   config: DatabaseConfig;
@@ -30,12 +40,9 @@ export interface DatabaseOptions {
   enableOptimizations?: boolean;
 }
 
-export type SqliteInstance = BetterSQLite3Database<Record<string, unknown>>;
-export type PostgresInstance = PostgresJsDatabase<Record<string, unknown>>;
-
 export interface DatabaseConnection {
-  db: SqliteInstance | PostgresInstance;
-  close: () => void;
+  db: PrismaClient;
+  close: () => Promise<void>;
   type: DatabaseType;
 }
 

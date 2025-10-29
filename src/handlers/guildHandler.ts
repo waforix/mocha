@@ -1,5 +1,4 @@
 import type { CommonDatabase } from '../db';
-import { schema } from '../db';
 import { Events } from '../enums';
 import { Intents } from '../enums/gateway/intents';
 import type { EventDispatcher } from '../events';
@@ -41,32 +40,33 @@ export class GuildHandler extends Handler {
   }
 
   public async handleGuildCreate(data: GuildCreate): Promise<void> {
-    await this.database
-      .insert(schema.guilds)
-      .values({
+    await this.database.guild.upsert({
+      where: {
+        id: data.id,
+      },
+      create: {
         id: data.id,
         name: data.name,
         icon: data.icon,
         ownerId: data.ownerId,
         memberCount: data.memberCount,
+      },
+      update: {
+        name: data.name,
+        icon: data.icon,
+        ownerId: data.ownerId,
+        memberCount: data.memberCount,
         updatedAt: new Date(),
-      })
-      .onConflictDoUpdate({
-        target: schema.guilds.id,
-        set: {
-          name: data.name,
-          icon: data.icon,
-          ownerId: data.ownerId,
-          memberCount: data.memberCount,
-          updatedAt: new Date(),
-        },
-      });
+      },
+    });
   }
 
   public async handleGuildUpdate(data: GuildUpdate): Promise<void> {
-    await this.database.update({
-      target: schema.guilds.id,
-      set: {
+    await this.database.guild.update({
+      where: {
+        id: data.id,
+      },
+      data: {
         name: data.name,
         icon: data.icon,
         ownerId: data.ownerId,

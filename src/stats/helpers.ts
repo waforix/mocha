@@ -1,5 +1,3 @@
-import { sql } from 'drizzle-orm';
-
 export const createDateFilter = (days: number) => {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - days);
@@ -13,16 +11,6 @@ export const createTimeRangeFilter = (startDate: Date, endDate: Date) => {
 export const createPaginationParams = (page: number, limit: number) => {
   const offset = (page - 1) * limit;
   return { limit, offset };
-};
-
-export const createOrderByClause = (field: string, direction: 'asc' | 'desc' = 'desc') => {
-  return direction === 'desc'
-    ? sql`${sql.identifier(field)} DESC`
-    : sql`${sql.identifier(field)} ASC`;
-};
-
-export const createCountQuery = (tableName: string, whereClause?: unknown) => {
-  return sql`SELECT COUNT(*) as count FROM ${sql.identifier(tableName)} ${whereClause ? sql`WHERE ${whereClause}` : sql``}`;
 };
 
 export const createTopUsersQuery = (guildId: string, limit: number, days: number) => {

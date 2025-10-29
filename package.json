@@ -1,6 +1,6 @@
 {
   "name": "@waforix/mocha",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,17 +10,12 @@
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
-    "schemas:generate": "bun run scripts/generate-schemas.ts",
-    "db:generate": "bun run schemas:generate && drizzle-kit generate --config=drizzle.config.ts",
-    "db:generate:sqlite": "bun run schemas:generate && drizzle-kit generate --config=drizzle.config.ts",
-    "db:generate:postgres": "bun run schemas:generate && drizzle-kit generate --config=drizzle.postgres.config.ts",
-    "db:generate:mysql": "bun run schemas:generate && drizzle-kit generate --config=drizzle.mysql.config.ts",
-    "db:generate:all": "bun run schemas:generate && bun run db:generate:sqlite && bun run db:generate:postgres && bun run db:generate:mysql",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
     "db:init": "bun run scripts/init-db.ts",
-    "db:studio": "drizzle-kit studio --config=drizzle.config.ts",
-    "db:studio:sqlite": "drizzle-kit studio --config=drizzle.config.ts",
-    "db:studio:postgres": "drizzle-kit studio --config=drizzle.postgres.config.ts",
-    "db:studio:mysql": "drizzle-kit studio --config=drizzle.mysql.config.ts",
     "lint": "biome lint src/",
     "lint:fix": "biome lint --write src/",
     "format": "biome format src/",
@@ -29,8 +24,9 @@
     "check:fix": "biome check --write src/"
   },
   "dependencies": {
+    "@prisma/client": "6.18.0",
+    "@prisma/internals": "^6.18.0",
     "better-sqlite3": "^12.2.0",
-    "drizzle-orm": "^0.44.5",
     "postgres": "^3.4.7",
     "ws": "^8.14.2",
     "zod": "^4.1.11"
@@ -41,7 +37,7 @@
     "@types/pg": "^8.15.5",
     "@types/ws": "^8.5.10",
     "bun-types": "^1.0.18",
-    "drizzle-kit": "^0.31.4",
+    "prisma": "6.18.0",
     "typescript": "^5.3.3"
   }
 }
