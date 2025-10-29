@@ -1,4 +1,3 @@
-import { schema } from '../db/index';
 import type { APIPresenceUpdate } from '../types/index';
 import { BaseProcessor } from './base';
 
@@ -8,6 +7,9 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
     { status: string; activity?: string; activityType?: number }
   >();
 
+  /**
+   * Process a presence update event
+   */
   async process(presence: APIPresenceUpdate) {
     if (!this.validatePresence(presence)) {
       return;
@@ -30,13 +32,15 @@ export class PresenceProcessor extends BaseProcessor<APIPresenceUpdate> {
         last.activity !== current.activity ||
         last.activityType !== current.activityType
       ) {
-        await this.db.insert(schema.presenceEvents).values({
-          guildId: presence.guild_id,
-          userId: presence.user.id || '',
-          status: presence.status,
-          activity: current.activity,
-          activityType: current.activityType,
-          timestamp: new Date(),
+        await this.db.presenceEvent.create({
+          data: {
+            guildId: presence.guild_id,
+            userId: presence.user.id || '',
+            status: presence.status,
+            activity: current.activity,
+            activityType: current.activityType,
+            timestamp: new Date(),
+          },
         });
 
         this.lastPresence.set(key, current);

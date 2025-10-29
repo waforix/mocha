@@ -73,8 +73,8 @@ export class StatsAggregator {
         0
       ),
       topChannels: channelStats.map((ch: Record<string, unknown>) => ({
-        channelId: ch.channelId,
-        name: ch.channelName || undefined,
+        channelId: ch.channelId as string,
+        name: (ch.channelName as string) || undefined,
         messageCount: Number(ch.messageCount),
         uniqueUsers: Number(ch.uniqueUsers),
       })),

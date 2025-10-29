@@ -1,8 +1,10 @@
-import { schema } from '../db/index';
 import type { APIMessage } from '../types/index';
 import { BaseProcessor } from './base';
 
 export class MessageProcessor extends BaseProcessor<APIMessage> {
+  /**
+   * Process a message event
+   */
   async process(message: APIMessage) {
     if (!this.validateMessage(message)) {
       return;
@@ -16,15 +18,17 @@ export class MessageProcessor extends BaseProcessor<APIMessage> {
       await this.upsertUser(message.author);
       await this.upsertChannel(message);
 
-      await this.db.insert(schema.messageEvents).values({
-        id: message.id,
-        guildId: message.guild_id,
-        channelId: message.channel_id,
-        userId: message.author.id,
-        content: (message.content || '').slice(0, 2000),
-        attachmentCount: message.attachments?.length || 0,
-        embedCount: message.embeds?.length || 0,
-        timestamp: new Date(message.timestamp),
+      await this.db.messageEvent.create({
+        data: {
+          id: message.id,
+          guildId: message.guild_id,
+          channelId: message.channel_id,
+          userId: message.author.id,
+          content: (message.content || '').slice(0, 2000),
+          attachmentCount: message.attachments?.length || 0,
+          embedCount: message.embeds?.length || 0,
+          timestamp: new Date(message.timestamp),
+        },
       });
     } catch (error) {
       throw new Error(`Failed to process message: ${error}`);
