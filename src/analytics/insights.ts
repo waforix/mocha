@@ -80,13 +80,13 @@ export class InsightsEngine {
       ORDER BY hour
     `;
 
-    const activityMap = new Map(
+    const activityMap = new Map<number, number>(
       result.map((r: { hour: number; activity: bigint }) => [r.hour, Number(r.activity)])
     );
 
     return Array.from({ length: 24 }, (_, hour) => ({
       hour,
-      activity: activityMap.get(hour) || 0,
+      activity: activityMap.get(hour) ?? 0,
     }));
   }
 
