@@ -1,0 +1,23 @@
+/**
+ * User model - represents a Discord user
+ */
+model User {
+  id            String   @id
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  username      String
+  discriminator String
+  avatar        String?
+  bot           Boolean  @default(false)
+
+  ownedGuilds    Guild[]          @relation("GuildOwner")
+  members        Member[]
+  messageEvents  MessageEvent[]
+  voiceEvents    VoiceEvent[]
+  memberEvents   MemberEvent[]
+  presenceEvents PresenceEvent[]
+  reactionEvents ReactionEvent[]
+
+  @@map("user")
+}
+

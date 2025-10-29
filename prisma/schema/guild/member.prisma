@@ -1,0 +1,19 @@
+/**
+ * Member model - represents a user's membership in a guild
+ */
+model Member {
+  id        String    @id @default(uuid())
+  guildId   String
+  userId    String
+  nick      String?
+  joinedAt  DateTime
+  leftAt    DateTime?
+  roles     String    @default("[]")
+  createdAt DateTime  @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("member")
+}
+

@@ -1,0 +1,19 @@
+/**
+ * PresenceEvent model - tracks user presence/status changes
+ */
+model PresenceEvent {
+  id           String   @id @default(uuid())
+  timestamp    DateTime
+  createdAt    DateTime @default(now())
+  guildId      String
+  userId       String
+  status       String
+  activity     String?
+  activityType Int?
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("presenceevent")
+}
+

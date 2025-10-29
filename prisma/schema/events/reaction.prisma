@@ -1,0 +1,22 @@
+/**
+ * ReactionEvent model - tracks message reaction events
+ */
+model ReactionEvent {
+  id            String   @id @default(uuid())
+  timestamp     DateTime
+  createdAt     DateTime @default(now())
+  guildId       String
+  channelId     String
+  messageId     String
+  userId        String
+  emojiId       String?
+  emojiName     String
+  emojiAnimated Boolean  @default(false)
+  action        String
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reactionevent")
+}
+

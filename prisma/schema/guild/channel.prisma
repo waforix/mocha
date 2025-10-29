@@ -1,0 +1,16 @@
+/**
+ * Channel model - represents a Discord channel
+ */
+model Channel {
+  id        String   @id
+  guildId   String
+  name      String?
+  type      Int
+  parentId  String?
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@map("channel")
+}
+

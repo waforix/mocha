@@ -1,0 +1,18 @@
+/**
+ * MemberEvent model - tracks member join/leave/update events
+ */
+model MemberEvent {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  createdAt DateTime @default(now())
+  guildId   String
+  userId    String
+  action    String
+  roles     String   @default("[]")
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("memberevent")
+}
+
