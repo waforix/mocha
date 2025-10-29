@@ -95,7 +95,7 @@ export class ReactionQueries {
       WHERE r."guildId" = ${guildId}
         AND r."action" = 'add'
         AND r."timestamp" >= ${since}
-      GROUP BY r."userId"
+      GROUP BY r."userId", u."username"
       ORDER BY reactions DESC
       LIMIT ${limit}
     `;
