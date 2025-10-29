@@ -24,6 +24,7 @@
     "check:fix": "biome check --write src/"
   },
   "dependencies": {
+    "@prisma/internals": "^6.18.0",
     "better-sqlite3": "^12.2.0",
     "postgres": "^3.4.7",
     "ws": "^8.14.2",
