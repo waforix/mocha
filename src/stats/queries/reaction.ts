@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import type { CommonDatabase } from '../../db/index';
 import { createDateSince } from '../../utils/date';
 
@@ -10,15 +11,17 @@ export class ReactionQueries {
   async getReactionStats(guildId: string, userId?: string, days = 30) {
     const since = createDateSince(days);
 
+    const userFilter = userId ? Prisma.sql`AND "userId" = ${userId}` : Prisma.empty;
+
     const results = await this.db.$queryRaw<Array<{ action: string; count: bigint }>>`
       SELECT
-        action,
+        "action",
         COUNT(*) as count
-      FROM reactionevent
-      WHERE guildId = ${guildId}
-        AND timestamp >= ${since}
-        ${userId ? `AND userId = ${userId}` : ''}
-      GROUP BY action
+      FROM "ReactionEvent"
+      WHERE "guildId" = ${guildId}
+        AND "timestamp" >= ${since}
+        ${userFilter}
+      GROUP BY "action"
     `;
 
     return results.map((r: { action: string; count: bigint }) => ({
@@ -42,15 +45,15 @@ export class ReactionQueries {
       }>
     >`
       SELECT
-        emojiId,
-        emojiName,
-        emojiAnimated,
+        "emojiId",
+        "emojiName",
+        "emojiAnimated",
         COUNT(*) as count
-      FROM reactionevent
-      WHERE guildId = ${guildId}
-        AND action = 'add'
-        AND timestamp >= ${since}
-      GROUP BY emojiId, emojiName
+      FROM "ReactionEvent"
+      WHERE "guildId" = ${guildId}
+        AND "action" = 'add'
+        AND "timestamp" >= ${since}
+      GROUP BY "emojiId", "emojiName"
       ORDER BY count DESC
       LIMIT ${limit}
     `;
@@ -84,15 +87,15 @@ export class ReactionQueries {
       }>
     >`
       SELECT
-        r.userId,
-        u.username,
+        r."userId",
+        u."username",
         COUNT(*) as reactions
-      FROM reactionevent r
-      LEFT JOIN user u ON u.id = r.userId
-      WHERE r.guildId = ${guildId}
-        AND r.action = 'add'
-        AND r.timestamp >= ${since}
-      GROUP BY r.userId
+      FROM "ReactionEvent" r
+      LEFT JOIN "User" u ON u."id" = r."userId"
+      WHERE r."guildId" = ${guildId}
+        AND r."action" = 'add'
+        AND r."timestamp" >= ${since}
+      GROUP BY r."userId"
       ORDER BY reactions DESC
       LIMIT ${limit}
     `;
@@ -118,14 +121,14 @@ export class ReactionQueries {
       }>
     >`
       SELECT
-        date(timestamp) as date,
-        CAST(strftime('%H', timestamp) AS INTEGER) as hour,
+        date("timestamp") as date,
+        CAST(strftime('%H', "timestamp") AS INTEGER) as hour,
         COUNT(*) as reactions
-      FROM reactionevent
-      WHERE guildId = ${guildId}
-        AND action = 'add'
-        AND timestamp >= ${since}
-      GROUP BY date(timestamp), strftime('%H', timestamp)
+      FROM "ReactionEvent"
+      WHERE "guildId" = ${guildId}
+        AND "action" = 'add'
+        AND "timestamp" >= ${since}
+      GROUP BY date("timestamp"), strftime('%H', "timestamp")
       ORDER BY date, hour
     `;
 
