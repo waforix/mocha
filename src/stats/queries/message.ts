@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import type { CommonDatabase } from '../../db/index';
 import { createDateSince } from '../../utils/date';
 
@@ -40,6 +41,8 @@ export class MessageQueries {
   async getTimeline(guildId: string, userId?: string, days = 7) {
     const since = createDateSince(days);
 
+    const userIdFragment = userId ? Prisma.sql`AND userId = ${userId}` : Prisma.sql``;
+
     const results = await this.db.$queryRaw<Array<{ hour: number; count: bigint }>>`
       SELECT
         CAST(strftime('%H', timestamp) AS INTEGER) as hour,
@@ -47,7 +50,7 @@ export class MessageQueries {
       FROM messageevent
       WHERE guildId = ${guildId}
         AND timestamp >= ${since}
-        ${userId ? `AND userId = ${userId}` : ''}
+        ${userIdFragment}
       GROUP BY strftime('%H', timestamp)
       ORDER BY strftime('%H', timestamp)
     `;
